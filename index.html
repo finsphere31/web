@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Finance Manager Pro</title>
 <meta name="theme-color" content="#2c3e50">
-  <link rel="icon" type = "images/png" href ="https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
-  
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
@@ -245,18 +243,52 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     white-space: nowrap;
 }
 @media print {
-    /* 1. Set Paper Size and Remove Browser Margins */
-    @page {
-        size: A4;
-        margin: 10mm;
+    @page { size: A4; margin: 10mm; }
+
+    /* 1. Destroy the 1-page limits (Remove fixed heights and flexbox) */
+    html, body, #app-view, main {
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        display: block !important; 
+        position: static !important;
+        background: #ffffff !important;
     }
 
-    /* 2. FORCE BROWSERS TO PRINT COLORS & BACKGROUNDS */
-    * {
-        -webkit-print-color-adjust: exact !important;   /* Chrome, Edge, Safari */
-        print-color-adjust: exact !important;           /* Firefox */
-        color-adjust: exact !important;                 /* Standard */
+    /* 2. Hide all the app UI menus and buttons */
+    aside, .mobile-header, .report-header-actions, .page-footer, #toast, .modal-overlay {
+        display: none !important;
     }
+
+    /* 3. Make the report paper behave normally (NO absolute positioning!) */
+    #active-report-paper {
+        position: static !important;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* 4. Fix table sizes and prevent rows from splitting across two pages */
+    table, .report-table {
+        width: 100% !important;
+        font-size: 10pt !important;
+    }
+    
+    tr {
+        page-break-inside: avoid !important;
+    }
+
+    /* 5. Force background colors to print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    
 /* 3. CRITICAL FIX: Force the Page Background to be White (Removes Gray) */
     html, body {
         background-color: #ffffff !important;
@@ -303,6 +335,8 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         overflow: visible !important;
     }
 }
+
+
 .page-footer {
     position: fixed;
     bottom: 0;
@@ -310,12 +344,51 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     background: #f1f1f1;
 }
 
+.toast {
+    position: fixed;
+    top: 20px;        /* Changed from bottom */
+    right: 20px;      /* Changed from left */
+    /* Notice: transform: translateX(-50%) is REMOVED */
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px; /* Changed to 8px for a more professional top-right look, but you can keep 50px if you prefer the pill shape */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 9999;
+    font-weight: bold;
+    font-size: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px); /* Starts slightly hidden higher up */
+    transition: all 0.3s ease;
+}
+
+/* Color variations */
+.toast.success { background-color: #27ae60; } /* Green */
+.toast.error { background-color: #e74c3c; }   /* Red */
+
+/* The new animation class (slides down into view) */
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0); 
+}
+
+    /* Show all rows when printing, ignore pagination */
+    .report-table tbody tr {
+        display: table-row !important;
+    }
+    /* Hide the Next/Prev buttons on the printed paper */
+    #pagination-controls {
+        display: none !important;
+    }
+    
 
 
 
 </style>
 </head>
 <body>
+<div id="toast" class="toast"></div>
 
 <section id="login-view">
     <div class="login-box">
@@ -536,8 +609,15 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         border-top: 2px solid #ccc !important;
     }
 
-    
-        
+        /* Show all rows when printing, ignore pagination */
+    .report-table tbody tr {
+        display: table-row !important;
+    }
+    /* Hide the Next/Prev buttons on the printed paper */
+    #pagination-controls {
+        display: none !important;
+    }
+          
 </style>
 
 <div id="view-dashboard">
@@ -597,12 +677,14 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 
 
         <div id="view-customers" class="hidden">
+          <h1 class="org-name-disp">My Finance Ltd</h1>
+ 
             <div class="card" id="cust-create-card">
                 <h3>Add Customer</h3>
                 <form id="cust-form" class="flex-col">
     <div class="flex">
         <input id="cust-name" placeholder="Full Name" required>
-        <input id="cust-ref" placeholder="Mobile / Place">
+        <input id="cust-ref" placeholder="Mobile">
         <input id="cust-addr" placeholder="Full Address"> 
     </div>
     <button class="btn btn-primary">Create</button>
@@ -612,6 +694,8 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <div class="table-responsive"><table id="cust-table"><thead><tr><th>ID</th><th>Name</th><th>Mobile</th> <th>Address</th><th>Accs</th><th>Action</th></tr></thead><tbody id="cust-tbody"></tbody></table></div>
         </div>
         <div id="view-transactions" class="hidden">
+            <h1 class="org-name-disp">My Finance Ltd</h1>
+
             <div class="card">
                 <h3>New Transaction</h3>
                 <div style="margin-bottom:15px; position:relative;">
@@ -669,6 +753,8 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         </div>
 
         <div id="view-Adjustment Entry" class="hidden">
+            <h1 class="org-name-disp">My Finance Ltd</h1>
+
     <div class="card">
         <h3>New Adjustment (Double Entry)</h3>
         <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Transfer balance between ANY two accounts (Debit -> Credit)</p>
@@ -747,21 +833,22 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 </div>
 
                <div id="view-reports" class="hidden">
+                   
             <div id="report-menu">
                 
                 <div class="card">
                     <div class="flex-between">
-                        <h4 style="margin: 0;">Reports</h4>
-                        <button onclick="document.getElementById('rep-filter-box').classList.toggle('hidden')" class="btn btn-outline btn-sm">
+                        <h4 style="margin:0; text-align:center; width:100%;">Reports</h4>
+                     <!-- <button onclick="document.getElementById('rep-filter-box').classList.toggle('hidden')" class="btn btn-outline btn-sm">
                             <i class="fas fa-filter"></i> Filters
-                        </button>
+                        </button> -->
                     </div>
                     
                     <div id="rep-filter-box" class="flex-col hidden" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
                         <div class="flex"><input type="date" id="rep-from"><input type="date" id="rep-to"></div>
-                        <select id="rep-cust-select" onchange="if(!document.getElementById('report-display').classList.contains('hidden')) showReport('cust_bal_book')">
-                            <option value="">All Customers</option>
-                        </select>
+                        <select id="rep-cust-select" style="display: none;">
+                           <option value="">All Customers</option>
+                         </select>
                         <div class="flex">
                             <button onclick="clearReportDates()" class="btn btn-outline" style="flex:1">Clear Dates</button>
                         </div>
@@ -778,28 +865,52 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
                     <div id="btn-schedule" class="report-btn-card" onclick="showReport('schedule')"><i class="fas fa-exchange-alt"></i> Rec/Pay</div>
                     <div id="btn-pl" class="report-btn-card" onclick="showReport('pl')"><i class="fas fa-chart-line"></i> P & L</div>
                     <div id="btn-bs" class="report-btn-card" onclick="showReport('bs')"><i class="fas fa-balance-scale"></i> Balance Sheet</div>
+          <div class="report-btn-card" onclick="handleHandoverReportClick()">
+    <i class="fas fa-handshake"></i> Handover Rep
+</div>
+         
+                    
                     <div class="report-btn-card" onclick="handleAgentReportClick()"><i class="fas fa-user-tie"></i> Agent</div>
                 </div>
                 
             </div>
-                                                               <div id="report-display" class="hidden">
-        <div class="report-header-actions" style="margin-bottom:15px; display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 8px;">
-            
-            <div class="desktop-actions">
-                <button onclick="closeReport()" class="btn btn-outline">Back</button>
-                <button onclick="window.print()" class="btn btn-info"><i class="fas fa-print"></i> Print</button>
-              <!--  <button onclick="downloadPDF('active-report-paper', 'Report.pdf')" class="btn btn-danger">PDF</button> -->
-            </div>
+           <div id="report-display" class="hidden">
+    <div class="report-header-actions" style="position: sticky; top: -15px; z-index: 85; margin: -15px -15px 15px -15px; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
 
-            <div class="mobile-actions">
-                <button class="btn btn-outline menu-toggle" onclick="toggleMobileMenu()">Options <i class="fas fa-caret-down"></i></button>
-                <div class="mobile-menu-dropdown hidden">
-                    <button onclick="closeReport()" class="btn btn-outline">Back</button>
-                    <button onclick="window.print()" class="btn btn-info">Print</button>
-                    <button onclick="downloadPDF('active-report-paper', 'Report.pdf')" class="btn btn-danger">PDF</button>
-                </div>
-            </div>
+        <div class="desktop-actions" style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="closeReport()" class="btn" style="background-color: #e2e8f0; color: #2c3e50;">Back</button>
+            <button onclick="window.print()" class="btn btn-info"><i class="fas fa-print"></i> Print</button>
+           <button class="btn btn-sm btn-outline-secondary" onclick="toggleFilters()">
+          <i class="fa fa-filter"></i> Filter
+           </button>
         </div>
+
+       <div id="filter-container" style="display: none; margin-top: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+    <div class="date-filters" style="display: flex; gap: 10px; align-items: center;">
+        <label for="rep-from-display"><small>From</small></label>
+        <input type="date" id="rep-from-display" class="form-control" onchange="refreshCurrentReport()">
+
+        <label for="rep-to-display"><small>To</small></label>
+        <input type="date" id="rep-to-display" class="form-control" onchange="refreshCurrentReport()">
+
+      <!--  <button class="btn btn-sm btn-primary" onclick="refreshCurrentReport()">Apply</button>
+    </div> -->
+</div>
+
+       <!-- <div class="mobile-actions">
+            <button class="btn btn-outline menu-toggle" onclick="toggleMobileMenu()">
+                Options <i class="fas fa-caret-down"></i>
+            </button>
+            <div class="mobile-menu-dropdown hidden">
+                <button onclick="closeReport()" class="btn btn-outline">Back</button>
+                <button onclick="window.print()" class="btn btn-info">Print</button>
+                <button onclick="downloadPDF('active-report-paper', 'Report.pdf')" class="btn btn-danger">PDF</button> 
+               
+            </div>-->
+        </div>
+
+    </div>
+
 
         <div id="active-report-paper" class="report-paper">                   
             <div class="report-header">
@@ -843,6 +954,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
                 <form id="agent-form" class="flex">
                     <input id="agent-user" placeholder="Username" required>
                     <input id="agent-pass" placeholder="Password" required>
+                    <input type="number" id="add-agent-comm" placeholder="Commission % (e.g. 2)">
                     <button type="submit" class="btn btn-primary">Add</button>
                 </form>
                 <div class="table-responsive" style="margin-top:15px;">
@@ -1347,6 +1459,32 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     </div>
 </div>
 
+<div id="edit-customer-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="flex-between">
+            <h3>Edit Customer</h3>
+            <button onclick="document.getElementById('edit-customer-modal').classList.add('hidden')" class="btn btn-outline">X</button>
+        </div>
+        <form id="edit-customer-form" class="flex-col" style="margin-top:15px;">
+            <input type="hidden" id="edit-cust-id">
+            
+            <small>Full Name</small>
+            <input id="edit-cust-name" placeholder="Full Name" required>
+            
+            <small>Mobile</small>
+            <input id="edit-cust-ref" placeholder="Mobile / Place">
+            
+            <small>Address</small>
+            <input id="edit-cust-addr" placeholder="Full Address">
+            
+            <div class="flex">
+                <button type="submit" class="btn btn-primary">Update Customer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <div id="edit-agent-modal" class="modal-overlay hidden">
     <div class="modal-box">
         <div class="flex-between"><h3>Edit Agent</h3><button onclick="document.getElementById('edit-agent-modal').classList.add('hidden')" class="btn btn-outline">X</button></div>
@@ -1354,6 +1492,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <input type="hidden" id="edit-agent-id">
             <input id="edit-agent-user" placeholder="Username" required>
             <input id="edit-agent-pass" placeholder="Password" required>
+            <input type="number" id="edit-agent-comm" placeholder="Commission % (e.g. 2)">
             <div class="flex"><button type="submit" class="btn btn-primary">Update</button></div>
         </form>
     </div>
@@ -1422,14 +1561,24 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         </div>
     </div>
 </div>
-
-
-
-
-
-                 
-
+              
 <script>
+   function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.classList.remove('success', 'error');
+    
+    if (type === 'error') {
+        toast.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+        toast.classList.add('error');
+    } else {
+        toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+        toast.classList.add('success');
+    }
+    
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 3000);
+}
+    
 // Storage utility
 const MemStorage={};
 const Safe={
@@ -1568,7 +1717,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     // Initialize forms
     document.getElementById('cust-form').addEventListener('submit', function(e){
         e.preventDefault();
-        if (DB.customers.some(c => c.name.toLowerCase() === document.getElementById('cust-name').value.toLowerCase())) return alert("Error: Customer Name already exists!");
+        if (DB.customers.some(c => c.name.toLowerCase() === document.getElementById('cust-name').value.toLowerCase()))
+         return showToast("Error: Customer Name already exists!", "error");
         
         const newID='DR'+String(DB.customers.length+1).padStart(4,'0');
         DB.customers.push({
@@ -1582,10 +1732,32 @@ document.addEventListener('DOMContentLoaded',()=>{
     saveDB(); 
     e.target.reset(); 
     updateCustSelect(); 
-    alert('Customer Created');
+    showToast('Customer Created');
 });    
     
+document.getElementById('edit-customer-form').addEventListener('submit', function(e) {
+    e.preventDefault();
     
+    // Get the ID and find the customer
+    const id = parseInt(document.getElementById('edit-cust-id').value);
+    const c = DB.customers.find(x => x.id === id);
+    
+    if (c) {
+        // Update the values
+        c.name = document.getElementById('edit-cust-name').value;
+        c.ref = document.getElementById('edit-cust-ref').value;
+        c.address = document.getElementById('edit-cust-addr').value;
+        
+        // Save and refresh UI
+        saveDB();
+        updateCustSelect();
+        renderCustomerTable(); 
+        
+        // Hide modal
+        document.getElementById('edit-customer-modal').classList.add('hidden');
+    }
+});
+     
 document.getElementById('trans-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -1627,22 +1799,27 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
     cancelTransaction();
     renderTrans();
 
-    if (confirm("Transaction Saved. Print Receipt?")) {
-        printReceiptData(newTrans);
-    }
-
+    showToast("Transaction Saved", "success");
 
 
     });  // <--- ADD THIS LINE HERE to close the transaction form listener
 
     document.getElementById('agent-form').addEventListener('submit',function(e){
- 
-        e.preventDefault();
-      if (DB.agents.some(a => a.user.toLowerCase() === document.getElementById('agent-user').value.toLowerCase())) return alert("Error: Agent Username already exists!");
-                DB.agents.push({id:Date.now(),user:document.getElementById('agent-user').value,pass:document.getElementById('agent-pass').value,assigned:[]});
-        saveDB(); e.target.reset(); updateUI();
-    });
+    e.preventDefault();
+    if (DB.agents.some(a => a.user.toLowerCase() === document.getElementById('agent-user').value.toLowerCase())) 
+    return showToast("Error: Agent Username already exists!", "error");
     
+    const commPercent = parseFloat(document.getElementById('add-agent-comm').value) || 0; // Fixed ID
+
+    DB.agents.push({
+        id: Date.now(),
+        user: document.getElementById('agent-user').value,
+        pass: document.getElementById('agent-pass').value,
+        comm: commPercent, // Saves successfully now
+        assigned: []
+    });
+    saveDB(); e.target.reset(); updateUI();
+});
     document.getElementById('assign-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const agentSelect = document.getElementById('assign-agent-select');
@@ -1689,7 +1866,8 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
     });
     
     document.getElementById('grp-form').addEventListener('submit',function(e){
-        e.preventDefault();
+        e.preventDefault();        
+       if (DB.groups.some(c => c.name.toLowerCase() === document.getElementById('grp-name').value.toLowerCase())) return alert("Error: Customer Name already exists!");
         DB.groups.push({id:Date.now(),name:document.getElementById('grp-name').value,type:document.getElementById('grp-parent').value});
         saveDB(); e.target.reset(); updateUI(); populateGroupSelects();
     });
@@ -1743,13 +1921,14 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
 });
     
     document.getElementById('edit-agent-form').addEventListener('submit',function(e){
-        e.preventDefault();
-        const a=DB.agents.find(x=>x.id===parseInt(document.getElementById('edit-agent-id').value));
-        a.user=document.getElementById('edit-agent-user').value;
-        a.pass=document.getElementById('edit-agent-pass').value;
-        saveDB(); document.getElementById('edit-agent-modal').classList.add('hidden'); updateUI();
-    });
+    e.preventDefault();
+    const a=DB.agents.find(x=>x.id===parseInt(document.getElementById('edit-agent-id').value));
+    a.user=document.getElementById('edit-agent-user').value;
+    a.pass=document.getElementById('edit-agent-pass').value;
+    a.comm=parseFloat(document.getElementById('edit-agent-comm').value) || 0; // Save edited commission
     
+    saveDB(); document.getElementById('edit-agent-modal').classList.add('hidden'); updateUI();
+});
     document.getElementById('edit-ledger-form').addEventListener('submit',function(e){
         e.preventDefault();
         const l=DB.accs.find(x=>x.id===parseInt(document.getElementById('edit-ledger-id').value));
@@ -2087,22 +2266,20 @@ function navTo(page){
 
 function toggleSidebar(){document.body.classList.toggle('sidebar-open')}
 
-// Customer Functions
 function editCustomer(id) {
     const c = DB.customers.find(x => x.id === id);
-    const n = prompt("Edit Name:", c.name); 
-    const r = prompt("Edit Mobile/Ref:", c.ref);
-    const a = prompt("Edit Address:", c.address || ""); // NEW: Prompt for Address
-
-    if (n !== null) { 
-        c.name = n; 
-        c.ref = r; 
-        c.address = a; // NEW: Save the updated address
-        saveDB(); 
-        updateCustSelect(); 
-        renderCustomerTable(); // Refresh the table to show changes
-    }
+    if (!c) return;
+    
+    // Fill the modal inputs with current data
+    document.getElementById('edit-cust-id').value = id;
+    document.getElementById('edit-cust-name').value = c.name;
+    document.getElementById('edit-cust-ref').value = c.ref || '';
+    document.getElementById('edit-cust-addr').value = c.address || '';
+    
+    // Show the modal
+    document.getElementById('edit-customer-modal').classList.remove('hidden');
 }
+
 
 function deleteCustomer(id){
     if(!confirm("Delete?"))return;
@@ -2373,22 +2550,32 @@ function renderAccountTypes() {
 function addAccountType() {
     const name = document.getElementById('account-type-name').value.trim();
     const prefix = document.getElementById('account-type-prefix').value.trim().toUpperCase();
-    const group = document.getElementById('account-type-group').value; // Get the group
+    const group = document.getElementById('account-type-group').value; 
     
     if(!name || !prefix || !group) return alert("Please fill Name, Prefix, and Group");
     
+    // --- ADDED THIS EASY DUPLICATE CHECK ---
+    const isDuplicate = DB.accountTypes.some(t => 
+        t.name.toLowerCase() === name.toLowerCase() || 
+        t.prefix === prefix
+    );
+    
+    if (isDuplicate) {
+        return showToast("Error: Account Type Name or Prefix already exists!", "error");
+    }  
     DB.accountTypes.push({
         id: Date.now(),
         name: name,
         prefix: prefix,
-        group: group, // Save it here
+        group: group, 
         config: []
     });
     
     saveDB();
     renderAccountTypes();
-}
 
+showToast("Account Type Added Successfully!", "success");
+}
 
 function configureAccountType(id) {
     editingAccountTypeId = id;
@@ -2491,7 +2678,7 @@ function searchTransAccount(){
     const q=document.getElementById('trans-search-input').value.toLowerCase();
     const box=document.getElementById('trans-search-results');
     if(q.length<2){box.style.display='none';return}
-    let list=DB.accs.filter(a=>a.status!=='closed');
+    let list=DB.accs.filter(a=>a.status==='active');   
     if(session.role==='agent'){const me=DB.agents.find(a=>a.id===session.id);if(me)list=list.filter(a=>me.assigned.includes(a.id))}
     const hits=list.filter(a=>(a.accNo&&a.accNo.toLowerCase().includes(q))||a.name.toLowerCase().includes(q));
     box.innerHTML=''; box.style.display='block';
@@ -2669,10 +2856,8 @@ function sendToWhatsApp(mobile, text) {
     window.open(url, '_blank');
 }
 
-
-
-
 function showReport(type, filterValue = 'all') { // Added filterValue with a default
+    window.currentReportType = type;
     document.getElementById('report-menu').classList.add('hidden');
     document.getElementById('report-display').classList.remove('hidden');
     document.getElementById('report-date').innerText=`As on: ${dateDisp(dateNow())}`;
@@ -2690,14 +2875,13 @@ function showReport(type, filterValue = 'all') { // Added filterValue with a def
     }
     
     // 2. CUST BAL BOOK CHECK (Else If)
-    else if(type==='cust_bal_book'){
+        else if(type==='cust_bal_book'){
         document.getElementById('report-subtitle').innerText='Customer Balance Book';
         const custFilterVal = document.getElementById('rep-cust-select').value;
         
         let totalBalance = 0;
-        let h=`<table class="report-table" style="width:100%;"><thead><tr><th>Acc No</th><th>Customer Name</th><th>Type</th><th>Op Date</th><th align="right">Balance</th></tr></thead><tbody>`;
-        
-        // ... (Rest of your cust_bal_book logic remains here) ...
+        // 1. Removed the <thead> from here
+        let h=`<table class="report-table" style="width:100%;"><tbody>`;
         
         let customersToShow = DB.customers;
         if(custFilterVal) customersToShow = customersToShow.filter(c=>c.id == custFilterVal);
@@ -2713,7 +2897,18 @@ function showReport(type, filterValue = 'all') { // Added filterValue with a def
                 accounts=accounts.filter(a=>me.assigned.includes(a.id));
             }
             if(accounts.length>0){
-                h+=`<tr style="background:#f9f9f9"><td colspan="5"><b>${c.name}</b> <span style="font-size:0.8em;color:#666">(${c.custNo})</span></td></tr>`;
+                // 2. The Group Header (Customer Name)
+                h+=`<tr style="background:#eaf2f8; font-weight:bold;"><td colspan="5" style="color:#2c3e50; padding-top:12px; font-size: 1.1em;">${c.name.toUpperCase()} (${c.custNo})</td></tr>`;
+                
+                // 3. The Column Headers moved INSIDE the loop, right below the Group Header
+                h+=`<tr style="background:#f1f1f1;">
+                        <th>Acc No</th>
+                        <th>Customer Name</th>
+                        <th>Type</th>
+                        <th>Op Date</th>
+                        <th align="right">Balance</th>
+                    </tr>`;
+
                 accounts.forEach(a=>{
                     const tLower = (a.type || '').toLowerCase();
                     const color = tLower.includes('loan') ? 'red' : 'green';
@@ -2733,27 +2928,26 @@ function showReport(type, filterValue = 'all') { // Added filterValue with a def
         b.innerHTML = h + '</tbody></table>';
     } 
 
-    // ... (Keep the rest of your else ifs for cust_list, agent, etc. exactly as they are) ...
-
-    else if(type==='cust_list'){
-        // ... code ...
-    }
-    // ... etc
- if(type==='cust_list'){
-        
-        
-        
+            else if(type==='cust_list'){
         document.getElementById('report-subtitle').innerText='Customer List';
-        let h=`<table class="report-table"><thead><tr><th>ID</th><th>Name</th><th>Ref</th><th>Accounts</th></tr></thead><tbody>`;
+        
+        // 1. Added <th>Address</th> to the header row
+        let h=`<table class="report-table"><thead><tr><th>S.No</th><th>ID</th><th>Name</th><th>Mobile</th><th>Address</th><th>Accounts</th></tr></thead><tbody>`;
+        
         const customersToShow = (session.role==='agent') ? 
             DB.customers.filter(c=>DB.accs.some(a=>a.custId===c.id&&DB.agents.find(ag=>ag.id===session.id).assigned.includes(a.id))) : 
             DB.customers;
-        customersToShow.forEach(c=>{
+        
+        customersToShow.forEach((c, index) => {
             const accCount = DB.accs.filter(a=>a.custId===c.id).length;
-            h+=`<tr><td>${c.custNo}</td><td>${c.name}</td><td>${c.ref}</td><td>${accCount}</td></tr>`;
+            
+            // 2. Added <td>${c.address || '-'}</td> to display the address (shows a dash if empty)
+            h+=`<tr><td>${index + 1}</td><td>${c.custNo}</td><td>${c.name}</td><td>${c.ref || '-'}</td><td>${c.address || '-'}</td><td>${accCount}</td></tr>`;
         });
+        
         b.innerHTML=h+'</tbody></table>';
     } 
+    
         else if(type==='agent'){
         document.getElementById('report-subtitle').innerText='Agent Collection Report (Day-wise)';
         
@@ -2814,42 +3008,48 @@ function showReport(type, filterValue = 'all') { // Added filterValue with a def
         document.getElementById('report-subtitle').innerText='Receipts & Payments Schedule';
         generateSchedule(b,fd,td); 
     }
+    
+    
 else if(type === 'all_accounts_bal'){
     document.getElementById('report-subtitle').innerText = 'All Accounts Balance Report';
     
-    
-        // ... existing logic ...
     const td = convertToYMD(document.getElementById('rep-to').value) || dateNow();
     const fd = convertToYMD(document.getElementById('rep-from').value);
 
-    if (type === 'all_accounts_bal') {
-        const targetType = filterValue;
+             if(type === 'all_accounts_bal') {
+        const targetType = filterValue || 'all';
         document.getElementById('report-subtitle').innerText = targetType === 'all' ? 
             'All Accounts Balance Report' : 
             `${targetType.toUpperCase()} Balance Report`;
         
+        const td = convertToYMD(document.getElementById('rep-to').value) || dateNow();
+        
+        // 1. Table starts here, but WITHOUT the <thead> at the top
         let h = `<table class="report-table" style="width:100%;">
-                    <thead>
-                        <tr>
-                            <th>Open Date</th>
-                            <th>Account No</th>
-                            <th>Particulars</th>
-                            <th align="right">Balance</th>
-                        </tr>
-                    </thead>
                     <tbody>`;
         
         let grandTotal = 0;
+        let sNo = 1; // Serial Number Counter
+        
         const typesToProcess = targetType === 'all' ? 
             [...new Set(DB.accs.map(a => a.type))] : 
             [targetType];
 
         typesToProcess.forEach(typeName => {
-            const filteredAccs = DB.accs.filter(a => a.type === typeName && a.status !== 'closed');
-            
+            const filteredAccs = DB.accs.filter(a => a.type === typeName && a.status === 'active');                      
             if(filteredAccs.length > 0) {
+                // 2. The Group Name goes here first
                 h += `<tr style="background:#eaf2f8; font-weight:bold;">
-                        <td colspan="4" style="color:#2c3e50;">${typeName.toUpperCase()} ACCOUNTS</td>
+                        <td colspan="5" style="color:#2c3e50; padding-top:12px; font-size: 1.1em;">${typeName.toUpperCase()} ACCOUNTS</td>
+                      </tr>`;
+                
+                // 3. The Headers go right underneath the Group Name!
+                h += `<tr style="background:#f1f1f1;">
+                        <th>S.No</th>
+                        <th>Open Date</th>
+                        <th>Account No</th>
+                        <th>Particulars</th>
+                        <th align="right">Balance</th>
                       </tr>`;
                 
                 let typeSubTotal = 0;
@@ -2857,6 +3057,7 @@ else if(type === 'all_accounts_bal'){
                     const bal = getBal(a.id, td);
                     const cust = DB.customers.find(c => c.id === a.custId);
                     h += `<tr>
+                            <td>${sNo++}</td>
                             <td>${dateDisp(a.opDate)}</td>
                             <td>${a.accNo || '-'}</td>
                             <td>${cust ? cust.name : a.name}</td>
@@ -2867,18 +3068,19 @@ else if(type === 'all_accounts_bal'){
                 });
 
                 h += `<tr style="background:#f8f9fa; font-style:italic;">
-                        <td colspan="3" align="right">Subtotal ${typeName.toUpperCase()}</td>
+                        <td colspan="4" align="right">Subtotal ${typeName.toUpperCase()}</td>
                         <td align="right"><b>${fmt.format(typeSubTotal)}</b></td>
                       </tr>`;
             }
         });
 
         h += `<tr class="final-total-row">
-                <td colspan="3">Grand Total</td>
+                <td colspan="4">Grand Total</td>
                 <td align="right">${fmt.format(grandTotal)}</td>
               </tr>`;
         b.innerHTML = h + '</tbody></table>';
-    } 
+    }
+       
     else if (type === 'daybook') {
         // ... your existing daybook code ...
     }
@@ -2886,6 +3088,7 @@ else if(type === 'all_accounts_bal'){
 
 }
 }
+
 
 function openLedgerSearch(){
     document.getElementById('ledger-select-modal').classList.remove('hidden');
@@ -2910,9 +3113,6 @@ function searchLedgerAccount(){
         r.appendChild(d);
     });
 }
-
-
-
 
 
 function generateLedger(id) {
@@ -3097,7 +3297,6 @@ function generatePL(b, fd, td) {
     incomeGroups.forEach(groupName => {
         const groupAccounts = DB.accs.filter(a => a.group === groupName);
         groupAccounts.forEach(acc => {
-            // FIX: Use getBal with both td (To Date) and fd (From Date)
             const bal = Math.abs(getBal(acc.id, td, fd));
             if (bal > 0) {
                 incomeHtml += `
@@ -3114,12 +3313,12 @@ function generatePL(b, fd, td) {
     expenseGroups.forEach(groupName => {
         const groupAccounts = DB.accs.filter(a => a.group === groupName);
         groupAccounts.forEach(acc => {
-            const bal = Math.abs(getBal(acc.id, td, fd)); // Treat expense accumulation as positive for the report
+            const bal = Math.abs(getBal(acc.id, td, fd)); 
             if (bal > 0) {
                 expenseHtml += `
                 <tr>
-                  <td style="padding-left:15px; font-size:0.85em; color:#555; border:none; text-align:left;">${acc.name}</td>
-                  <td style="font-size:0.85em; border:none; text-align:right;">${fmt.format(bal)}</td>
+                  <td class="col-particulars">${acc.name}</td>
+                  <td class="col-amount">${fmt.format(bal)}</td>
                 </tr>`;
                 totalExpense += bal;
             }
@@ -3128,26 +3327,24 @@ function generatePL(b, fd, td) {
 
     const netProfit = totalIncome - totalExpense;
 
+    // --- RESPONSIVE & ALIGNED HTML LAYOUT ---
     b.innerHTML = `
         <style>
-            .pl-container table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-            .pl-container td { vertical-align: top; border: 1px solid #ccc; }
-            .inner-table { width: 100%; border: none !important; }
-            .inner-table td { border: none !important; padding: 6px 8px; } 
-            .sub-head { font-size: 0.75em; color: #666; text-transform: uppercase; border-bottom: 1px solid #eee !important; font-weight: bold; }
+            /* Inner Tables */
+            .inner-table { width: 100%; border-collapse: collapse; }
+            .inner-table td { padding: 10px 8px; border-bottom: 1px solid #eee; }
+            .col-particulars { text-align: left; width: 60%; font-size: 0.85rem; color: #444; }
+            .col-amount { text-align: right; width: 40%; font-weight: bold; font-size: 0.85rem; }
+            .sub-head { font-size: 0.75rem; color: #666; text-transform: uppercase; font-weight: bold; background: #f8f9fa; }
+            .total-row td { border-top: none !important; font-weight: bold; background: #f8f9fa; color: #000; font-size: 0.95rem; }
         </style>
         
-       <div class="pl-container">
-    <table>
-        <thead>
-            <tr>
-                <th style="background: #dcedc8;">Income</th>
-                <th style="background: #ffcdd2;">Expenses</th>
-            </tr>
-        </thead>
-        <tbody>                                         
-            <tr>                        
-                <td style="vertical-align: top; border: 1px solid #ccc;">
+        <div class="flex" style="flex-wrap:wrap; gap:15px; align-items:stretch;">
+            
+            <div style="flex:1; min-width:300px; border:1px solid #ccc; border-radius:5px; display:flex; flex-direction:column; overflow:hidden;">
+                <div style="background: #dcedc8; padding: 12px; text-align: center; font-weight: bold; font-size: 1.1rem; color: #33691e;">Income</div>
+                
+                <div style="flex-grow: 1;">
                     <table class="inner-table">
                         <thead>
                             <tr>
@@ -3158,16 +3355,21 @@ function generatePL(b, fd, td) {
                         <tbody>
                             ${incomeHtml || '<tr><td colspan="2" style="color:#999; font-style:italic; text-align:center;">No Income</td></tr>'}
                         </tbody>
-                        <tfoot>
-                            <tr class="total-row">
-                                <td class="col-particulars">Total Income:</td>
-                                <td class="col-amount">${fmt.format(totalIncome)}</td>
-                            </tr>
-                        </tfoot>
                     </table>
-                </td>
+                </div>
+
+                <table class="inner-table" style="border-top: 2px solid #ccc;">
+                    <tr class="total-row">
+                        <td class="col-particulars">Total Income:</td>
+                        <td class="col-amount">${fmt.format(totalIncome)}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div style="flex:1; min-width:300px; border:1px solid #ccc; border-radius:5px; display:flex; flex-direction:column; overflow:hidden;">
+                <div style="background: #ffcdd2; padding: 12px; text-align: center; font-weight: bold; font-size: 1.1rem; color: #c62828;">Expenses</div>
                 
-                <td style="vertical-align: top; border: 1px solid #ccc;">
+                <div style="flex-grow: 1;">
                     <table class="inner-table">
                         <thead>
                             <tr>
@@ -3178,30 +3380,35 @@ function generatePL(b, fd, td) {
                         <tbody>
                             ${expenseHtml || '<tr><td colspan="2" style="color:#999; font-style:italic; text-align:center;">No Expenses</td></tr>'}
                         </tbody>
-                        <tfoot>
-                            <tr class="total-row">
-                                <td class="col-particulars">Total Expenses:</td>
-                                <td class="col-amount">${fmt.format(totalExpense)}</td>
-                            </tr>
-                        </tfoot>
                     </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                </div>
 
-    <div style="margin-top:15px; padding:15px; border:2px solid #ccc; background:${netProfit >= 0 ? '#e8f5e9' : '#ffebee'};">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="font-size:1.1rem;">Net ${netProfit >= 0 ? 'Profit' : 'Loss'}:</strong>
-            <span style="font-size:1.4rem; font-weight:bold; color:${netProfit >= 0 ? '#2e7d32' : '#c62828'};">
-                ${fmt.format(Math.abs(netProfit))}
-            </span>
+                <table class="inner-table" style="border-top: 2px solid #ccc;">
+                    <tr class="total-row">
+                        <td class="col-particulars">Total Expenses:</td>
+                        <td class="col-amount">${fmt.format(totalExpense)}</td>
+                    </tr>
+                </table>
+            </div>
+            
         </div>
-    </div>
-</div>
-    `;
-}
 
+        <div style="margin-top:15px; padding:15px; border:2px solid #ccc; border-radius:8px; background:${netProfit >= 0 ? '#e8f5e9' : '#ffebee'};">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size:1.1rem;">Net ${netProfit >= 0 ? 'Profit' : 'Loss'}:</strong>
+                <span style="font-size:1.4rem; font-weight:bold; color:${netProfit >= 0 ? '#2e7d32' : '#c62828'};">
+                    ${fmt.format(Math.abs(netProfit))}
+                </span>
+            </div>
+        </div>
+    `;
+
+    // Safety checks added here to prevent the console crash!
+    setTimeout(() => { 
+        if (typeof initColumnPagination === 'function') initColumnPagination(1); 
+        if (typeof initRowPagination === 'function') initRowPagination(); 
+    }, 100); 
+}
 function generateLoans(b, td) {
     let totalOutstanding = 0;
     let totalRepaid = 0;
@@ -4274,6 +4481,7 @@ function editAgent(id){
     document.getElementById('edit-agent-id').value=id;
     document.getElementById('edit-agent-user').value=agent.user;
     document.getElementById('edit-agent-pass').value=agent.pass;
+    document.getElementById('edit-agent-comm').value=agent.comm || ''; // Load existing commission
     document.getElementById('edit-agent-modal').classList.remove('hidden');
 }
 
@@ -4720,31 +4928,31 @@ function saveHandover() {
 
     if(!agentId || !amt || amt <= 0) return alert("Please select an agent and enter a valid amount.");
 
-    // 1. Find the Admin's primary Cash Account
+    const earnedCommission = calculateHandoverCommission(agentId, amt);
+
     const cashAcc = DB.accs.find(a => a.type === 'cash');
     if (cashAcc) {
-        cashAcc.balance += amt; // Now the money physically enters the Admin's cash account
+        cashAcc.balance += amt; 
     }
 
-    // 2. Create the special handover transaction
     DB.trans.push({
         id: Date.now(),
         date: dateNow(),
-        accId: -1, // System internal
-        secAccId: cashAcc ? cashAcc.id : 1, // Reference the cash account
+        accId: -1, 
+        secAccId: cashAcc ? cashAcc.id : 1, 
         type: 'agent_handover',
         amt: amt,
-        desc: 'Cash Handover from Agent',
+        comm: earnedCommission, // Save commission inside transaction
+        desc: `Handover (Comm: ${fmt.format(earnedCommission)})`, // Shows in regular history
         agentId: agentId, 
-        by: 'admin' // Marked as admin receiving it
+        by: 'admin' 
     });
 
     saveDB();
     document.getElementById('handover-amt').value = '';
     updateHandoverDisplay(); 
-    alert(`Received ${fmt.format(amt)}. Money added to Office Cash.`);
+    alert(`Received ${fmt.format(amt)}. Money added to Office Cash.\n\nAgent earned commission: ${fmt.format(earnedCommission)}`);
 }
-
 // --- BACKUP & RESTORE FUNCTIONS ---
 
 function backupData() {
@@ -5486,10 +5694,211 @@ window.addEventListener('load', () => {
     }
 });
 
+// 1. FIX: This function handles the button click and stops the ReferenceError
+function handleHandoverReportClick() {
+    if (session.role === 'admin') {
+        // Open the search modal for Admin to pick an agent
+        openAgentSearch();
+        
+        // Wait for search results to appear, then link them to the report
+        setTimeout(() => {
+            const items = document.querySelectorAll('#agent-search-results .ac-item');
+            items.forEach(div => {
+                const idMatch = div.innerText.match(/ID: (\d+)/);
+                if (idMatch) {
+                    div.onclick = () => generateAgentHandoverReport(parseInt(idMatch[1]));
+                }
+            });
+            // Handle "All Agents" button
+            const allBtn = document.querySelector('#agent-search-results .ac-item b i.fa-users')?.parentElement;
+            if(allBtn) allBtn.onclick = () => generateAgentHandoverReport('all');
+        }, 300);
+    } else {
+        // Agents see only their own data
+        generateAgentHandoverReport(session.id);
+    }
+}
 
+// 2. THE REPORT: Simplified Daily Collection & Handover (No Customers)
+function generateAgentHandoverReport(agentId) {
+    closeAgentSearch();
+    document.getElementById('report-menu').classList.add('hidden');
+    document.getElementById('report-display').classList.remove('hidden');
 
+    const fd = convertToYMD(document.getElementById('rep-from').value);
+    const td = convertToYMD(document.getElementById('rep-to').value);
+    
+    let agentName = (agentId === 'all') ? "All Agents Summary" : (DB.agents.find(a => a.id == agentId)?.user || "Agent");
+
+    document.getElementById('report-subtitle').innerText = `Agent Cash Summary: ${agentName}`;
+    const b = document.getElementById('report-content-body');
+    
+    let h = `<table class="report-table">
+                <thead>
+                    <tr style="background:#f8f9fa;">
+                        <th>Date</th>
+                        <th align="right">Collected (+)</th>
+                        <th align="right">Handover (-)</th>
+                        <th align="right" style="color:#e67e22">Commission</th>
+                        <th align="right">Running Bal</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+    let dailyData = {}; 
+    let runningBal = 0;
+    let grandTotalColl = 0;
+    let grandTotalHand = 0;
+    let grandTotalComm = 0;
+
+    let list = DB.trans.filter(t => {
+        const isAgentMatch = (agentId === 'all') ? (t.agentId != null) : (t.agentId == agentId);
+        const isDateMatch = (!fd || t.date >= fd) && (!td || t.date <= td);
+        return isAgentMatch && isDateMatch;
+    });
+
+    list.forEach(t => {
+        const date = t.date;
+        if (!dailyData[date]) dailyData[date] = { in: 0, out: 0, comm: 0 };
+
+        if (t.type === 'agent_handover') {
+            dailyData[date].out += t.amt;
+            dailyData[date].comm += (t.comm || 0); // Add commission
+        } else if (['deposit', 'repay_princ', 'repay_int'].includes(t.type)) {
+            dailyData[date].in += t.amt;
+        } else if (['withdraw', 'disburse'].includes(t.type)) {
+            dailyData[date].out += t.amt;
+        }
+    });
+
+    const sortedDates = Object.keys(dailyData).sort();
+
+    if (sortedDates.length === 0) {
+        h += `<tr><td colspan="5" style="text-align:center; padding:20px;">No cash activity found.</td></tr>`;
+    } else {
+        sortedDates.forEach(date => {
+            const day = dailyData[date];
+            runningBal += (day.in - day.out);
+            grandTotalColl += day.in;
+            grandTotalHand += day.out;
+            grandTotalComm += day.comm;
+
+            h += `<tr>
+                <td>${dateDisp(date)}</td>
+                <td align="right" style="color:green;">${day.in > 0 ? fmt.format(day.in) : '-'}</td>
+                <td align="right" style="color:red;">${day.out > 0 ? fmt.format(day.out) : '-'}</td>
+                <td align="right" style="color:#e67e22; font-weight:bold;">${day.comm > 0 ? fmt.format(day.comm) : '-'}</td>
+                <td align="right"><b>${fmt.format(runningBal)}</b></td>
+            </tr>`;
+        });
+    }
+
+    h += `<tr class="final-total-row">
+            <td><b>GRAND TOTAL</b></td>
+            <td align="right"><b>${fmt.format(grandTotalColl)}</b></td>
+            <td align="right"><b>${fmt.format(grandTotalHand)}</b></td>
+            <td align="right" style="color:#d35400;"><b>${fmt.format(grandTotalComm)}</b></td>
+            <td align="right" style="background:#2c3e50; color:white;"><b>${fmt.format(runningBal)}</b></td>
+          </tr>`;
+
+    h += `</tbody></table>`;
+
+    h += `
+    <div style="margin-top:20px; padding:15px; border:2px solid #2c3e50; background:#fff; border-radius:8px; text-align:center;">
+        <p>Current Cash with <b>${agentName}</b>: <br> 
+        <span style="font-size:1.5rem; color:${runningBal > 0 ? '#e74c3c' : '#27ae60'}"><b>${fmt.format(runningBal)}</b></span></p>
+        <p style="color:#e67e22; font-weight:bold; margin-top:5px;">Total Earned Commission: ${fmt.format(grandTotalComm)}</p>
+    </div>`;
+
+    b.innerHTML = h;
+}
+
+function calculateHandoverCommission(agentId, handoverAmount) {
+    const agent = DB.agents.find(a => a.id === agentId);
+    
+    // If agent doesn't exist or has 0 commission, return 0
+    if (!agent || !agent.comm) {
+        return 0; 
+    }
+
+    // Calculate: (Handover Amount * Commission Percentage) / 100
+    const commissionAmt = (handoverAmount * agent.comm) / 100;
+    
+    return commissionAmt;
+}
+function toggleFilters() {
+    var x = document.getElementById("filter-container");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+
+function refreshCurrentReport() {
+    // 1. Copy dates from the new display filter to the hidden master filter
+    document.getElementById('rep-from').value = document.getElementById('rep-from-display').value;
+    document.getElementById('rep-to').value = document.getElementById('rep-to-display').value;
+    
+    // 2. Re-run the currently active report
+    if (window.currentReportType) showReport(window.currentReportType);
+}
+
+// === UNIVERSAL PAGINATION SYSTEM ===
+let reportRows = [];
+let currentPage = 1;
+let rowsPerPage = 25; // Adjust this number (e.g., 20 or 30) to perfectly fit your screen/A4 view
+
+function applyPagination(reportType) {
+    // Skip pagination for Balance Sheet and P&L because they use complex side-by-side layouts
+    if (reportType === 'bs' || reportType === 'pl') return; 
+
+    const tbody = document.querySelector('#report-content-body .report-table tbody');
+    if (!tbody) return;
+
+    // Grab all rows EXCEPT the Grand Total (so the total is always visible at the bottom!)
+    const allRows = Array.from(tbody.querySelectorAll('tr'));
+    reportRows = allRows.filter(r => !r.classList.contains('final-total-row'));
+
+    currentPage = 1;
+    
+    // Create the Next/Prev buttons container
+    let controls = document.createElement('div');
+    controls.id = 'pagination-controls';
+    controls.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding:10px; background:#f8f9fa; border:1px solid #ddd; border-radius:8px;';
+    
+    // Attach it right below the report
+    document.getElementById('report-content-body').appendChild(controls);
+
+    showPage(1); // Load the first page
+}
+
+function showPage(page) {
+    const totalPages = Math.ceil(reportRows.length / rowsPerPage) || 1;
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentPage = page;
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    // Hide all normal rows
+    reportRows.forEach(r => r.style.display = 'none');
+
+    // Show ONLY the rows meant for the current page
+    reportRows.slice(start, end).forEach(r => r.style.display = '');
+
+    // Update the Buttons
+    const controls = document.getElementById('pagination-controls');
+    if (controls) {
+        controls.innerHTML = `
+            <button onclick="showPage(${currentPage - 1})" class="btn btn-outline" ${currentPage === 1 ? 'disabled' : ''} style="padding: 8px 15px;">&laquo; Previous</button>
+            <span style="font-weight:bold; color:#2c3e50;">Page ${currentPage} of ${totalPages}</span>
+            <button onclick="showPage(${currentPage + 1})" class="btn btn-primary" ${currentPage === totalPages ? 'disabled' : ''} style="padding: 8px 15px;">Next &raquo;</button>
+        `;
+    }
+}
 
 </script>
 </body>
-
 </html> 
