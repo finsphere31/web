@@ -382,100 +382,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         display: none !important;
     }
     
-
-
-
-</style>
-</head>
-<body>
-<div id="toast" class="toast"></div>
-
-<section id="login-view">
-    <div class="login-box">
-        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
-   
-     
-        <h2 id="login-org-name">Finance </h2>
-        <p id="login-subtitle" style="color:#666; margin-bottom:20px;">Please Login</p>
-        
-        <div id="login-status-box" style="display:none; padding:10px; background:#f8d7da; color:#721c24; margin-bottom:10px; border-radius:5px; font-size:0.8rem;"></div>
-        
-        <form id="login-form" onsubmit="event.preventDefault(); tryLogin();">
-            <input id="login-user" placeholder="Username" style="margin-bottom:10px;" required autocapitalize="off" autocomplete="off">
-            <input type="password" id="login-pass" placeholder="Password" style="margin-bottom:15px;" required>
-            <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
-        </form>
-               
-
-        <form id="register-form" class="hidden" onsubmit="event.preventDefault(); doOwnerRegister();">
-            <input id="reg-org" placeholder="Organization Name" style="margin-bottom:10px;" required>
-            <input id="reg-user" placeholder="New Username" style="margin-bottom:10px;" required>
-            <input type="password" id="reg-pass" placeholder="New Password" style="margin-bottom:10px;" required>
-            <input type="number" id="reg-mobile" placeholder="Mobile (For Recovery)" style="margin-bottom:10px;" required>
-            <input type="email" id="reg-email" placeholder="Email (For Recovery)" style="margin-bottom:15px;" required>
-            <button type="submit" class="btn btn-success" style="width:100%; background:#27ae60; color:white;">Register Owner</button>
-        </form>
-
-        <div style="display:flex; justify-content:space-between; margin-top:15px; font-size:0.9rem;">
-            <a href="#" id="link-forgot" onclick="forgotPassword()" style="color:#3498db; text-decoration:none;">Forgot Password?</a>
-            <a href="#" id="link-register" onclick="toggleRegisterMode()" style="color:#3498db; text-decoration:none;">Owner Register</a>
-        </div>
-    </div>
-</section>
-
-
-<section id="app-view" class="hidden">
-    <div class="mobile-header">
-        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <div style="font-size: 1.2rem; font-weight: bold;">Menu</div>
-        <div style="width:30px"></div>
-    </div>
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-    <aside>
-        <div class="sidebar-header">
-        <i class="fas fa-chart-line" style="margin-right: 10px;"></i>
-        <span>FinSphere</span> </div>
-        <nav>
-            <button onclick="navTo('dashboard')" id="btn-dashboard" class="active"><i class="fas fa-home"></i> Dashboard</button>
-            <button onclick="navTo('customers')" id="btn-customers"><i class="fas fa-users"></i> Customers</button>
-            <button onclick="navTo('transactions')" id="btn-transactions"><i class="fas fa-exchange-alt"></i> Transactions</button>
-            <button onclick="navTo('Adjustment Entry')" id="btn-Adjustment Entry"><i class="fas fa-exchange-alt"></i> Adjustment Entry</button>
-            <button onclick="navTo('reports')" id="btn-reports"><i class="fas fa-file-alt"></i> Reports</button>
-            <div id="admin-menu">
-                
-                <button onclick="document.getElementById('agent-submenu').classList.toggle('hidden')" id="btn-agents">
-    <i class="fas fa-user-tie"></i> Agents <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
-</button>
-
-<div id="agent-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
-    <button onclick="openAgentTab('col')" style="padding-left: 40px;"><i class="fas fa-hand-holding-usd"></i> Collection</button>
-    <button onclick="openAgentTab('cre')" style="padding-left: 40px;"><i class="fas fa-user-plus"></i> Create Agent</button>
-    <button onclick="openAgentTab('ass')" style="padding-left: 40px;"><i class="fas fa-tasks"></i> Assign Accounts</button>
-</div>
-                
-             <button onclick="document.getElementById('master-submenu').classList.toggle('hidden')">
-    <i class="fas fa-folder"></i> Master <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
-</button>
-
-<div id="master-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
-    <button onclick="navTo('ledgers')" id="btn-ledgers" style="padding-left: 40px;"><i class="fas fa-book"></i> Account Master</button>
-    <button onclick="navTo('accountTypes')" id="btn-accountTypes" style="padding-left: 40px;"><i class="fas fa-cog"></i> Account Types</button>
-    <button onclick="navTo('groups')" id="btn-groups" style="padding-left: 40px;"><i class="fas fa-layer-group"></i> Groups</button>
-</div>
-                
-                
-                <button onclick="navTo('settings')" id="btn-settings"><i class="fas fa-cog"></i> Settings</button>
-            </div>
-            <button onclick="logout()" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </nav>
-    </aside>
-
-    <main>
-        <div class="page-footer">
-        <div id="user-role-display">User: Admin</div> </div> 
-<div id="view-dashboard">
-    <style>
     .dashboard-container {
         display: flex;
         flex-direction: column;
@@ -608,7 +514,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         background: #f8f9fa;
         border-top: 2px solid #ccc !important;
     }
-
         /* Show all rows when printing, ignore pagination */
     .report-table tbody tr {
         display: table-row !important;
@@ -617,16 +522,115 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     #pagination-controls {
         display: none !important;
     }
-          
-</style>
 
+    nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1; 
+    overflow-y: auto; /* Adds a scrollbar to the menu if your screen gets too small */
+}
+.btn-logout-3d {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+    color: #ffffff !important;
+    border-radius: 10px;
+    box-shadow: 0 4px 0 #c0392b, 0 2px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease;
+    
+    /* These 3 lines perfectly position it at the bottom */
+    margin-top: auto !important; 
+    margin-bottom: 25px !important; 
+    width: 90% !important; 
+    align-self: center; /* Centers it nicely */
+}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+
+<section id="login-view">
+    <div class="login-box">
+        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+        
+        <h2 id="login-org-name">Finance </h2>
+        <p id="login-subtitle" style="color:#666; margin-bottom:20px;">Please Login</p>
+        
+        <div id="login-status-box" style="display:none; padding:10px; background:#f8d7da; color:#721c24; margin-bottom:10px; border-radius:5px; font-size:0.8rem;"></div>
+        
+        <form id="login-form" onsubmit="event.preventDefault(); tryLogin();">
+            <input id="login-user" placeholder="Username" style="margin-bottom:10px;" required autocapitalize="off" autocomplete="off">
+            <input type="password" id="login-pass" placeholder="Password" style="margin-bottom:15px;" required>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+        </form>
+               
+        <form id="register-form" class="hidden" onsubmit="event.preventDefault(); doOwnerRegister();">
+            <input id="reg-org" placeholder="Organization Name" style="margin-bottom:10px;" required>
+            <input id="reg-user" placeholder="New Username" style="margin-bottom:10px;" required>
+            <input type="password" id="reg-pass" placeholder="New Password" style="margin-bottom:10px;" required>
+            <input type="number" id="reg-mobile" placeholder="Mobile (For Recovery)" style="margin-bottom:10px;" required>
+            <input type="email" id="reg-email" placeholder="Email (For Recovery)" style="margin-bottom:15px;" required>
+            <button type="submit" class="btn btn-success" style="width:100%; background:#27ae60; color:white;">Register Owner</button>
+        </form>
+
+        <div style="display:flex; justify-content:space-between; margin-top:15px; font-size:0.9rem;">
+            <a href="#" id="link-forgot" onclick="forgotPassword()" style="color:#3498db; text-decoration:none;">Forgot Password?</a>
+            <a href="#" id="link-register" onclick="toggleRegisterMode()" style="color:#3498db; text-decoration:none;">Owner Register</a>
+        </div>
+    </div>
+</section>
+
+<section id="app-view" class="hidden">
+    <div class="mobile-header">
+        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div style="font-size: 1.2rem; font-weight: bold;">Menu</div>
+        <div style="width:30px"></div>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside>
+        <div class="sidebar-header">
+        <i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+        <span>FinSphere</span> </div>
+        <nav>
+            <button onclick="navTo('dashboard')" id="btn-dashboard" class="active"><i class="fas fa-home"></i> Dashboard</button>
+            <button onclick="navTo('customers')" id="btn-customers"><i class="fas fa-users"></i> Customers</button>
+            <button onclick="navTo('transactions')" id="btn-transactions"><i class="fas fa-exchange-alt"></i> Transactions</button>
+            <button onclick="navTo('Adjustment Entry')" id="btn-Adjustment Entry"><i class="fas fa-exchange-alt"></i> Adjustment Entry</button>
+            <button onclick="navTo('reports')" id="btn-reports"><i class="fas fa-file-alt"></i> Reports</button>
+            <div id="admin-menu">
+                
+                <button onclick="document.getElementById('agent-submenu').classList.toggle('hidden')" id="btn-agents">
+    <i class="fas fa-user-tie"></i> Agents <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
+</button>
+
+<div id="agent-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
+    <button onclick="openAgentTab('col')" style="padding-left: 40px;"><i class="fas fa-hand-holding-usd"></i> Collection</button>
+    <button onclick="openAgentTab('cre')" style="padding-left: 40px;"><i class="fas fa-user-plus"></i> Create Agent</button>
+    <button onclick="openAgentTab('ass')" style="padding-left: 40px;"><i class="fas fa-tasks"></i> Assign Accounts</button>
+</div>
+                
+             <button onclick="document.getElementById('master-submenu').classList.toggle('hidden')">
+    <i class="fas fa-folder"></i> Master <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
+</button>
+
+<div id="master-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
+    <button onclick="navTo('ledgers')" id="btn-ledgers" style="padding-left: 40px;"><i class="fas fa-book"></i> Account Master</button>
+    <button onclick="navTo('accountTypes')" id="btn-accountTypes" style="padding-left: 40px;"><i class="fas fa-cog"></i> Account Types</button>
+    <button onclick="navTo('groups')" id="btn-groups" style="padding-left: 40px;"><i class="fas fa-layer-group"></i> Groups</button>
+</div>                
+                <button onclick="navTo('settings')" id="btn-settings"><i class="fas fa-cog"></i> Settings</button>
+            </div>
+           <button onclick="logout()" class="btn-logout-3d"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </nav>
+    </aside>
+
+    <main>
+        <div class="page-footer">
+        <div id="user-role-display">User: Admin</div> </div> 
 <div id="view-dashboard">
     <div class="dashboard-container">
         <h1 class="org-name-disp">My Finance Ltd</h1>
-    </div>
+    </div>        
     
-        
-    </div>
      <div class="page-title" id="page-title">Dashboard</div>
 
     <div class="dash-grid" style="grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px;">
@@ -674,7 +678,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         </div>
     </div>
 </div>
-
 
         <div id="view-customers" class="hidden">
           <h1 class="org-name-disp">My Finance Ltd</h1>
@@ -831,7 +834,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         <div id="adj-search-results" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px;"></div>
     </div>
 </div>
-
                <div id="view-reports" class="hidden">
                    
             <div id="report-menu">
@@ -868,8 +870,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
           <div class="report-btn-card" onclick="handleHandoverReportClick()">
     <i class="fas fa-handshake"></i> Handover Rep
 </div>
-         
-                    
+                         
                     <div class="report-btn-card" onclick="handleAgentReportClick()"><i class="fas fa-user-tie"></i> Agent</div>
                 </div>
                 
@@ -895,23 +896,9 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 
       <!--  <button class="btn btn-sm btn-primary" onclick="refreshCurrentReport()">Apply</button>
     </div> -->
+</div>  
 </div>
-
-       <!-- <div class="mobile-actions">
-            <button class="btn btn-outline menu-toggle" onclick="toggleMobileMenu()">
-                Options <i class="fas fa-caret-down"></i>
-            </button>
-            <div class="mobile-menu-dropdown hidden">
-                <button onclick="closeReport()" class="btn btn-outline">Back</button>
-                <button onclick="window.print()" class="btn btn-info">Print</button>
-                <button onclick="downloadPDF('active-report-paper', 'Report.pdf')" class="btn btn-danger">PDF</button> 
-               
-            </div>-->
-        </div>
-
     </div>
-
-
         <div id="active-report-paper" class="report-paper">                   
             <div class="report-header">
                 <h2 class="org-name-disp">ORG</h2>
@@ -948,13 +935,14 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     </div>
 </div>
  
-
   <div class="card" id="ag-cre">
     <h3>Agents</h3>
                 <form id="agent-form" class="flex">
                     <input id="agent-user" placeholder="Username" required>
                     <input id="agent-pass" placeholder="Password" required>
                     <input type="number" id="add-agent-comm" placeholder="Commission % (e.g. 2)">
+                    <input type="tel" id="agent-mobile" placeholder="Mobile No" required>
+                   <input type="text" id="agent-address" placeholder="Address" required>
                     <button type="submit" class="btn btn-primary">Add</button>
                 </form>
                 <div class="table-responsive" style="margin-top:15px;">
@@ -1047,9 +1035,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
                 <div class="table-responsive" style="margin-top:15px;"><table id="grp-table"><thead><tr><th>Name</th><th>Type</th><th>Action</th></tr></thead><tbody id="grp-tbody"></tbody></table></div>
             </div>
         </div>
-        
-        
-
 <div id="view-settings" class="hidden">
     <div class="card">
         <h3>Settings Menu</h3>
@@ -1169,12 +1154,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         </div>
     </div>
 </div>
-
-
-
-
-
-
 <div id="view-set-printer" class="hidden">
     <div class="card">
         <div class="flex-between" style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:20px;">
@@ -1349,9 +1328,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         
         <div id="cm-add-acc-form" class="hidden" style="background:#eaf2f8; padding:15px; border-radius:8px; margin-top:20px; border:1px solid #b3d7ff;">
             <h4 style="margin-top:0;">Open New Account</h4>
-       
-            
-            
             <div class="flex-col">
                 <div class="flex">
                     <div style="flex:1">
@@ -1378,9 +1354,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         </div>
     </div>
 </div>
-
-
-
 <div id="account-type-config-modal" class="modal-overlay hidden">
     <div class="modal-box">
         <div class="flex-between">
@@ -1410,8 +1383,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             </div>
     </div>
 </div>
-
-
 <div id="ledger-select-modal" class="modal-overlay hidden">
     <div class="modal-box">
         <div class="flex-between" style="margin-bottom:10px;"><h3>Select Ledger</h3><button onclick="document.getElementById('ledger-select-modal').classList.add('hidden')" class="btn btn-outline">X</button></div>
@@ -1483,8 +1454,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         </form>
     </div>
 </div>
-
-
 <div id="edit-agent-modal" class="modal-overlay hidden">
     <div class="modal-box">
         <div class="flex-between"><h3>Edit Agent</h3><button onclick="document.getElementById('edit-agent-modal').classList.add('hidden')" class="btn btn-outline">X</button></div>
@@ -1493,6 +1462,8 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <input id="edit-agent-user" placeholder="Username" required>
             <input id="edit-agent-pass" placeholder="Password" required>
             <input type="number" id="edit-agent-comm" placeholder="Commission % (e.g. 2)">
+            <input type="tel" id="edit-agent-mobile" placeholder="Mobile No" required>
+            <input type="text" id="edit-agent-address" placeholder="Address" required>
             <div class="flex"><button type="submit" class="btn btn-primary">Update</button></div>
         </form>
     </div>
@@ -1524,6 +1495,18 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <input type="hidden" id="edit-group-id">
             <input id="edit-group-name" placeholder="Group Name" required>
             <select id="edit-group-type"><option value="Asset">Asset</option><option value="Liability">Liability</option><option value="Income">Income</option><option value="Expense">Expense</option><option value="Equity">Equity</option></select>
+            <div class="flex"><button type="submit" class="btn btn-primary">Update</button></div>
+        </form>
+    </div>
+</div>
+<div id="edit-account-type-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="flex-between"><h3>Edit Account Type</h3><button type="button" onclick="document.getElementById('edit-account-type-modal').classList.add('hidden')" class="btn btn-outline">X</button></div>
+        <form class="flex-col" style="margin-top:15px;" onsubmit="event.preventDefault(); saveEditedAccountType();">
+            <input type="hidden" id="edit-type-id">
+            <input id="edit-type-name" placeholder="Type Name" required>
+            <input id="edit-type-prefix" placeholder="Prefix" required>
+            <select id="edit-type-group" required></select>
             <div class="flex"><button type="submit" class="btn btn-primary">Update</button></div>
         </form>
     </div>
@@ -1800,25 +1783,35 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
     renderTrans();
 
     showToast("Transaction Saved", "success");
-
-
     });  // <--- ADD THIS LINE HERE to close the transaction form listener
 
-    document.getElementById('agent-form').addEventListener('submit',function(e){
+   document.getElementById('agent-form').addEventListener('submit', function(e){
     e.preventDefault();
-    if (DB.agents.some(a => a.user.toLowerCase() === document.getElementById('agent-user').value.toLowerCase())) 
-    return showToast("Error: Agent Username already exists!", "error");
     
-    const commPercent = parseFloat(document.getElementById('add-agent-comm').value) || 0; // Fixed ID
+    // Check for duplicate username
+    if (DB.agents.some(a => a.user.toLowerCase() === document.getElementById('agent-user').value.toLowerCase())) {
+        return showToast("Error: Agent Username already exists!", "error");
+    }
+    // Get the values from the inputs
+    const mobile = document.getElementById('agent-mobile').value;
+    const address = document.getElementById('agent-address').value;
+    const commPercent = parseFloat(document.getElementById('add-agent-comm').value) || 0; 
 
+    // Save to database
     DB.agents.push({
         id: Date.now(),
         user: document.getElementById('agent-user').value,
         pass: document.getElementById('agent-pass').value,
-        comm: commPercent, // Saves successfully now
+        mobile: mobile,   // <-- Fixed: now matches the variable above
+        address: address, // <-- Fixed: now matches the variable above
+        comm: commPercent, 
         assigned: []
     });
-    saveDB(); e.target.reset(); updateUI();
+    
+    saveDB(); 
+    e.target.reset(); 
+    updateUI();
+    showToast("Agent Added Successfully!", "success");
 });
     document.getElementById('assign-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -1863,6 +1856,7 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
             opDate:dateNow()
         });
         saveDB(); e.target.reset(); updateUI();
+        showToast("Account Master added successfully", "success");
     });
     
     document.getElementById('grp-form').addEventListener('submit',function(e){
@@ -1870,6 +1864,7 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
        if (DB.groups.some(c => c.name.toLowerCase() === document.getElementById('grp-name').value.toLowerCase())) return alert("Error: Customer Name already exists!");
         DB.groups.push({id:Date.now(),name:document.getElementById('grp-name').value,type:document.getElementById('grp-parent').value});
         saveDB(); e.target.reset(); updateUI(); populateGroupSelects();
+        showToast("Group added successfully", "success");
     });
     
        document.getElementById('edit-trans-form').addEventListener('submit', function(e) {
@@ -1881,7 +1876,6 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
     const primAcc = DB.accs.find(a => a.id === t.accId);
     const secAcc = DB.accs.find(a => a.id === t.secAccId);
 
-    // --- STEP 1: REVERSE OLD IMPACTS ---
     // Reverse Primary
     if (primAcc) primAcc.balance -= (t.amt * getTxMod(primAcc, t.type));
     
@@ -1920,14 +1914,20 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
     alert('Transaction and Cash Balance updated');
 });
     
-    document.getElementById('edit-agent-form').addEventListener('submit',function(e){
+  document.getElementById('edit-agent-form').addEventListener('submit',function(e){
     e.preventDefault();
     const a=DB.agents.find(x=>x.id===parseInt(document.getElementById('edit-agent-id').value));
     a.user=document.getElementById('edit-agent-user').value;
     a.pass=document.getElementById('edit-agent-pass').value;
-    a.comm=parseFloat(document.getElementById('edit-agent-comm').value) || 0; // Save edited commission
+    a.comm=parseFloat(document.getElementById('edit-agent-comm').value) || 0; 
     
-    saveDB(); document.getElementById('edit-agent-modal').classList.add('hidden'); updateUI();
+    // Add these two lines to save the updated data to the database:
+    a.mobile=document.getElementById('edit-agent-mobile').value;
+    a.address=document.getElementById('edit-agent-address').value;
+    
+    saveDB(); 
+    document.getElementById('edit-agent-modal').classList.add('hidden'); 
+    updateUI();
 });
     document.getElementById('edit-ledger-form').addEventListener('submit',function(e){
         e.preventDefault();
@@ -1982,8 +1982,6 @@ function updateAccountTypeSelect() {
         if (currentValue) select.value = currentValue;
     }
 }
-
-
 function tryLogin() {
     // Get values and trim spaces
     let u = document.getElementById('login-user').value.trim();
@@ -2014,8 +2012,6 @@ function tryLogin() {
     }
 }
 
-
-// Function to switch between Login and Register views
 function toggleRegisterMode() {
     const loginForm = document.getElementById('login-form');
     const regForm = document.getElementById('register-form');
@@ -2039,11 +2035,6 @@ function toggleRegisterMode() {
         forgotLink.classList.remove('hidden');
     }
 }
-
-// Function to handle the Registration Logic
-
-
-
 function doOwnerRegister() {
     const org = document.getElementById('reg-org').value.trim();
     const user = document.getElementById('reg-user').value.trim();
@@ -2104,8 +2095,6 @@ function forgotPassword() {
         alert("Verification Failed: Mobile or Email does not match our records.");
     }
 }
-
-
 function initSession(role, id, username) {
     // 1. Existing Session Logic
     session = { role, id, username };
@@ -2140,9 +2129,6 @@ function initSession(role, id, username) {
     navTo('dashboard');
     updateUI();
 }
-
-
-
 function logout() {
     // 1. First, confirm they actually want to exit
     if (confirm("Are you sure you want to Logout?")) {
@@ -2279,8 +2265,6 @@ function editCustomer(id) {
     // Show the modal
     document.getElementById('edit-customer-modal').classList.remove('hidden');
 }
-
-
 function deleteCustomer(id){
     if(!confirm("Delete?"))return;
     if(DB.accs.some(a=>a.custId===id && a.balance!==0)) return alert("Has balance");
@@ -2291,9 +2275,6 @@ function openCustomerProfile(id){
     document.getElementById('cm-title').innerText=c.name; document.getElementById('cm-id').innerText=c.custNo; document.getElementById('cm-ref').innerText=c.ref;
     document.getElementById('cust-modal').classList.remove('hidden'); cancelAddAccount(); renderCustAccs(id);
 }
-
-
-
 function renderCustAccs(cid) {
     activeCustId = cid; // Ensure this is set
     const tb = document.getElementById('cm-acc-body');
@@ -2349,9 +2330,6 @@ function renderCustAccs(cid) {
         tb.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 10px; color: #888;">No active accounts found.</td></tr>`;
     }
 }
-
-
-
 function showAddAccountForm(){
     document.getElementById('cm-add-acc-form').classList.remove('hidden');
     populateGroupSelects();
@@ -2397,7 +2375,6 @@ function showConfigFields(config) {
         section.classList.add('hidden');
     }
 }
-
 function saveNewAccount() {
     if (!activeCustId) return;
     const typeName = document.getElementById('new-acc-type').value;
@@ -2523,30 +2500,6 @@ function selectCustForReport(custId) {
     showReport('cust_bal_book');
 }
 
-
-
-// Account Types Management
-function renderAccountTypes() {
-    const tbody = document.getElementById('account-types-tbody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '';
-    DB.accountTypes.forEach(type => {
-        const configCount = type.config ? type.config.length : 0;
-        tbody.innerHTML += `
-            <tr>
-                <td>${type.name}</td>
-                <td>${type.prefix}</td>
-                <td>${configCount} field${configCount !== 1 ? 's' : ''}</td>
-                <td>
-                    <button onclick="configureAccountType(${type.id})" class="btn-sm btn-warning"><i class="fas fa-cog"></i> Config</button>
-                    <button onclick="deleteAccountType(${type.id})" class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        `;
-    });
-}
-
 function addAccountType() {
     const name = document.getElementById('account-type-name').value.trim();
     const prefix = document.getElementById('account-type-prefix').value.trim().toUpperCase();
@@ -2663,15 +2616,23 @@ function saveAccountTypeConfig() {
     updateAccountTypeSelect();
 }
 function deleteAccountType(id) {
-    if(confirm("Delete this account type? This won't delete existing accounts of this type.")) {
+    const typeObj = DB.accountTypes.find(t => t.id === id);
+    if (!typeObj) return;
+
+    // 1. Check if any accounts are currently using this type
+    if (DB.accs.some(a => a.type === typeObj.name)) {
+        return showToast("Cannot delete: Accounts are currently using this type!", "error");
+    }
+
+    // 2. Confirm and Delete
+    if (confirm(`Are you sure you want to delete Account Type '${typeObj.name}'?`)) {
         DB.accountTypes = DB.accountTypes.filter(t => t.id !== id);
         saveDB();
-        updateAccountTypeSelect();
-        renderAccountTypes();
+        updateAccountTypeSelect(); // Refresh dropdowns
+        renderAccountTypes();      // Refresh the table
+        showToast("Account Type deleted successfully", "success");
     }
 }
-
-
 
 // Transaction Functions
 function searchTransAccount(){
@@ -2865,8 +2826,6 @@ function showReport(type, filterValue = 'all') { // Added filterValue with a def
     const fd=convertToYMD(document.getElementById('rep-from').value);
     const td=convertToYMD(document.getElementById('rep-to').value);
     
-    // --- START OF FIXED LOGIC ---
-    
     // 1. DAY BOOK CHECK (Moved to top level)
     if (type === 'daybook') {
         document.getElementById('report-subtitle').innerText = 'Daily Cash Book';
@@ -3008,8 +2967,7 @@ function showReport(type, filterValue = 'all') { // Added filterValue with a def
         document.getElementById('report-subtitle').innerText='Receipts & Payments Schedule';
         generateSchedule(b,fd,td); 
     }
-    
-    
+       
 else if(type === 'all_accounts_bal'){
     document.getElementById('report-subtitle').innerText = 'All Accounts Balance Report';
     
@@ -3088,8 +3046,6 @@ else if(type === 'all_accounts_bal'){
 
 }
 }
-
-
 function openLedgerSearch(){
     document.getElementById('ledger-select-modal').classList.remove('hidden');
     document.getElementById('led-search').value='';
@@ -3113,7 +3069,6 @@ function searchLedgerAccount(){
         r.appendChild(d);
     });
 }
-
 
 function generateLedger(id) {
     document.getElementById('report-menu').classList.add('hidden');
@@ -3180,8 +3135,6 @@ function generateLedger(id) {
 
         bal += impact;
   
-
-                // FIX: Swap colors so Dr (In) is Green and Cr (Out) is Red for Cash & Bank only
         let drColor = (ac.type === 'cash' || ac.type === 'bank') ? 'green' : 'red';
         let crColor = (ac.type === 'cash' || ac.type === 'bank') ? 'red' : 'green';
 
@@ -3197,7 +3150,6 @@ function generateLedger(id) {
     h += `<tr class="final-total-row"><td colspan="4">Closing Balance</td><td align="right">${fmt.format(bal)}</td></tr>`;
     document.getElementById('report-content-body').innerHTML = h + '</tbody></table>';
 }
-
 
 function generateDayBook(container, targetDate) {
     let openingBal = 0;
@@ -3220,9 +3172,6 @@ function generateDayBook(container, targetDate) {
             openingBal -= t.amt;
         }
     });
-    
-    
-
     // 2. Filter Today's Transactions
     const dayTrans = DB.trans.filter(t => t.date === targetDate);
     let runningBal = openingBal;
@@ -3284,7 +3233,6 @@ function generateDayBook(container, targetDate) {
             </tbody>
         </table>`;
 }
-
 
 function generatePL(b, fd, td) {
     const incomeGroups = DB.groups.filter(g => g.type === 'Income').map(g => g.name);
@@ -3479,10 +3427,6 @@ function generateLoans(b, td) {
     h += '</tbody></table>';
     b.innerHTML = h;
 }
-
-
-
-
 function generateBS(b, fd, td) {
     const dt = td || dateNow();
 
@@ -3628,7 +3572,6 @@ function generateBS(b, fd, td) {
     return { html, total: sectionTotal, rows: rowCount };
 }
 
-    // Build Data
     const assets = buildSection('Asset');
     const liabilities = buildSection('Liability');
     const equity = buildSection('Equity');
@@ -3900,8 +3843,6 @@ function getFilteredTrans(fd,td){
     return DB.trans.filter(t=>(!fd||t.date>=fd)&&(!td||t.date<=td));
 }
 
-
-
 function getBal(id, td, fd) {
     let runningBalance = 0;
     const targetAcc = DB.accs.find(a => a.id === id);
@@ -3960,9 +3901,6 @@ function calculateProfitLoss(endDate, startDate){
     return profit;
 }
 
-
-
-
 function getTxMod(acc, type) {
     if (!acc) return 0;
     const group = DB.groups.find(g => g.name === acc.group);
@@ -3978,8 +3916,6 @@ function getTxMod(acc, type) {
         if (['deposit', 'repay_princ', 'income'].includes(t)) return -1; // Credit (Decrease Loan/Increase Bank)
     }
 
-    // --- LIABILITY RULES (Savings, Pigmy, RD) ---
-    // Credit increases liabilities, Debit decreases them.
     if (isLiability) {
         if (['deposit', 'repay_princ'].includes(t)) return 1;  // Credit (Increase what you owe)
         if (['withdraw', 'disburse'].includes(t)) return -1;  // Debit (Decrease what you owe)
@@ -3987,8 +3923,6 @@ function getTxMod(acc, type) {
 
     return 1;
 }
-
-
 
 function clearReportDates() {
     document.getElementById('rep-from').value = '';
@@ -4068,6 +4002,7 @@ function updateUI() {
             if (isExpense) todayExpense += t.amt;
         }
     });
+    
 
     // 3. Update the UI Elements
     document.getElementById('d-tot-cash').innerText = fmt.format(cashInHand);
@@ -4285,9 +4220,6 @@ function renderGroupTable(){
     });
 } // <--- END OF renderGroupTable
 
-// --- NEW AGENT SEARCH FUNCTIONS (Paste these AFTER renderGroupTable) ---
-
-// 1. Open the Search Modal
 function openAgentSearch() {
     document.getElementById('agent-search-modal').classList.remove('hidden');
     document.getElementById('agent-search-input').value = '';
@@ -4355,8 +4287,6 @@ function generateAgentReport(agentId) {
     document.getElementById('report-subtitle').innerText = `Collection: ${agentName}`;
     document.getElementById('report-date').innerText = `As on: ${dateDisp(today)}`;
 
-    // D. Filter Transactions
-    // 1. Filter by Date AND Type (Deposits/Repayments) AND Role (Agent)
     let list = getFilteredTrans(fd, td).filter(t => 
         (t.type === 'deposit' || t.type === 'repay_princ') && 
         t.by === 'agent'
@@ -4367,7 +4297,6 @@ function generateAgentReport(agentId) {
         list = list.filter(t => t.agentId == agentId);
     }
 
-    // E. Sort & Render HTML
     list.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const b = document.getElementById('report-content-body');
@@ -4413,9 +4342,6 @@ function generateAgentReport(agentId) {
     b.innerHTML = h + `<tr class="final-total-row"><td colspan="3">Total Collected</td><td align="right">${fmt.format(grandTotal)}</td></tr></tbody></table>`;
 }
 
-
-// --- ADD THIS NEW FUNCTION ---
-
 function handleAgentReportClick() {
     // 1. Check who is logged in
     if (session.role === 'admin') {
@@ -4427,8 +4353,6 @@ function handleAgentReportClick() {
         generateAgentReport(session.id);
     }
 }
-
-// Settings functions
 function saveSettings() {
     // 1. Get Values
     const org = document.getElementById('set-org').value;
@@ -4454,9 +4378,6 @@ function saveSettings() {
     // 6. Confirmation Alert (Debug)
     alert(`SAVED SUCCESSFULLY!\n\nOrg: ${org}\nMobile: ${mobile}\nEmail: ${email}\n\n(These are now saved in memory)`);
 }
-
-
-
 function changeAdminPW(){
     const newPass=document.getElementById('set-admin-pw').value;
     if(newPass.length<4) return alert('Password must be at least 4 characters');
@@ -4473,7 +4394,6 @@ function factoryReset(){
     }
 }
 
-// Edit functions for agents, ledgers, groups
 function editAgent(id){
     const agent=DB.agents.find(a=>a.id===id);
     if(!agent) return;
@@ -4481,7 +4401,12 @@ function editAgent(id){
     document.getElementById('edit-agent-id').value=id;
     document.getElementById('edit-agent-user').value=agent.user;
     document.getElementById('edit-agent-pass').value=agent.pass;
-    document.getElementById('edit-agent-comm').value=agent.comm || ''; // Load existing commission
+    document.getElementById('edit-agent-comm').value=agent.comm || ''; 
+    
+    // Add these two lines to load the data into the modal:
+    document.getElementById('edit-agent-mobile').value=agent.mobile || '';
+    document.getElementById('edit-agent-address').value=agent.address || '';
+    
     document.getElementById('edit-agent-modal').classList.remove('hidden');
 }
 
@@ -4502,13 +4427,20 @@ function editLedger(id){
     document.getElementById('edit-ledger-modal').classList.remove('hidden');
 }
 
-function deleteLedger(id){
-    if(DB.trans.some(t=>t.accId===id)) return alert("Cannot delete ledger with transactions");
-    if(!confirm("Delete this ledger account?")) return;
-    DB.accs=DB.accs.filter(a=>a.id!==id);
-    saveDB();
-}
+function deleteLedger(id) {
+    // 1. Check if any transactions exist for this account
+    if (DB.trans.some(t => t.accId === id || t.secAccId === id)) {
+        return showToast("Cannot delete: Transactions exist for this account!", "error");
+    }
 
+    // 2. Confirm and Delete
+    if (confirm("Are you sure you want to delete this ledger account?")) {
+        DB.accs = DB.accs.filter(a => a.id !== id);
+        saveDB();
+        renderLedgerTable(); // Refresh the table
+        showToast("Ledger account deleted successfully", "success");
+    }
+}
 function editGroup(id){
     const group=DB.groups.find(g=>g.id===id);
     if(!group) return;
@@ -4519,14 +4451,24 @@ function editGroup(id){
     document.getElementById('edit-group-modal').classList.remove('hidden');
 }
 
-function deleteGroup(id){
-    const group=DB.groups.find(g=>g.id===id);
-    if(DB.accs.some(a=>a.group===group.name)) return alert("Cannot delete group that is in use");
-    if(!confirm("Delete this group?")) return;
-    DB.groups=DB.groups.filter(g=>g.id!==id);
-    saveDB();
-}
+function deleteGroup(id) {
+    const group = DB.groups.find(g => g.id === id);
+    if (!group) return;
 
+    // 1. Check if any accounts are inside this group
+    if (DB.accs.some(a => a.group === group.name)) {
+        return showToast("Cannot delete: Accounts exist under this group!", "error");
+    }
+
+    // 2. Confirm and Delete
+    if (confirm(`Are you sure you want to delete Group '${group.name}'?`)) {
+        DB.groups = DB.groups.filter(g => g.id !== id);
+        saveDB();
+        populateGroupSelects(); // Refresh dropdowns
+        renderGroupTable();     // Refresh the table
+        showToast("Group deleted successfully", "success");
+    }
+}
 
 function renderDashActivities() {
     const tbody = document.getElementById('dash-tbody');
@@ -4572,7 +4514,6 @@ function renderDashActivities() {
             });
         });
 
-        // 4. Filter Groups (Admin Only)
         DB.groups.forEach(g => {
             activities.push({
                 time: g.id,
@@ -4583,7 +4524,6 @@ function renderDashActivities() {
         });
     }
 
-    // Sort by Time (Newest First)
     activities.sort((a, b) => b.time - a.time);
 
     // Take top 5 and Render
@@ -4603,9 +4543,6 @@ function renderDashActivities() {
     });
 }
 
-
-
-// Updated Render Account Types
 function renderAccountTypes() {
     const tbody = document.getElementById('account-types-tbody');
     if (!tbody) return;
@@ -4639,6 +4576,7 @@ function renderAccountTypes() {
                 <td>${type.prefix}</td>
                 <td>${configCount} field${configCount !== 1 ? 's' : ''}</td>
                 <td>
+                    <button onclick="editAccountType(${type.id})" class="btn-sm btn-primary" title="Edit"><i class="fas fa-edit"></i></button>
                     <button onclick="configureAccountType(${type.id})" class="btn-sm btn-warning"><i class="fas fa-cog"></i> Config</button>
                     <button onclick="deleteAccountType(${type.id})" class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                 </td>
@@ -4647,7 +4585,6 @@ function renderAccountTypes() {
     });
 }
 
-// Updated Render Ledger Table (Account Master)
 function renderLedgerTable(){
     const tbody = document.querySelector('#ledger-table tbody');
     if(!tbody) return;
@@ -4685,7 +4622,6 @@ function renderLedgerTable(){
     });
 }
 
-// Updated Render Group Table
 function renderGroupTable(){
     const tbody = document.querySelector('#grp-table tbody');
     if(!tbody) return;
@@ -4718,8 +4654,6 @@ function renderGroupTable(){
         `;
     });
 }
-
-// --- AGENT SEARCH FUNCTIONS ---
 
 function openAgentSearch() {
     document.getElementById('agent-search-modal').classList.remove('hidden');
@@ -4830,8 +4764,6 @@ function generateAgentReport(agentId) {
 
     b.innerHTML = h + `<tr class="final-total-row"><td colspan="3">Total Collected</td><td align="right">${fmt.format(grandTotal)}</td></tr></tbody></table>`;
 }
-
-// --- ASSIGNMENT FUNCTIONS ---
 
 function updateAssignForms() {
     const agSel = document.getElementById('assign-agent-select');
@@ -4975,7 +4907,6 @@ function backupData() {
             }
         };
 
-        // 2. Convert to JSON string
         const dataStr = JSON.stringify(backupObj, null, 2);
 
         // 3. Create File (Blob)
@@ -5058,9 +4989,6 @@ function processRestoreFile(inputElement) {
     // Reset input so same file can be selected again if needed
     inputElement.value = ''}
     
-    /* --- NEW SETTINGS NAVIGATION & LOGIC --- */
-
-// 1. Navigation: Open a Sub-Page
 function openSetSub(id) {
     // Hide Main Settings Menu
     document.getElementById('view-settings').classList.add('hidden');
@@ -5090,9 +5018,6 @@ function initPrinterUI() {
     setPrinterDriver(method);
 }
 
-
-
-// 2. Navigation: Close Sub-Page (Back Button)
 function closeSetSub() {
     // Hide all sub-views
     ['org', 'printer', 'backup', 'recovery', 'security'].forEach(id => {
@@ -5124,7 +5049,6 @@ function saveSettingsRecovery() {
     alert("Recovery Info Saved!");
 }
 
-// 5. Save Logic: Admin Security (Username + Password)
 function saveAdminSecurity() {
     const newUser = document.getElementById('set-admin-user').value.trim();
     const newPass = document.getElementById('set-admin-pw').value.trim();
@@ -5139,7 +5063,6 @@ function saveAdminSecurity() {
         msg += "\n- Username changed to: " + newUser;
     }
 
-    // Update Password (only if entered)
     if(newPass && newPass.length >= 4) {
         DB.settings.adminPass = newPass;
         msg += "\n- Password updated";
@@ -5152,8 +5075,6 @@ function saveAdminSecurity() {
     alert(msg + "\n\nPlease use these new credentials next time you login.");
 }
 
-
-// Function to save individual Admin Name
 function saveAdminName() {
     const adminName = document.getElementById('set-admin-name').value;
     if (adminName.trim() === "") {
@@ -5318,8 +5239,6 @@ function toggleAccountStatus(accId, newStatus) {
     const acc = DB.accs.find(a => a.id === accId);
     if (!acc) return;
 
-    // MANDATORY BALANCE CHECK
-    // If trying to deactivate, balance MUST be 0
     if (newStatus === 'inactive' && Math.abs(acc.balance) > 0) {
         alert(`Cannot deactivate! This account has a remaining balance of ${fmt.format(acc.balance)}. The balance must be 0 to deactivate.`);
         return; // Stop here and do not change status
@@ -5345,11 +5264,6 @@ function processDoubleEntry(t) {
     // 1. PRIMARY ACCOUNT (Customer Loan/Savings or Ledger)
     const primMod = getTxMod(primaryAcc, t.type);
     primaryAcc.balance += (t.amt * primMod);
-
-    // 2. SECONDARY ACCOUNT (Cash or Bank) - The "Debit/Credit" Side
-    // Professional Rule: 
-    // Receipts (Deposit/Repay/Income) = DEBIT Cash (Increase Asset)
-    // Payments (Withdraw/Disburse/Expense) = CREDIT Cash (Decrease Asset)
     
     if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
         secondaryAcc.balance += t.amt; // This is a Debit to Cash
@@ -5357,7 +5271,6 @@ function processDoubleEntry(t) {
         secondaryAcc.balance -= t.amt; // This is a Credit to Cash
     }
 }
-// FIX: Transaction Cancel Button
 function cancelTransaction() {
     const entryArea = document.getElementById('trans-entry-area');
     const transForm = document.getElementById('trans-form');
@@ -5455,7 +5368,6 @@ document.getElementById('adj-form').addEventListener('submit', function(e) {
     updateBalance(drAcc, amt, 'dr');
     updateBalance(crAcc, amt, 'cr');
 
-    // Save as a special transaction type
     const entry = {
         id: Date.now(),
         date: date,
@@ -5483,7 +5395,6 @@ function resetAdjForm() {
     document.getElementById('adj-date').value = dateNow();
 }
 
-// 3. History and Delete Logic
 function renderAdjHistory() {
     const tbody = document.getElementById('adj-history-body');
     if (!tbody) return;
@@ -5514,8 +5425,6 @@ function deleteAdjustment(id) {
     const drAcc = DB.accs.find(a => a.id === t.accId);
     const crAcc = DB.accs.find(a => a.id === t.secAccId);
 
-    // To reverse: Debit the original Credit, and Credit the original Debit
-    // (Logic: using the same updateBalance function but swapping sides)
     function updateBalance(acc, amount, action) {
         const group = DB.groups.find(g => g.name === acc.group);
         const isAssetOrExpense = group && (group.type === 'Asset' || group.type === 'Expense');
@@ -5537,7 +5446,6 @@ function toggleMobileMenu() {
   dropdown.classList.toggle('hidden');
 }
 
-// Optional: close the menu if user clicks outside
 document.addEventListener('click', function(event) {
   const isToggle = event.target.closest('.menu-toggle');
   const isDropdown = event.target.closest('.mobile-menu-dropdown');
@@ -5548,16 +5456,12 @@ document.addEventListener('click', function(event) {
 
 function openAgentTab(tab) {
     navTo('agents'); // Keeps your admin security working perfectly!
-    
-    // Hide all 3 cards, then show only the one you clicked
+
     document.getElementById('ag-col').style.display = (tab === 'col') ? 'block' : 'none';
     document.getElementById('ag-cre').style.display = (tab === 'cre') ? 'block' : 'none';
     document.getElementById('ag-ass').style.display = (tab === 'ass') ? 'block' : 'none';
 }
 
-// --- PRINTER CONFIGURATION & BLUETOOTH MANAGER ---
-
-// 1. Switch between RawBT and Bluetooth UI in Settings
 function setPrinterDriver(type) {
     document.querySelectorAll('.driver-select-card').forEach(el => el.classList.remove('active'));
     document.getElementById('driver-' + type).classList.add('active');
@@ -5571,7 +5475,6 @@ function setPrinterDriver(type) {
     }
 }
 
-// 2. The Missing Bluetooth (BLE) Manager
 const BLEManager = {
     device: null,
     server: null,
@@ -5585,18 +5488,15 @@ const BLEManager = {
 
         try {
             document.getElementById('ble-status-text').innerText = 'Searching...';
-            
-            // 2. Request the device
+      
             this.device = await navigator.bluetooth.requestDevice({
                 acceptAllDevices: true,
                 optionalServices: ['49535056-fe7d-4ae5-8fa9-9fafd205e455', '000018f0-0000-1000-8000-00805f9b34fb'] 
             });
 
-            // 3. Connect to GATT
             const server = await this.device.gatt.connect();
             const services = await server.getPrimaryServices();
             
-            // 4. Find the Writable Characteristic automatically
             for (const service of services) {
                 const characteristics = await service.getCharacteristics();
                 for (const char of characteristics) {
@@ -5620,9 +5520,7 @@ const BLEManager = {
             alert("Connection Error: " + error.message);
         }
     },
-    
-    
-
+  
     disconnect: function() {
         if (this.device && this.device.gatt.connected) {
             this.device.gatt.disconnect();
@@ -5659,9 +5557,7 @@ const BLEManager = {
         }
     }
 };
-// --- PREVENT LOGOUT ON BACK BUTTON / BACKSPACE ---
 
-// 1. Every time we switch pages, we tell the browser's history
 const originalNavTo = navTo; 
 navTo = function(page) {
     originalNavTo(page);
@@ -5679,28 +5575,23 @@ window.onpopstate = function(event) {
             // If we are at the beginning (Home/Dashboard), ask to logout
             if (confirm("Do you want to exit and Logout?")) {
                 logout();
-            } else {
-                // Stay on dashboard if they click cancel
+            } else {               
                 history.pushState({ page: 'dashboard' }, "", "#dashboard");
             }
         }
     }
 };
 
-// 3. Initialize the first state when app loads
 window.addEventListener('load', () => {
     if (session.role) {
         history.replaceState({ page: 'dashboard' }, "", "#dashboard");
     }
 });
 
-// 1. FIX: This function handles the button click and stops the ReferenceError
 function handleHandoverReportClick() {
     if (session.role === 'admin') {
-        // Open the search modal for Admin to pick an agent
         openAgentSearch();
         
-        // Wait for search results to appear, then link them to the report
         setTimeout(() => {
             const items = document.querySelectorAll('#agent-search-results .ac-item');
             items.forEach(div => {
@@ -5719,7 +5610,6 @@ function handleHandoverReportClick() {
     }
 }
 
-// 2. THE REPORT: Simplified Daily Collection & Handover (No Customers)
 function generateAgentHandoverReport(agentId) {
     closeAgentSearch();
     document.getElementById('report-menu').classList.add('hidden');
@@ -5815,13 +5705,11 @@ function generateAgentHandoverReport(agentId) {
 
 function calculateHandoverCommission(agentId, handoverAmount) {
     const agent = DB.agents.find(a => a.id === agentId);
-    
-    // If agent doesn't exist or has 0 commission, return 0
+
     if (!agent || !agent.comm) {
         return 0; 
     }
 
-    // Calculate: (Handover Amount * Commission Percentage) / 100
     const commissionAmt = (handoverAmount * agent.comm) / 100;
     
     return commissionAmt;
@@ -5836,7 +5724,6 @@ function toggleFilters() {
 }
 
 function refreshCurrentReport() {
-    // 1. Copy dates from the new display filter to the hidden master filter
     document.getElementById('rep-from').value = document.getElementById('rep-from-display').value;
     document.getElementById('rep-to').value = document.getElementById('rep-to-display').value;
     
@@ -5844,30 +5731,25 @@ function refreshCurrentReport() {
     if (window.currentReportType) showReport(window.currentReportType);
 }
 
-// === UNIVERSAL PAGINATION SYSTEM ===
 let reportRows = [];
 let currentPage = 1;
 let rowsPerPage = 25; // Adjust this number (e.g., 20 or 30) to perfectly fit your screen/A4 view
 
 function applyPagination(reportType) {
-    // Skip pagination for Balance Sheet and P&L because they use complex side-by-side layouts
     if (reportType === 'bs' || reportType === 'pl') return; 
 
     const tbody = document.querySelector('#report-content-body .report-table tbody');
     if (!tbody) return;
 
-    // Grab all rows EXCEPT the Grand Total (so the total is always visible at the bottom!)
     const allRows = Array.from(tbody.querySelectorAll('tr'));
     reportRows = allRows.filter(r => !r.classList.contains('final-total-row'));
 
     currentPage = 1;
     
-    // Create the Next/Prev buttons container
     let controls = document.createElement('div');
     controls.id = 'pagination-controls';
     controls.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding:10px; background:#f8f9fa; border:1px solid #ddd; border-radius:8px;';
     
-    // Attach it right below the report
     document.getElementById('report-content-body').appendChild(controls);
 
     showPage(1); // Load the first page
@@ -5882,13 +5764,10 @@ function showPage(page) {
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    // Hide all normal rows
     reportRows.forEach(r => r.style.display = 'none');
 
-    // Show ONLY the rows meant for the current page
     reportRows.slice(start, end).forEach(r => r.style.display = '');
 
-    // Update the Buttons
     const controls = document.getElementById('pagination-controls');
     if (controls) {
         controls.innerHTML = `
@@ -5897,6 +5776,32 @@ function showPage(page) {
             <button onclick="showPage(${currentPage + 1})" class="btn btn-primary" ${currentPage === totalPages ? 'disabled' : ''} style="padding: 8px 15px;">Next &raquo;</button>
         `;
     }
+}
+
+function editAccountType(id) {
+    let t = DB.accountTypes.find(x => x.id === id);
+    let g = document.getElementById('edit-type-group');
+    g.innerHTML = DB.groups.map(x => `<option value="${x.name}">${x.name}</option>`).join('');
+    document.getElementById('edit-type-id').value = id;
+    document.getElementById('edit-type-name').value = t.name;
+    document.getElementById('edit-type-prefix').value = t.prefix;
+    g.value = t.group;
+    document.getElementById('edit-account-type-modal').classList.remove('hidden');
+}
+
+function saveEditedAccountType() {
+    let id = parseInt(document.getElementById('edit-type-id').value);
+    let t = DB.accountTypes.find(x => x.id === id);
+    let n = document.getElementById('edit-type-name').value.trim();
+    let p = document.getElementById('edit-type-prefix').value.trim().toUpperCase();
+    
+    if (DB.accountTypes.some(x => x.id !== id && (x.name.toLowerCase() === n.toLowerCase() || x.prefix === p))) 
+        return showToast("Name or Prefix already exists!", "error");
+
+    t.name = n; t.prefix = p; t.group = document.getElementById('edit-type-group').value;
+    saveDB(); renderAccountTypes(); updateAccountTypeSelect();
+    document.getElementById('edit-account-type-modal').classList.add('hidden');
+    showToast("Updated Successfully", "success");
 }
 
 </script>
