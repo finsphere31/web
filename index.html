@@ -643,7 +643,556 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 
 .dashboard-container {
     display: flex;
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Finance Manager Pro</title>
+<meta name="theme-color" content="#2c3e50">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+
+  
+
+:root {
+    --header-bg: #2c3e50;
+    /* Sidebar Background changed to Gray */
+    --sidebar-bg: #343a40; 
+    --bg-main: #f3f4f6;
+    --card-bg: #ffffff;
+    --primary: #3498db;
+    /* Sidebar Text changed to White */
+    --sidebar-text: #ffffff; 
+    --border-color: #bdc3c7;
+    --sidebar-width: 260px;
+}*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background-color:var(--bg-main);color:var(--text-dark);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.hidden{display:none!important}
+.flex{display:flex;gap:10px;align-items:center}
+.flex-col{display:flex;flex-direction:column;gap:15px}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.btn{padding:10px 14px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:0.95rem}
+.btn-sm{padding:5px 10px;font-size:0.85rem;margin-left:2px}
+.btn-primary{background:var(--header-bg);color:white}
+.btn-danger{background:#e74c3c;color:white}
+.btn-warning{background:#f39c12;color:white}
+.btn-secondary{background:#95a5a6;color:white}
+.btn-outline{border:1px solid #ccc;background:white;color:#333}
+.btn-info{background:#17a2b8;color:white}
+.card{background:white;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.05);margin-bottom:15px}
+input,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;outline:none;font-size:16px}
+#app-view{display:flex;height:100%;width:100%}
+aside {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg); /* Gray Background */
+    border-right: none;
+    display: flex;
     flex-direction: column;
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+.sidebar-header{height:60px;background:var(--header-bg);color:white;display:flex;align-items:center;padding:0 20px;font-weight:bold}
+nav button {
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    width: 100%;
+    cursor: pointer;
+    color: var(--sidebar-text); /* White Text */
+    border-bottom: 1px solid rgba(255,255,255,0.1); /* Subtle divider */
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+nav button:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+/* Logout Button: Red Box with White Text */
+.nav-logout {
+    background: #e74c3c !important;
+    color: white !important;
+    margin-top: auto; /* Pushes logout to the bottom if inside nav */
+    font-weight: bold;
+}
+
+/* Button Styles matching the uploaded image */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px; /* Matches the slightly rounded look in image */
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn-edit {
+    background-color: var(--primary-blue);
+    padding: 6px 20px;
+    font-size: 0.9rem;
+    margin-right: 5px;
+}
+
+/* Delete Button (Red/Orange-Red) */
+.btn-danger, .btn-delete {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Add New Customer (Green) */
+.btn-success, .btn-add {
+    background: #27ae60;
+    color: white;
+    padding: 10px 20px;
+}
+
+main{flex:1;padding:15px;overflow-y:auto;position:relative}
+.page-header{margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
+.page-title{font-size:1.3rem;font-weight:bold;color:var(--header-bg)}
+.mobile-header{display:none;height:60px;background:var(--header-bg);color:white;align-items:center;padding:0 15px;justify-content:space-between;position:fixed;top:0;left:0;width:100%;z-index:90}
+.menu-btn{background:none;border:none;color:white;font-size:1.6rem;cursor:pointer}
+.sidebar-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:95;display:none}
+body.sidebar-open .sidebar-overlay{display:block}
+
+
+#login-view{position:fixed;top:0;left:0;width:100%;height:100%;background:#2c3e50;display:flex;justify-content:center;align-items:center;z-index:999}
+.login-box{background:white;padding:25px;border-radius:10px;width:90%;max-width:350px;text-align:center}
+.table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;background:white;border-radius:8px;border:1px solid #eee;margin-top:10px}
+table{width:100%;border-collapse:collapse;min-width:500px}
+th,td{padding:12px 10px;border-bottom:1px solid #eee;text-align:left;font-size:0.85rem}
+th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
+.dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px}
+.report-btn-card{background:white;padding:15px 5px;text-align:center;border-radius:8px;border:1px solid #eee;cursor:pointer}
+.report-btn-card i{font-size:1.5rem;color:var(--primary);margin-bottom:5px;display:block}
+.report-paper{background:white;padding:15px;width:100%;border:1px solid #ccc;min-height:400px;font-size:0.8rem}
+.report-header{text-align:center;border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:15px}
+.report-table th{background:#eee;border:1px solid #ccc}
+.report-table td{border:1px solid #ccc}
+.final-total-row{background-color:lightskyblue!important;color:black!important;font-weight:bold}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:200;display:flex;justify-content:center;align-items:center}
+.modal-box{background:white;width:95%;max-width:500px;padding:20px;border-radius:8px;max-height:90vh;overflow-y:auto}
+.ac-item{padding:12px;cursor:pointer;border-bottom:1px solid #eee;font-size:0.9rem}
+.ac-item:hover{background:#f0f8ff}
+.account-config-section {background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e9ecef;}
+.account-config-row {display: flex; gap: 10px; margin-bottom: 10px; align-items: center;}
+.account-config-row label {min-width: 150px; font-size: 0.9rem;}
+.account-config-row input {flex: 1;}
+@media (max-width:900px){.mobile-header{display:flex}aside{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%)}body.sidebar-open aside{transform:translateX(0)}main{margin-top:60px}.flex{flex-wrap:wrap}.flex>*{flex:1 1 100%}.flex-between{flex-wrap:wrap;gap:10px}.bs-split-container{display:block!important}.bs-split-col{width:100%!important;border-left:none!important;border-top:1px solid #ccc;display:block}.dash-grid{grid-template-columns:1fr 1fr}.btn{width:100%;margin-bottom:5px;text-align:center}.btn-sm{width:auto;display:inline-block;margin:0}}
+
+/* --- MOBILE REPORT COMPATIBILITY FIXES --- */
+
+/* 1. General Mobile Adjustments (Portrait & Small Screens) */
+@media screen and (max-width: 768px) {
+    /* Allow the report paper to scroll horizontally if data is wide */
+    .report-paper {
+        padding: 8px !important;
+        width: 100%;
+        overflow-x: auto; /* CRITICAL: Enables scrolling sideways inside the white box */
+        display: block;
+    }
+
+    /* Override the global table min-width so it fits on screen */
+    .report-paper table, 
+    .report-table {
+        min-width: 100% !important; /* was 500px */
+        width: 100%;
+        font-size: 0.75rem; /* Smaller font to fit more columns */
+    }
+
+    /* Tighter padding for cells */
+    .report-table th, 
+    .report-table td {
+        padding: 6px 3px !important;
+        white-space: normal; /* Allow text to wrap to next line */
+    }
+
+    /* Keep amounts on one line so they don't look messy */
+    .report-table td[align="right"] {
+        white-space: nowrap;
+    }
+
+    /* BALANCE SHEET FIX: Stack Assets and Liabilities vertically */
+    /* Target the .flex container inside the report body */
+    #report-content-body .flex {
+        display: block !important; /* Force block layout instead of flex */
+    }
+    
+    #report-content-body .flex > div {
+        width: 100% !important;
+        min-width: 100% !important;
+        margin-bottom: 20px; /* Add space between Assets and Liabilities */
+    }
+}
+
+/* 2. Landscape Specific Adjustments */
+@media screen and (orientation: landscape) and (max-width: 900px) {
+    /* In landscape, we have more width, so we can increase font slightly */
+    .report-paper table, 
+    .report-table {
+        font-size: 0.85rem;
+    }
+
+    /* In Landscape, try to put Balance Sheet side-by-side again if it fits */
+    #report-content-body .flex {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 15px;
+    }
+
+    #report-content-body .flex > div {
+        width: 50% !important;
+        min-width: 0 !important; /* Allow shrinking */
+        flex: 1;
+    }
+}
+
+
+
+/* 3-Column Report Styles */
+.rep-col-1 { width: 50%; }
+.rep-col-2 { width: 25%; text-align: right; color: #555; font-size: 0.9em; }
+.rep-col-3 { width: 25%; text-align: right; font-weight: bold; }
+
+.rep-group-header {
+    background-color: #e9ecef;
+    font-weight: bold;
+}
+.rep-sub-row td:first-child {
+    padding-left: 20px !important; /* Indent sub-items */
+    font-size: 0.9em;
+}
+
+
+@@media (max-width: 768px) {
+    .bs-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important; /* This creates the physical distance between sections */
+    }
+}
+#cm-acc-body .btn-sm {
+    margin-right: 2px;
+    padding: 5px 8px;
+    white-space: nowrap;
+}
+@media print {
+    /* 1. Set Paper Size and Remove Browser Margins */
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+
+    /* 2. FORCE BROWSERS TO PRINT COLORS & BACKGROUNDS */
+    * {
+        -webkit-print-color-adjust: exact !important;   /* Chrome, Edge, Safari */
+        print-color-adjust: exact !important;           /* Firefox */
+        color-adjust: exact !important;                 /* Standard */
+    }
+/* 3. CRITICAL FIX: Force the Page Background to be White (Removes Gray) */
+    html, body {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 3. Hide everything else */
+    body * {
+        visibility: hidden;
+        height: auto;
+    }
+
+    /* 4. Show and Position the Report */
+    #active-report-paper, #active-report-paper * {
+        visibility: visible;
+    }
+
+    #active-report-paper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+
+        /* 5. Shrink content slightly to fit */
+        zoom: 85%;
+    }
+
+    /* 6. Fix Table Widths for Print */
+    table, .report-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        font-size: 11pt;
+    }
+
+    /* 7. Allow text to wrap */
+    td, th {
+        white-space: normal !important;
+        overflow: visible !important;
+    }
+}
+.page-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #f1f1f1;
+}
+
+
+
+
+</style>
+</head>
+<body>
+
+<section id="login-view">
+    <div class="login-box">
+        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+   
+     
+        <h2 id="login-org-name">Finance </h2>
+        <p id="login-subtitle" style="color:#666; margin-bottom:20px;">Please Login</p>
+        
+        <div id="login-status-box" style="display:none; padding:10px; background:#f8d7da; color:#721c24; margin-bottom:10px; border-radius:5px; font-size:0.8rem;"></div>
+        
+        <form id="login-form" onsubmit="event.preventDefault(); tryLogin();">
+            <input id="login-user" placeholder="Username" style="margin-bottom:10px;" required autocapitalize="off" autocomplete="off">
+            <input type="password" id="login-pass" placeholder="Password" style="margin-bottom:15px;" required>
+            <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+        </form>
+               
+
+        <form id="register-form" class="hidden" onsubmit="event.preventDefault(); doOwnerRegister();">
+            <input id="reg-org" placeholder="Organization Name" style="margin-bottom:10px;" required>
+            <input id="reg-user" placeholder="New Username" style="margin-bottom:10px;" required>
+            <input type="password" id="reg-pass" placeholder="New Password" style="margin-bottom:10px;" required>
+            <input type="number" id="reg-mobile" placeholder="Mobile (For Recovery)" style="margin-bottom:10px;" required>
+            <input type="email" id="reg-email" placeholder="Email (For Recovery)" style="margin-bottom:15px;" required>
+            <button type="submit" class="btn btn-success" style="width:100%; background:#27ae60; color:white;">Register Owner</button>
+        </form>
+
+        <div style="display:flex; justify-content:space-between; margin-top:15px; font-size:0.9rem;">
+            <a href="#" id="link-forgot" onclick="forgotPassword()" style="color:#3498db; text-decoration:none;">Forgot Password?</a>
+            <a href="#" id="link-register" onclick="toggleRegisterMode()" style="color:#3498db; text-decoration:none;">Owner Register</a>
+        </div>
+    </div>
+</section>
+
+
+<section id="app-view" class="hidden">
+    <div class="mobile-header">
+        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div style="font-size: 1.2rem; font-weight: bold;">Menu</div>
+        <div style="width:30px"></div>
+    </div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <aside>
+        <div class="sidebar-header">
+        <i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+        <span>FinSphere</span> </div>
+        <nav>
+            <button onclick="navTo('dashboard')" id="btn-dashboard" class="active"><i class="fas fa-home"></i> Dashboard</button>
+            <button onclick="navTo('customers')" id="btn-customers"><i class="fas fa-users"></i> Customers</button>
+            <button onclick="navTo('transactions')" id="btn-transactions"><i class="fas fa-exchange-alt"></i> Transactions</button>
+            <button onclick="navTo('Adjustment Entry')" id="btn-Adjustment Entry"><i class="fas fa-exchange-alt"></i> Adjustment Entry</button>
+            <button onclick="navTo('reports')" id="btn-reports"><i class="fas fa-file-alt"></i> Reports</button>
+            <div id="admin-menu">
+                
+                <button onclick="document.getElementById('agent-submenu').classList.toggle('hidden')" id="btn-agents">
+    <i class="fas fa-user-tie"></i> Agents <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
+</button>
+
+<div id="agent-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
+    <button onclick="openAgentTab('col')" style="padding-left: 40px;"><i class="fas fa-hand-holding-usd"></i> Collection</button>
+    <button onclick="openAgentTab('cre')" style="padding-left: 40px;"><i class="fas fa-user-plus"></i> Create Agent</button>
+    <button onclick="openAgentTab('ass')" style="padding-left: 40px;"><i class="fas fa-tasks"></i> Assign Accounts</button>
+</div>
+                
+             <button onclick="document.getElementById('master-submenu').classList.toggle('hidden')">
+    <i class="fas fa-folder"></i> Master <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
+</button>
+
+<div id="master-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
+    <button onclick="navTo('ledgers')" id="btn-ledgers" style="padding-left: 40px;"><i class="fas fa-book"></i> Account Master</button>
+    <button onclick="navTo('accountTypes')" id="btn-accountTypes" style="padding-left: 40px;"><i class="fas fa-cog"></i> Account Types</button>
+    <button onclick="navTo('groups')" id="btn-groups" style="padding-left: 40px;"><i class="fas fa-layer-group"></i> Groups</button>
+</div>
+                
+                
+                <button onclick="navTo('settings')" id="btn-settings"><i class="fas fa-cog"></i> Settings</button>
+            </div>
+            <button onclick="logout()" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </nav>
+    </aside>
+
+    <main>
+        <div class="page-footer">
+        <div id="user-role-display">User: Admin</div> </div> 
+<div id="view-dashboard">
+    <style>
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .org-name-disp {
+        margin: 0 auto;
+        font-size: 1.6rem;
+        /* Using max-width instead of width 100% prevents it from exploding on mobile */
+        width: 100%; 
+        max-width: 2500px; 
+        
+        background: linear-gradient(90deg, #325a7d 0%, #3e84bb 100%);
+        color: white;
+        padding: 10px 20px;
+        border: 2px solid rgb(200, 200, 200);
+        border-radius: 50px;
+        box-sizing: border-box;
+        text-align: center;
+        
+        /* Ensures it stays above content but stays within its parent container */
+        position: relative; 
+        z-index: 5;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* This fixes the "long space" when sidebar is hidden/shown */
+    #view-dashboard {
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+   /* Default: desktop buttons visible, mobile toggle hidden */
+.desktop-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mobile-actions {
+  display: none;
+  position: relative;
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .desktop-actions {
+    display: none;  /* Hide inline buttons */
+  }
+
+  .mobile-actions {
+    display: block; /* Show three‑dots button */
+  }
+
+  .mobile-menu-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+  }
+
+  .mobile-menu-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border: none;
+  background: none;
+  border-radius: 0;
+  color: #333; /* <-- add this line */
+}
+  .mobile-menu-dropdown button:hover {
+    background-color: #E2FBCE;
+  }
+}
+
+/* Utility class to hide dropdown */
+.hidden {
+  display: none !important;
+}
+
+.pl-container table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        table-layout: fixed; /* Ensures both sides are exactly 50% */
+    }
+    
+    .pl-container > table > thead th {
+        padding: 10px;
+        font-size: 1.1rem;
+        text-align: center; /* Centers "Income" and "Expenses" */
+        border: 1px solid #ccc;
+    }
+
+    /* Inner Tables (The actual data) */
+    .inner-table { 
+        width: 100%; 
+        border: none !important; 
+        table-layout: fixed; 
+    }
+    
+    .inner-table td, .inner-table th { 
+        padding: 8px; 
+        border: none !important; 
+    }
+
+    /* Column Alignment */
+    .col-particulars { text-align: left; width: 65%; }
+    .col-amount { text-align: right; width: 35%; font-weight: bold; }
+
+    .sub-head { 
+        font-size: 0.75rem; 
+        color: #666; 
+        text-transform: uppercase; 
+        border-bottom: 1px solid #eee !important; 
+        font-weight: bold;
+    }
+
+    /* Professional Totals Bar */
+    .total-row {
+        background: #f8f9fa;
+        border-top: 2px solid #ccc !important;
+    }
+
+    
+        
+</style>
+
+<div id="view-dashboard">
+    <div class="dashboard-container">
+        <h1 class="org-name-disp">My Finance Ltd</h1>
+    </div>
+    
+        
+    </div>
+     <div class="page-title" id="page-title">Dashboard</div>
+
+    <div class="dash-grid" styflex-direction: column;
     align-items: center;
     width: 100%;
     padding: 10px;
