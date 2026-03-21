@@ -7,10 +7,8 @@
 <meta name="theme-color" content="#2c3e50">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-
-  
-
 :root {
     --header-bg: #2c3e50;
     /* Sidebar Background changed to Gray */
@@ -75,45 +73,143 @@ nav button:hover {
     font-weight: bold;
 }
 
-/* Button Styles matching the uploaded image */
+/* ========== MODERN BUTTON DESIGN ========== */
+/* Replaces or enhances all button styles – retains all existing button classes */
+
 .btn {
-    padding: 8px 16px;
+    padding: 10px 18px;
     border: none;
-    border-radius: 4px; /* Matches the slightly rounded look in image */
-    font-weight: 500;
-    cursor: pointer;
+    border-radius: 8px;          /* Softer rounding */
+    font-weight: 600;
     font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.2s;
+    gap: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-.btn:hover {
-    opacity: 0.9;
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 6px;
 }
 
-.btn-edit {
-    background-color: var(--primary-blue);
-    padding: 6px 20px;
-    font-size: 0.9rem;
-    margin-right: 5px;
-}
-
-/* Delete Button (Red/Orange-Red) */
-.btn-danger, .btn-delete {
-    background: #e74c3c;
+/* Primary (Blue) */
+.btn-primary {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
     color: white;
+    box-shadow: 0 2px 4px rgba(52,152,219,0.3);
+}
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(52,152,219,0.4);
+}
+.btn-primary:active {
+    transform: translateY(1px);
 }
 
-/* Add New Customer (Green) */
-.btn-success, .btn-add {
-    background: #27ae60;
+/* Danger (Red) */
+.btn-danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
     color: white;
-    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(231,76,60,0.3);
+}
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(231,76,60,0.4);
 }
 
-main{flex:1;padding:15px;overflow-y:auto;position:relative}
+/* Warning (Orange) */
+.btn-warning {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(243,156,18,0.3);
+}
+.btn-warning:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(243,156,18,0.4);
+}
+
+/* Success (Green) */
+.btn-success {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(39,174,96,0.3);
+}
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(39,174,96,0.4);
+}
+
+/* Secondary (Gray) */
+.btn-secondary {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(149,165,166,0.3);
+}
+.btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(149,165,166,0.4);
+}
+
+/* Outline button */
+.btn-outline {
+    background: transparent;
+    border: 1px solid #bdc3c7;
+    color: #2c3e50;
+    box-shadow: none;
+}
+.btn-outline:hover {
+    background: #f8f9fa;
+    border-color: #3498db;
+    color: #3498db;
+    transform: translateY(-1px);
+}
+
+/* Info button */
+.btn-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(23,162,184,0.3);
+}
+.btn-info:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(23,162,184,0.4);
+}
+
+/* Light button (custom) */
+.btn-light {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #2c3e50;
+}
+.btn-light:hover {
+    background: #e2e6ea;
+    transform: translateY(-1px);
+}
+
+/* Icon button (if used) */
+.btn-icon {
+    padding: 8px 12px;
+    gap: 8px;
+}
+.btn-icon i {
+    font-size: 1.1rem;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .btn-sm {
+        width: auto;    /* small buttons can remain inline */
+    }
+}main{flex:1;padding:15px;overflow-y:auto;position:relative}
 .page-header{margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
 .page-title{font-size:1.3rem;font-weight:bold;color:var(--header-bg)}
 .mobile-header{display:none;height:60px;background:var(--header-bg);color:white;align-items:center;padding:0 15px;justify-content:space-between;position:fixed;top:0;left:0;width:100%;z-index:90}
@@ -250,6 +346,304 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         height: auto !important;
         min-height: auto !important;
         overflow: visible !important;
+        display: block !important; 
+        position: static !important;
+        background: #ffffff !important;
+    }
+
+    /* 2. Hide all the app UI menus and buttons */
+    aside, .mobile-header, .report-header-actions, .page-footer, #toast, .modal-overlay {
+        display: none !important;
+    }
+
+    /* 3. Make the report paper behave normally (NO absolute positioning!) */
+    #active-report-paper {
+        position: static !important;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* 4. Fix table sizes and prevent rows from splitting across two pages */
+    table, .report-table {
+        width: 100% !important;
+        font-size: 10pt !important;
+    }
+    
+    tr {
+        page-break-inside: avoid !important;
+    }
+
+    /* 5. Force background colors to print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    
+/* 3. CRITICAL FIX: Force the Page Background to be White (Removes Gray) */
+    html, body {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 3. Hide everything else */
+    body * {
+        visibility: hidden;
+        height: auto;
+    }
+
+    /* 4. Show and Position the Report */
+    #active-report-paper, #active-report-paper * {
+        visibility: visible;
+    }
+
+    #active-report-paper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+
+        /* 5. Shrink content slightly to fit */
+        zoom: 85%;
+    }
+
+    /* 6. Fix Table Widths for Print */
+    table, .report-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        font-size: 11pt;
+    }
+
+    /* 7. Allow text to wrap */
+    td, th {
+        white-space: normal !important;
+        overflow: visible !important;
+    }
+}
+
+
+.page-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #f1f1f1;
+}
+
+.toast {
+    position: fixed;
+    top: 20px;        /* Changed from bottom */
+    right: 20px;      /* Changed from left */
+    /* Notice: transform: translateX(-50%) is REMOVED */
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px; /* Changed to 8px for a more professional top-right look, but you can keep 50px if you prefer the pill shape */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 9999;
+    font-weight: bold;
+    font-size: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px); /* Starts slightly hidden higher up */
+    transition: all 0.3s ease;
+}
+
+/* Color variations */
+.toast.success { background-color: #27ae60; } /* Green */
+.toast.error { background-color: #e74c3c; }   /* Red */
+
+/* The new animation class (slides down into view) */
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0); 
+}
+
+    /* Show all rows when printing, ignore pagination */
+    .report-table tbody tr {
+        display: table-row !important;
+    }
+    /* Hide the Next/Prev buttons on the printed paper */
+    #pagination-controls {
+        display: none !important;
+    }
+    
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .org-name-disp {
+        margin: 0 auto;
+        font-size: 1.6rem;
+        /* Using max-width instead of width 100% prevents it from exploding on mobile */
+        width: 100%; 
+        max-width: 2500px; 
+        
+        background: linear-gradient(90deg, #325a7d 0%, #3e84bb 100%);
+        color: white;
+        padding: 10px 20px;
+        border: 2px solid rgb(200, 200, 200);
+        border-radius: 50px;
+        box-sizing: border-box;
+        text-align: center;
+        
+        /* Ensures it stays above content but stays within its parent container */
+        position: relative; 
+        z-index: 5;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* This fixes the "long space" when sidebar is hidden/shown */
+    #view-dashboard {
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+   /* Default: desktop buttons visible, mobile toggle hidden */
+.desktop-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mobile-actions {
+  display: none;
+  position: relative;
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .desktop-actions {
+    display: none;  /* Hide inline buttons */
+  }
+
+  .mobile-actions {
+    display: block; /* Show three‑dots button */
+  }
+
+  .mobile-menu-dropdown {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+  }
+
+  .mobile-menu-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  border: none;
+  background: none;
+  border-radius: 0;
+  color: #333; /* <-- add this line */
+}
+  .mobile-menu-dropdown button:hover {
+    background-color: #E2FBCE;
+  }
+}
+
+/* Utility class to hide dropdown */
+.hidden {
+  display: none !important;
+}
+
+.pl-container table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        table-layout: fixed; /* Ensures both sides are exactly 50% */
+    }
+    
+    .pl-container > table > thead th {
+        padding: 10px;
+        font-size: 1.1rem;
+        text-align: center; /* Centers "Income" and "Expenses" */
+        border: 1px solid #ccc;
+    }
+
+    /* Inner Tables (The actual data) */
+    .inner-table { 
+        width: 100%; 
+        border: none !important; 
+        table-layout: fixed; 
+    }
+    
+    .inner-table td, .inner-table th { 
+        padding: 8px; 
+        border: none !important; 
+    }
+
+    /* Column Alignment */
+    .col-particulars { text-align: left; width: 65%; }
+    .col-amount { text-align: right; width: 35%; font-weight: bold; }
+
+    .sub-head { 
+        font-size: 0.75rem; 
+        color: #666; 
+        text-transform: uppercase; 
+        border-bottom: 1px solid #eee !important; 
+        font-weight: bold;
+    }
+
+    /* Professional Totals Bar */
+    .total-row {
+        background: #f8f9fa;
+        border-top: 2px solid #ccc !important;
+    }
+        /* Show all rows when printing, ignore pagination */
+    .report-table tbody tr {
+        display: table-row !important;
+    }
+    /* Hide the Next/Prev buttons on the printed paper */
+    #pagination-controls {
+        display: none !important;
+    }
+
+    nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1; 
+    overflow-y: auto; /* Adds a scrollbar to the menu if your screen gets too small */
+}
+.btn-logout-3d {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+    color: #ffffff !important;
+    border-radius: 10px;
+    box-shadow: 0 4px 0 #c0392b, 0 2px 5px rgba(0,0,0,0.3) !important;
+    transition: all 0.1s ease;
+    
+    /* These 3 lines perfectly position it at the bottom */
+    margin-top: auto !important; 
+    margin-bottom: 25px !important; 
+    width: 90% !important; 
+    align-self: center; /* Centers it nicely */
+}
+/* ========== NEW DASHBOARD DESIGN ========== */
+/* Only affects dashboard view – all other parts remain unchanged */
+
+.dashboard-container {
+    display: flex;
+    !important;
         display: block !important; 
         position: static !important;
         background: #ffffff !important;
