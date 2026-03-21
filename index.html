@@ -643,299 +643,120 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 
 .dashboard-container {
     display: flex;
-    !important;
-        display: block !important; 
-        position: static !important;
-        background: #ffffff !important;
-    }
-
-    /* 2. Hide all the app UI menus and buttons */
-    aside, .mobile-header, .report-header-actions, .page-footer, #toast, .modal-overlay {
-        display: none !important;
-    }
-
-    /* 3. Make the report paper behave normally (NO absolute positioning!) */
-    #active-report-paper {
-        position: static !important;
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-
-    /* 4. Fix table sizes and prevent rows from splitting across two pages */
-    table, .report-table {
-        width: 100% !important;
-        font-size: 10pt !important;
-    }
-    
-    tr {
-        page-break-inside: avoid !important;
-    }
-
-    /* 5. Force background colors to print */
-    * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-    }
-
-    
-/* 3. CRITICAL FIX: Force the Page Background to be White (Removes Gray) */
-    html, body {
-        background-color: #ffffff !important;
-        background: #ffffff !important;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* 3. Hide everything else */
-    body * {
-        visibility: hidden;
-        height: auto;
-    }
-
-    /* 4. Show and Position the Report */
-    #active-report-paper, #active-report-paper * {
-        visibility: visible;
-    }
-
-    #active-report-paper {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-
-        /* 5. Shrink content slightly to fit */
-        zoom: 85%;
-    }
-
-    /* 6. Fix Table Widths for Print */
-    table, .report-table {
-        width: 100% !important;
-        min-width: 0 !important;
-        font-size: 11pt;
-    }
-
-    /* 7. Allow text to wrap */
-    td, th {
-        white-space: normal !important;
-        overflow: visible !important;
-    }
-}
-
-
-.page-footer {
-    position: fixed;
-    bottom: 0;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
-    background: #f1f1f1;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
-.toast {
-    position: fixed;
-    top: 20px;        /* Changed from bottom */
-    right: 20px;      /* Changed from left */
-    /* Notice: transform: translateX(-50%) is REMOVED */
+/* Organization name display (with wrap support) */
+.org-name-disp {
+    margin: 0 auto 20px auto;
+    font-size: 1.6rem;
+    width: 100%;
+    max-width: 2500px;
+    background: linear-gradient(90deg, #325a7d 0%, #3e84bb 100%);
     color: white;
-    padding: 12px 24px;
-    border-radius: 8px; /* Changed to 8px for a more professional top-right look, but you can keep 50px if you prefer the pill shape */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    z-index: 9999;
-    font-weight: bold;
-    font-size: 1rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-20px); /* Starts slightly hidden higher up */
-    transition: all 0.3s ease;
+    padding: 10px 20px;
+    border: 2px solid rgb(200, 200, 200);
+    border-radius: 50px;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    z-index: 5;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    word-break: break-word;   /* ensures long text wraps */
+    white-space: normal;      /* allows text to wrap */
 }
 
-/* Color variations */
-.toast.success { background-color: #27ae60; } /* Green */
-.toast.error { background-color: #e74c3c; }   /* Red */
-
-/* The new animation class (slides down into view) */
-.toast.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0); 
+/* Dashboard grid – responsive cards */
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
 }
 
-    /* Show all rows when printing, ignore pagination */
-    .report-table tbody tr {
-        display: table-row !important;
-    }
-    /* Hide the Next/Prev buttons on the printed paper */
-    #pagination-controls {
-        display: none !important;
-    }
-    
-    .dashboard-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-
-    .org-name-disp {
-        margin: 0 auto;
-        font-size: 1.6rem;
-        /* Using max-width instead of width 100% prevents it from exploding on mobile */
-        width: 100%; 
-        max-width: 2500px; 
-        
-        background: linear-gradient(90deg, #325a7d 0%, #3e84bb 100%);
-        color: white;
-        padding: 10px 20px;
-        border: 2px solid rgb(200, 200, 200);
-        border-radius: 50px;
-        box-sizing: border-box;
-        text-align: center;
-        
-        /* Ensures it stays above content but stays within its parent container */
-        position: relative; 
-        z-index: 5;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-
-    /* This fixes the "long space" when sidebar is hidden/shown */
-    #view-dashboard {
-        transition: all 0.3s ease;
-        width: 100%;
-    }
-    
-   /* Default: desktop buttons visible, mobile toggle hidden */
-.desktop-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.mobile-actions {
-  display: none;
-  position: relative;
-}
-
-/* Mobile styles */
-@media (max-width: 600px) {
-  .desktop-actions {
-    display: none;  /* Hide inline buttons */
-  }
-
-  .mobile-actions {
-    display: block; /* Show three‑dots button */
-  }
-
-  .mobile-menu-dropdown {
-    position: absolute;
-    top: 40px;
-    right: 0;
+/* Dashboard card styling */
+.dash-card {
     background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    min-width: 120px;
-  }
-
-  .mobile-menu-dropdown button {
-  width: 100%;
-  text-align: left;
-  padding: 10px;
-  border: none;
-  background: none;
-  border-radius: 0;
-  color: #333; /* <-- add this line */
-}
-  .mobile-menu-dropdown button:hover {
-    background-color: #E2FBCE;
-  }
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Utility class to hide dropdown */
-.hidden {
-  display: none !important;
+.dash-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
-.pl-container table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        table-layout: fixed; /* Ensures both sides are exactly 50% */
+.dash-card-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    margin-bottom: 12px;
+}
+
+.dash-card-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.dash-card-change {
+    font-size: 0.8rem;
+    color: #28a745;
+}
+
+.dash-card-change.negative {
+    color: #dc3545;
+}
+
+/* Quick actions / report buttons */
+.report-btn-card {
+    background: white;
+    padding: 15px 5px;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.report-btn-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: var(--primary);
+}
+
+.report-btn-card i {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Mobile responsiveness – now shows 2 cards per row */
+@media (max-width: 768px) {
+    .dash-grid {
+        grid-template-columns: repeat(2, 1fr);   /* two columns on mobile */
+        gap: 15px;
     }
     
-    .pl-container > table > thead th {
-        padding: 10px;
-        font-size: 1.1rem;
-        text-align: center; /* Centers "Income" and "Expenses" */
-        border: 1px solid #ccc;
+    .org-name-disp {
+        font-size: 1.2rem;
+        padding: 8px 16px;
+        white-space: normal;   /* ensures wrapping if needed */
+        word-break: break-word;
     }
-
-    /* Inner Tables (The actual data) */
-    .inner-table { 
-        width: 100%; 
-        border: none !important; 
-        table-layout: fixed; 
-    }
-    
-    .inner-table td, .inner-table th { 
-        padding: 8px; 
-        border: none !important; 
-    }
-
-    /* Column Alignment */
-    .col-particulars { text-align: left; width: 65%; }
-    .col-amount { text-align: right; width: 35%; font-weight: bold; }
-
-    .sub-head { 
-        font-size: 0.75rem; 
-        color: #666; 
-        text-transform: uppercase; 
-        border-bottom: 1px solid #eee !important; 
-        font-weight: bold;
-    }
-
-    /* Professional Totals Bar */
-    .total-row {
-        background: #f8f9fa;
-        border-top: 2px solid #ccc !important;
-    }
-        /* Show all rows when printing, ignore pagination */
-    .report-table tbody tr {
-        display: table-row !important;
-    }
-    /* Hide the Next/Prev buttons on the printed paper */
-    #pagination-controls {
-        display: none !important;
-    }
-
-    nav {
-    display: flex;
-    flex-direction: column;
-    flex: 1; 
-    overflow-y: auto; /* Adds a scrollbar to the menu if your screen gets too small */
 }
-.btn-logout-3d {
-    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
-    color: #ffffff !important;
-    border-radius: 10px;
-    box-shadow: 0 4px 0 #c0392b, 0 2px 5px rgba(0,0,0,0.3) !important;
-    transition: all 0.1s ease;
-    
-    /* These 3 lines perfectly position it at the bottom */
-    margin-top: auto !important; 
-    margin-bottom: 25px !important; 
-    width: 90% !important; 
-    align-self: center; /* Centers it nicely */
-}
+
+
 </style>
 </head>
 <body>
@@ -1779,9 +1600,14 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 </div>
 <div id="ledger-select-modal" class="modal-overlay hidden">
     <div class="modal-box">
-        <div class="flex-between" style="margin-bottom:10px;"><h3>Select Ledger</h3><button onclick="document.getElementById('ledger-select-modal').classList.add('hidden')" class="btn btn-outline">X</button></div>
-        <div class="flex"><input id="led-search" placeholder="Search..." style="flex:2"><button onclick="searchLedgerAccount()" class="btn btn-primary" style="flex:1">Search</button></div>
-        <div id="led-results" style="border:1px solid #eee; max-height:200px; overflow-y:auto; margin-top:10px;"></div>
+        <div class="flex-between" style="border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px;">
+            <h3>Select Ledger</h3>
+            <button onclick="document.getElementById('ledger-select-modal').classList.add('hidden')" class="btn btn-outline">X</button>
+        </div>
+        <div class="flex" style="margin-bottom:15px;">
+            <input id="led-search" placeholder="Search Account Name or Number..." onkeyup="searchLedgerAccount()" autofocus>
+        </div>
+        <div id="led-results" style="max-height:300px; overflow-y:auto; border:1px solid #eee; border-radius:4px;"></div>
     </div>
 </div>
 
@@ -1938,6 +1764,25 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         </div>
     </div>
 </div>
+   <div id="receipt-modal" class="modal-overlay hidden" style="z-index: 9999;">
+    <div class="modal-box" style="max-width: 350px; text-align: center;">
+        <div class="flex-between" style="margin-bottom: 15px;">
+            <h3 style="margin: 0;">Receipt Preview</h3>
+            <button onclick="document.getElementById('receipt-modal').classList.add('hidden')" class="btn btn-outline">X</button>
+        </div>
+
+        <div id="receipt-render-area" style="background: white; padding: 20px; border: 1px dashed #7f8c8d; font-family: 'Courier New', Courier, monospace; text-align: left; margin: 0 auto 20px auto; width: 100%; box-sizing: border-box; color: black; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button onclick="downloadReceiptImage()" class="btn btn-secondary" style="background: #8e44ad;"><i class="fas fa-image"></i> Save Image</button>
+            <button onclick="shareReceiptWhatsApp()" class="btn btn-success"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+            <button onclick="printReceiptBluetooth()" class="btn btn-info" style="grid-column: span 2;"><i class="fas fa-print"></i> Print Receipt</button>
+        </div>
+    </div>
+</div>
+
+   
               
 <script>
    function showToast(message, type = 'success') {
@@ -1981,8 +1826,8 @@ const storedSettings=safeJSON('fbp_m_set',{});
 const DB={
     customers:safeJSON('fbp_m_custs',[]),
         accs:safeJSON('fbp_m_accs',[
-        {id:1,name:"Cash",group:"Cash",type:"cash",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
-        {id:2,name:"Bank",group:"Bank",type:"bank",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
+       {id:1,name:"Cash",group:"Cash",type:"cash",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},  
+              {id:2,name:"Bank",group:"Bank",type:"bank",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
         // --- NEW DEFAULT ACCOUNTS ---
         {id:3,name:"Interest",group:"Income",type:"general",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
         {id:4,name:"Rent",group:"Expense",type:"general",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
@@ -2091,26 +1936,33 @@ document.addEventListener('DOMContentLoaded',()=>{
         initSession(savedSession.role, savedSession.id, savedSession.username);
     }
     
-    // Initialize forms
-    document.getElementById('cust-form').addEventListener('submit', function(e){
-        e.preventDefault();
-        if (DB.customers.some(c => c.name.toLowerCase() === document.getElementById('cust-name').value.toLowerCase()))
-         return showToast("Error: Customer Name already exists!", "error");
+  document.getElementById('cust-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    
+    // 1. Get the name and remove accidental spaces at the ends
+    const inputName = document.getElementById('cust-name').value.trim();
+
+    // 2. The Duplicate Check
+    // (If you WANT to allow customers with the same name, just delete these next 3 lines)
+    if (DB.customers.some(c => c.name.toLowerCase() === inputName.toLowerCase())) {
+        return showToast("Error: Customer Name already exists!", "error");
+    }
         
-        const newID='DR'+String(DB.customers.length+1).padStart(4,'0');
-        DB.customers.push({
+    const newID='DR'+String(DB.customers.length+1).padStart(4,'0');
+    DB.customers.push({
         id: Date.now(),
         custNo: newID,
-        name: document.getElementById('cust-name').value,
+        name: inputName, // Use the trimmed name here
         ref: document.getElementById('cust-ref').value,
-        address: document.getElementById('cust-addr').value // Saves the address
+        address: document.getElementById('cust-addr').value,
+        createdBy: session.id 
     });
-
+    
     saveDB(); 
     e.target.reset(); 
     updateCustSelect(); 
     showToast('Customer Created');
-});    
+}); 
     
 document.getElementById('edit-customer-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -2499,7 +2351,7 @@ function initSession(role, id, username) {
     document.getElementById('user-role-display').innerText = `User: ${username} (${role.toUpperCase()})`;
     
     // 2. Hide Admin Menus
-    const els = ['admin-menu', 'cust-create-card', 'view-agents', 'view-ledgers', 'view-accountTypes', 'view-groups', 'btn-Adjustment Entry'];
+   const els = ['admin-menu', 'view-agents', 'view-ledgers', 'view-accountTypes', 'view-groups', 'btn-Adjustment Entry'];
     els.forEach(eid => {
         const el = document.getElementById(eid);
         if (el) el.classList.toggle('hidden', role !== 'admin');
@@ -2769,6 +2621,7 @@ function showConfigFields(config) {
         section.classList.add('hidden');
     }
 }
+
 function saveNewAccount() {
     if (!activeCustId) return;
     const typeName = document.getElementById('new-acc-type').value;
@@ -2788,18 +2641,27 @@ function saveNewAccount() {
     const cnt = DB.accs.filter(a => (a.accNo || '').startsWith(p)).length + 1;
     const no = p + String(cnt).padStart(4, '0');
     
+   const newAccId = Date.now();
+    
     DB.accs.push({
-        id: Date.now(),
+        id: newAccId,
         custId: activeCustId,
         accNo: no,
         name: `${c.name} - ${typeName.toUpperCase()}`,
-        group: assignedGroup, // Link created here
+        group: assignedGroup, 
         type: typeName,
         category: 'customer',
         balance: 0,
         status: 'active',
         opDate: opDateInput || dateNow()
     });
+    // Auto-assign the new account to the agent who created it
+    if (session.role === 'agent') {
+        const agent = DB.agents.find(a => a.id === session.id);
+        if (agent && !agent.assigned.includes(newAccId)) {
+            agent.assigned.push(newAccId);
+        }
+    }
     
     saveDB(); 
     renderCustAccs(activeCustId); 
@@ -3166,50 +3028,119 @@ function deleteTransaction() {
     alert("Transaction deleted and balances restored.");
 }
 
+
+
+// === RECEIPT MODAL FUNCTIONS ===
+let currentReceiptData = null;
+
 function printReceiptData(t) {
+    currentReceiptData = t;
     const acc = DB.accs.find(a => a.id === t.accId);
     const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
     const orgName = DB.settings.org || "Finance Manager";
 
-    // Format the Receipt Text
-    const receiptText = `
---------------------------------
-      ${orgName.toUpperCase()}
---------------------------------
-Date: ${dateDisp(t.date)}
-Receipt No: ${t.id}
-Customer: ${cust ? cust.name : 'General'}
-Account: ${acc ? acc.accNo : '-'}
-Type: ${t.type.toUpperCase()}
-Amount: ${fmt.format(t.amt)}
-Available Bal: ${acc ? fmt.format(acc.balance) : '₹0.00'}
-Details: ${t.desc || 'N/A'}
---------------------------------
+    const area = document.getElementById('receipt-render-area');
+    area.innerHTML = `
+        <div style="text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 5px;">${orgName.toUpperCase()}</div>
+        <div style="text-align: center; border-bottom: 1px dashed black; padding-bottom: 5px; margin-bottom: 10px;">Transaction Receipt</div>
+        <div style="font-size: 0.9rem; line-height: 1.5;">
+            <div><b>Date:</b> ${dateDisp(t.date)}</div>
+            <div><b>Voucher No:</b> ${t.id}</div>
+            <div><b>Customer:</b> ${cust ? cust.name : 'General'}</div>
+            <div><b>Account:</b> ${acc ? acc.accNo || '-' : '-'}</div>
+            <div><b>Type:</b> ${t.type.toUpperCase()}</div>
+            <div style="margin: 8px 0; padding: 5px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee;">
+                <b>Amount:</b> <span style="font-size: 1.2rem; font-weight: bold; float: right;">${fmt.format(t.amt)}</span>
+            </div>
+            <div><b>Available Bal:</b> <span style="float: right;">${acc ? fmt.format(acc.balance) : '₹0.00'}</span></div>
+            <div style="margin-top: 5px;"><b>Details:</b> ${t.desc || 'N/A'}</div>
+        </div>
+        <div style="text-align: center; border-top: 1px dashed black; padding-top: 10px; margin-top: 15px; font-size: 0.9rem;">Thank you</div>
     `;
 
-    // Option A: Print via RawBT (Android Thermal Printer)
-    if (typeof printViaRawBT === "function") {
+    const editModal = document.getElementById('edit-trans-modal');
+    if (editModal) editModal.classList.add('hidden');
+    document.getElementById('receipt-modal').classList.remove('hidden');
+}
+
+function downloadReceiptImage() {
+    const area = document.getElementById('receipt-render-area');
+    html2canvas(area, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Receipt_${currentReceiptData.id}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast("Receipt Image Downloaded!", "success");
+    });
+}
+
+function shareReceiptWhatsApp() {
+    if(!currentReceiptData) return;
+    const area = document.getElementById('receipt-render-area');
+    const orgName = DB.settings.org || "Finance Manager";
+
+    showToast("Preparing image for WhatsApp...", "success");
+
+    html2canvas(area, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
+        canvas.toBlob(function(blob) {
+            const fileName = `Receipt_${currentReceiptData.id}.png`;
+            const file = new File([blob], fileName, { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: `${orgName} Receipt`,
+                    text: `Transaction Receipt from ${orgName}`
+                }).catch((error) => {
+                    console.log('Sharing cancelled or failed', error);
+                });
+            } else {
+                alert("Direct image sharing is not supported on this browser. The image will download so you can attach it manually.");
+                downloadReceiptImage();
+            }
+        }, 'image/png');
+    });
+}
+
+function printReceiptBluetooth() {
+    if(!currentReceiptData) return;
+    const t = currentReceiptData;
+    const method = DB.settings.printMethod || 'rawbt';
+
+    if(method === 'rawbt' && typeof printViaRawBT === "function") {
         printViaRawBT(t);
-    } else {
-        console.log("Printing Text:", receiptText);
-    }
+        showToast("Sent to RawBT", "success");
+    } 
+    else if (window.BLEManager && window.BLEManager.characteristic) {
+        const acc = DB.accs.find(a => a.id === t.accId);
+        const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
+        const orgName = DB.settings.org || "Finance Manager";
+        
+        const receiptText = "\\x1B\\x40" + 
+                            "\\x1B\\x61\\x01" + orgName.toUpperCase() + "\\n" + 
+                            "\\x1B\\x61\\x00" + 
+                            "--------------------------------\\n" +
+                            `Date: ${dateDisp(t.date)}\n` +
+                            `Receipt No: ${t.id}\n` +
+                            `Customer: ${cust ? cust.name : 'General'}\n` +
+                            `Account: ${acc ? acc.accNo : '-'}\n` +
+                            `Type: ${t.type.toUpperCase()}\n` +
+                            `Amount: ${fmt.format(t.amt)}\n` +
+                            `Avail Bal: ${acc ? fmt.format(acc.balance) : '0.00'}\n` +
+                            `Details: ${t.desc || 'N/A'}\n` +
+                            "--------------------------------\\n" +
+                            "\\x1B\\x61\\x01" + "Thank you\\n\\n\\n"; 
 
-    // Option B: Share to WhatsApp
-    if (confirm("Send Receipt via WhatsApp?")) {
-        const mobile = cust ? cust.ref : ""; // Assuming mobile is in the 'ref' field
-        sendToWhatsApp(mobile, receiptText);
+        const encoder = new TextEncoder();
+        window.BLEManager.characteristic.writeValue(encoder.encode(receiptText))
+            .then(() => showToast("Printed via Bluetooth", "success"))
+            .catch(e => alert("Print failed: " + e.message));
+    } 
+    else {
+        alert("Please connect your Bluetooth printer in Settings -> Printer Config first.");
     }
 }
 
-function sendToWhatsApp(mobile, text) {
-    // Clean mobile number (remove spaces/dashes)
-    const cleanMobile = mobile.replace(/\D/g, '');
-    const encodedText = encodeURIComponent(text);
-    
-    // Open WhatsApp Web or App
-    const url = `https://wa.me/${cleanMobile}?text=${encodedText}`;
-    window.open(url, '_blank');
-}
 
 function showReport(type, filterValue = 'all') { // Added filterValue with a default
     window.currentReportType = type;
@@ -3471,7 +3402,7 @@ function generateLedger(id) {
     const ac = DB.accs.find(a => a.id === id);
     document.getElementById('report-subtitle').innerText = `Ledger: ${ac.name}`;
 
-    let h = `<table class="report-table"><thead><tr><th>Date</th><th>Description</th><th>Dr (In/Out)</th><th>Cr (In/Out)</th><th>Balance</th></tr></thead><tbody>`;
+    let h = `<table class="report-table"><thead><tr><th>Date</th><th>Description</th><th>Dr</th><th>Cr </th><th>Balance</th></tr></thead><tbody>`;
     let bal = 0;
 
     const fd = convertToYMD(document.getElementById('rep-from').value);
@@ -3856,9 +3787,10 @@ function generateBS(b, fd, td) {
     const absNetResult = Math.abs(netResult);
     const isProfit = netResult >= 0;
 
-  const cashAcc = DB.accs.find(a => a.type === 'cash');
-    const bankAcc = DB.accs.find(a => a.type === 'bank');
-    let adminCash = (cashAcc ? getBal(cashAcc.id, dt) : 0) + (bankAcc ? getBal(bankAcc.id, dt) : 0);
+      const cashAcc = DB.accs.find(a => a.type === 'cash');
+    // FIXED: Only calculate Office Cash for the Cash row
+    let adminCash = (cashAcc ? getBal(cashAcc.id, dt) : 0);
+
     
        // 2. NEW: Calculate individual Agent Balances (Receivables)
     let agentBalances = {}; 
@@ -3908,7 +3840,13 @@ function generateBS(b, fd, td) {
         groupAccounts.forEach(a => {
             const bal = getBal(a.id, dt);
             if (Math.abs(bal) > 0.01) {
-                const typeLabel = (a.type || 'General').toUpperCase();
+                
+                // FIXED: If it's a ledger (like a Bank), show its specific Name. 
+                // If it's a customer account, keep grouping by Type.
+                const typeLabel = (a.category === 'ledger') 
+                    ? a.name.toUpperCase() 
+                    : (a.type || 'General').toUpperCase();
+
                 if (!typeTotals[typeLabel]) typeTotals[typeLabel] = 0;
                 typeTotals[typeLabel] += bal;
                 groupSum += bal;
@@ -3943,8 +3881,8 @@ function generateBS(b, fd, td) {
             const bal = agentBalances[agentName];
             if (bal !== 0) {
                 groupSum += bal;
-                subRowsHtml += `<tr class="rep-sub-row" style="color: #2980b9;">
-                    <td>Receivable: ${agentName}</td>
+                subRowsHtml += `<tr class="rep-sub-row" style="color: #FF0000">
+                    <td>Agent: ${agentName}</td>
                     <td class="rep-col-2">${fmt.format(bal)}</td>
                     <td></td>
                 </tr>`;
@@ -4085,153 +4023,184 @@ function getNormalBalanceSign(acc) {
 }
 
 function generateSchedule(b, fd, td) {
-    // --- FIX: Start at 0 and calculate Opening Balance strictly from transactions ---
+    // 1. Find ALL Liquid Accounts (Cash + Bank)
+    const liquidAccs = DB.accs.filter(a => a.type === 'cash' || a.type === 'bank');
+    const liquidIds = liquidAccs.map(a => a.id);
+
+    if (liquidIds.length === 0) {
+        b.innerHTML = "<p style='text-align:center; padding:20px;'>No Cash or Bank accounts found.</p>";
+        return;
+    }
+
     let opBal = 0;
     
-    // Calculate balance of ALL cash/bank transactions BEFORE the 'From Date'
+    // 2. Calculate Combined Opening Balance (Cash + Bank before From Date)
     if (fd) {
         DB.trans.filter(t => t.date < fd).forEach(t => {
-            if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
-                opBal += t.amt;
-            } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
-                opBal -= t.amt;
+            if (t.type === 'adjustment') {
+                if (liquidIds.includes(t.accId)) opBal += t.amt; // Dr to Liquid (In)
+                if (liquidIds.includes(t.secAccId)) opBal -= t.amt; // Cr to Liquid (Out)
+            } else {
+                if (liquidIds.includes(t.accId)) {
+                    const targetAcc = liquidAccs.find(a => a.id === t.accId);
+                    opBal += (t.amt * getTxMod(targetAcc, t.type));
+                } else if (liquidIds.includes(t.secAccId)) {
+                    if (t.by === 'agent' && t.type !== 'agent_handover') return;
+                    if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) opBal += t.amt;
+                    else if (['withdraw', 'disburse', 'expense'].includes(t.type)) opBal -= t.amt;
+                }
             }
         });
     }
 
-    // 2. Filter Current Transactions (Between From Date and To Date)
-    const transactions = getFilteredTrans(fd, td);
+    // 3. Filter Current Transactions (touching ANY liquid account)
+    const transactions = getFilteredTrans(fd, td).filter(t => liquidIds.includes(t.accId) || liquidIds.includes(t.secAccId));
 
-    // 3. Initialize Grouping Objects
-    let receiptGroups = {}; // Stores totals like { "SB Deposit": 5000, "Loan Repayment": 10000 }
-    let paymentGroups = {}; // Stores totals like { "Loan Disburse": 50000, "Expense": 200 }
+    let receiptGroups = {}; 
+    let paymentGroups = {}; 
     let totRec = 0;
     let totPay = 0;
 
-    // 4. Process and Group Transactions
+    // 4. Process Cash & Bank Flow
     transactions.forEach(t => {
-        const acc = DB.accs.find(a => a.id === t.accId);
+        let isReceipt = false;
+        let isPayment = false;
         let typeLabel = "General";
 
-        // Determine the Label (e.g., "Pigmy Deposit", "Loan Disburse")
-        if(t.type === 'agent_handover') {
-            typeLabel = "Cash from Agent";
-        } else if (acc) {
-            // Get Account Type Name (e.g., Pigmy, RD, Loan)
-            // Use the account type defined in the account or fallback to raw type
-            const rawType = (acc.type || t.type).toUpperCase();
-            
-            // Refine Label based on transaction type
-            if(t.type === 'deposit') typeLabel = `${rawType} Deposit`;
-            else if(t.type === 'withdraw') typeLabel = `${rawType} Withdraw`;
-            else if(t.type === 'disburse') typeLabel = `${rawType} Disburse`;
-            else if(t.type === 'repay_princ') typeLabel = `${rawType} Repayment`;
-            else if(t.type === 'repay_int') typeLabel = `${rawType} Interest`;
-            else if(t.type === 'expense') typeLabel = `Expense - ${acc.name}`;
-            else if(t.type === 'income') typeLabel = `Income - ${acc.name}`;
-            else typeLabel = rawType;
-        } else {
-            typeLabel = t.type.toUpperCase();
+        const isAccLiquid = liquidIds.includes(t.accId);
+        const isSecLiquid = liquidIds.includes(t.secAccId);
+
+        // Handle Double-Entry Adjustments
+        if (t.type === 'adjustment') {
+            if (isAccLiquid && isSecLiquid) {
+                // Contra entry (e.g., Moving Cash to Bank) - Shows on BOTH sides
+                const drAcc = liquidAccs.find(a => a.id === t.accId);
+                const crAcc = liquidAccs.find(a => a.id === t.secAccId);
+                
+                const rLabel = `Contra / Transfer to ${drAcc.name}`;
+                if (!receiptGroups[rLabel]) receiptGroups[rLabel] = 0;
+                receiptGroups[rLabel] += t.amt;
+                totRec += t.amt;
+
+                const pLabel = `Contra / Transfer from ${crAcc.name}`;
+                if (!paymentGroups[pLabel]) paymentGroups[pLabel] = 0;
+                paymentGroups[pLabel] += t.amt;
+                totPay += t.amt;
+                return; // Skip rest of loop
+            } else if (isAccLiquid) { 
+                isReceipt = true;
+                const otherAcc = DB.accs.find(a => a.id === t.secAccId);
+                typeLabel = `Adj from ${otherAcc ? otherAcc.name : 'Unknown'}`;
+            } else if (isSecLiquid) { 
+                isPayment = true;
+                const otherAcc = DB.accs.find(a => a.id === t.accId);
+                typeLabel = `Adj to ${otherAcc ? otherAcc.name : 'Unknown'}`;
+            }
+        } 
+        // Handle Normal Transactions
+        else {
+            if (isAccLiquid) {
+                const targetAcc = liquidAccs.find(a => a.id === t.accId);
+                const mod = getTxMod(targetAcc, t.type);
+                if (mod > 0) isReceipt = true; else isPayment = true;
+                typeLabel = `${targetAcc.name} ${t.type.toUpperCase()}`; 
+            } else if (isSecLiquid) {
+                if (t.by === 'agent' && t.type !== 'agent_handover') return; 
+                
+                if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
+                    isReceipt = true;
+                } else {
+                    isPayment = true;
+                }
+
+                // Generate clean labels showing WHICH account received/paid it
+                const primaryAcc = DB.accs.find(a => a.id === t.accId);
+                const secAccDetails = liquidAccs.find(a => a.id === t.secAccId);
+                const mode = secAccDetails ? secAccDetails.name : 'Liquid'; 
+
+                if (t.type === 'agent_handover') {
+                    typeLabel = `Cash from Agent (via ${mode})`;
+                } else if (primaryAcc) {
+                    const rawType = primaryAcc.category === 'ledger' ? primaryAcc.name : (primaryAcc.type || t.type).toUpperCase();
+                    if(t.type === 'deposit') typeLabel = `${rawType} Deposit (via ${mode})`;
+                    else if(t.type === 'withdraw') typeLabel = `${rawType} Withdraw (via ${mode})`;
+                    else if(t.type === 'disburse') typeLabel = `${rawType} Disburse (via ${mode})`;
+                    else if(t.type === 'repay_princ') typeLabel = `${rawType} Repayment (via ${mode})`;
+                    else if(t.type === 'expense') typeLabel = `Expense - ${rawType} (via ${mode})`;
+                    else if(t.type === 'income') typeLabel = `Income - ${rawType} (via ${mode})`;
+                    else typeLabel = `${rawType} (via ${mode})`;
+                } else {
+                    typeLabel = `${t.type.toUpperCase()} (via ${mode})`;
+                }
+            }
         }
 
-        // Add to Totals (Receipt or Payment)
-        if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
+        // Add to Totals
+        if (isReceipt) {
             if (!receiptGroups[typeLabel]) receiptGroups[typeLabel] = 0;
             receiptGroups[typeLabel] += t.amt;
             totRec += t.amt;
-        } else {
+        } else if (isPayment) {
             if (!paymentGroups[typeLabel]) paymentGroups[typeLabel] = 0;
             paymentGroups[typeLabel] += t.amt;
             totPay += t.amt;
         }
     });
 
-    // Get sorted keys
+    // 5. Render Layout
     const rKeys = Object.keys(receiptGroups).sort();
     const pKeys = Object.keys(paymentGroups).sort();
-    
-    // Find which list is longer
     const maxRows = Math.max(rKeys.length, pKeys.length);
 
     let receiptsHtml = '';
     let paymentsHtml = '';
 
     for (let i = 0; i < maxRows; i++) {
-        // Build Receipt Row or Blank
-        if (i < rKeys.length) {
-            receiptsHtml += `<tr><td>${rKeys[i]}</td><td align="right">${fmt.format(receiptGroups[rKeys[i]])}</td></tr>`;
-        } else {
-            receiptsHtml += `<tr><td>&nbsp;</td><td>&nbsp;</td></tr>`; // Blank row
-        }
+        if (i < rKeys.length) receiptsHtml += `<tr><td>${rKeys[i]}</td><td align="right">${fmt.format(receiptGroups[rKeys[i]])}</td></tr>`;
+        else receiptsHtml += `<tr><td>&nbsp;</td><td>&nbsp;</td></tr>`; 
 
-        // Build Payment Row or Blank
-        if (i < pKeys.length) {
-            paymentsHtml += `<tr><td>${pKeys[i]}</td><td align="right">${fmt.format(paymentGroups[pKeys[i]])}</td></tr>`;
-        } else {
-            paymentsHtml += `<tr><td>&nbsp;</td><td>&nbsp;</td></tr>`; // Blank row
-        }
+        if (i < pKeys.length) paymentsHtml += `<tr><td>${pKeys[i]}</td><td align="right">${fmt.format(paymentGroups[pKeys[i]])}</td></tr>`;
+        else paymentsHtml += `<tr><td>&nbsp;</td><td>&nbsp;</td></tr>`; 
     }
 
-    // 7. Calculate Closing Balance
     const closeBal = opBal + totRec - totPay;
 
-    // 8. Render Final Report
     b.innerHTML = `
         <div style="margin-bottom:10px; font-weight:bold; background:#eee; padding:10px; border-radius:5px;">
-            Opening Balance: <span style="float:right">${fmt.format(opBal)}</span>
+            Opening Balance (Cash + Bank): <span style="float:right">${fmt.format(opBal)}</span>
         </div>
         
         <div class="flex" style="flex-wrap:wrap; gap:20px; align-items:flex-start;">
-            
             <div style="flex:1; min-width:300px; border:1px solid #ccc; border-radius:5px; overflow:hidden;">
-                <h4 style="background:#27ae60; color:white; padding:10px; text-align:center; margin:0;">
-                    Receipts (In)
-                </h4>
+                <h4 style="background:#27ae60; color:white; padding:10px; text-align:center; margin:0;">Receipts (In)</h4>
                 <table class="report-table" style="width:100%;">
-                    <thead>
-                        <tr>
-                            <th>Account / Type Head</th>
-                            <th align="right">Amount</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Account / Type Head</th><th align="right">Amount</th></tr></thead>
                     <tbody>
                         ${receiptsHtml || '<tr><td colspan="2" style="text-align:center;color:#999">No Receipts</td></tr>'}
-                        <tr class="final-total-row">
-                            <td>Total Receipts</td>
-                            <td align="right">${fmt.format(totRec)}</td>
-                        </tr>
+                        <tr class="final-total-row"><td>Total Receipts</td><td align="right">${fmt.format(totRec)}</td></tr>
                     </tbody>
                 </table>
             </div>
 
             <div style="flex:1; min-width:300px; border:1px solid #ccc; border-radius:5px; overflow:hidden;">
-                <h4 style="background:#c0392b; color:white; padding:10px; text-align:center; margin:0;">
-                    Payments (Out)
-                </h4>
+                <h4 style="background:#c0392b; color:white; padding:10px; text-align:center; margin:0;">Payments (Out)</h4>
                 <table class="report-table" style="width:100%;">
-                    <thead>
-                        <tr>
-                            <th>Account / Type Head</th>
-                            <th align="right">Amount</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Account / Type Head</th><th align="right">Amount</th></tr></thead>
                     <tbody>
                         ${paymentsHtml || '<tr><td colspan="2" style="text-align:center;color:#999">No Payments</td></tr>'}
-                        <tr class="final-total-row">
-                            <td>Total Payments</td>
-                            <td align="right">${fmt.format(totPay)}</td>
-                        </tr>
+                        <tr class="final-total-row"><td>Total Payments</td><td align="right">${fmt.format(totPay)}</td></tr>
                     </tbody>
                 </table>
             </div>
-
         </div>
 
         <div style="margin-top:10px; font-weight:bold; background:#34495e; color:white; padding:10px; border-radius:5px;">
-            Closing Balance: <span style="float:right">${fmt.format(closeBal)}</span>
+            Closing Balance (Cash + Bank): <span style="float:right">${fmt.format(closeBal)}</span>
         </div>
     `;
 }
+
+
 
 function getFilteredTrans(fd,td){
     return DB.trans.filter(t=>(!fd||t.date>=fd)&&(!td||t.date<=td));
@@ -4360,11 +4329,12 @@ function updateUI() {
     const expenseGroups = DB.groups.filter(g => g.type === 'Expense').map(g => g.name);
 
     // --- A. CALCULATE TOTAL CASH (ADMIN vs AGENT) ---
-  if (session.role === 'admin') {
+    if (session.role === 'admin') {
         const cashAcc = DB.accs.find(a => a.type === 'cash');
-        const bankAcc = DB.accs.find(a => a.type === 'bank');
-        cashInHand = (cashAcc ? cashAcc.balance : 0) + (bankAcc ? bankAcc.balance : 0);
+        // FIXED: Cash in Hand now ONLY shows actual cash, keeping bank separate
+        cashInHand = (cashAcc ? cashAcc.balance : 0);
     } 
+    
     // AGENT sees only their current collection holding
     else {
         cashInHand = getAgentCashHolding(session.id);
@@ -4419,11 +4389,7 @@ function updateUI() {
     // 5. Refresh Tables
     renderCustomerTable();
     renderTrans();
-    renderDashActivities(); 
-
-
-  
-    
+    renderDashActivities();       
     if(session && session.role === 'admin'){
         renderAgentTable();
         renderLedgerTable();
@@ -4444,8 +4410,9 @@ function renderCustomerTable(){
         const agent=DB.agents.find(a=>a.id===session.id);
         if(agent){
             customers=customers.filter(c=>{
+                if (c.createdBy === session.id) return true; // Show if agent created them
                 const customerAccounts=DB.accs.filter(a=>a.custId===c.id);
-                return customerAccounts.some(a=>agent.assigned.includes(a.id));
+                return customerAccounts.some(a=>agent.assigned.includes(a.id)); // Or if assigned
             });
         }
     }
@@ -5676,15 +5643,23 @@ function populateSecondaryAccs() {
     const secSelect = document.getElementById('trans-sec-acc');
     if (!secSelect) return;
     
-    // Filter accounts that are type 'cash' or 'bank'
-    const list = DB.accs.filter(a => a.type === 'cash' || a.type === 'bank');
+    // Filter accounts based on the user's role
+    const list = DB.accs.filter(a => {
+        if (session.role === 'admin') {
+            // Admin sees both Cash and Bank accounts
+            return a.type === 'cash' || a.type === 'bank';
+        } else {
+            // Agents see ONLY the Cash account
+            return a.type === 'cash';
+        }
+    });
     
-    secSelect.innerHTML = list.map(a => 
-        `<option value="${a.id}">${a.name} (Bal: ${fmt.format(a.balance)})</option>`
-    ).join('');
+    secSelect.innerHTML = list.map(a => {
+        // Only show the balance if the logged-in user is the Admin
+        const balDisplay = session.role === 'admin' ? ` (Bal: ${fmt.format(a.balance)})` : '';
+        return `<option value="${a.id}">${a.name}${balDisplay}</option>`;
+    }).join('');
 }
-
-let currentAdjSide = ''; // To track if we are picking for Dr or Cr
 
 // 1. Search Logic
 function openAdjSearch(side) {
@@ -6197,6 +6172,7 @@ function saveEditedAccountType() {
     document.getElementById('edit-account-type-modal').classList.add('hidden');
     showToast("Updated Successfully", "success");
 }
+
 
 </script>
 </body>
