@@ -6142,12 +6142,16 @@ function saveEditedAccountType() {
     document.getElementById('edit-account-type-modal').classList.add('hidden');
     showToast("Updated Successfully", "success");
 }
-   function printViaRawBT(t) {
+  function printViaRawBT(t) {
     if(!t) return alert("No transaction data found");
 
     const acc = DB.accs.find(a => a.id === t.accId);
     const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
     const orgName = DB.settings.org || "Finance Manager";
+
+    // Calculate Opening Balance
+    const impact = acc ? (t.amt * getTxMod(acc, t.type)) : 0;
+    const openingBal = acc ? (acc.balance - impact) : 0;
 
     // 1. Build the clean text for the receipt
     let receipt = "";
@@ -6159,13 +6163,14 @@ function saveEditedAccountType() {
     receipt += "Name: " + (cust ? cust.name : 'General') + "\n";
     receipt += "Account: " + (acc ? (acc.accNo || '-') : '-') + "\n";
     receipt += "Type: " + t.type.toUpperCase() + "\n";
+    receipt += "Op Bal: Rs " + openingBal.toFixed(2) + "\n";       // <--- ADDED
     receipt += "Amount: Rs " + t.amt.toFixed(2) + "\n";
     receipt += "Avail Bal: Rs " + (acc ? acc.balance.toFixed(2) : '0.00') + "\n";
+    receipt += "Details: " + (t.desc || 'N/A') + "\n";              // <--- ADDED
     receipt += "--------------------------------\n";
     receipt += "           Thank you\n\n\n";
 
     // 2. Convert it into a special Android Link (Intent)
-    // This instantly wakes up the RawBT app and passes the text to it
     let encodedReceipt = encodeURIComponent(receipt);
     let rawbtUrl = "intent:" + encodedReceipt + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
     
