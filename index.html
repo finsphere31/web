@@ -3207,20 +3207,20 @@ function printReceiptData(t) {
     const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
     const orgName = DB.settings.org || "Finance Manager";
 
-    // Calculate Opening Balance (Current Balance minus this transaction's impact)
     const impact = acc ? (t.amt * getTxMod(acc, t.type)) : 0;
     const openingBal = acc ? (acc.balance - impact) : 0;
 
-    // --- NEW: Find out who issued this receipt ---
+    // --- LOGIC TO GET NAME AND MOBILE ---
     let issuerName = "Admin";
+    let issuerMobile = DB.settings.adminMobile || "";
+
     if (t.by === 'agent' && t.agentId) {
-        // If it was an agent, find their name
         const agent = DB.agents.find(a => a.id === t.agentId);
-        if (agent && agent.user) {
+        if (agent) {
             issuerName = agent.user;
+            issuerMobile = agent.mobile || "";
         }
     } else {
-        // If it was an admin, use the admin name
         issuerName = DB.settings.adminName || DB.settings.adminUser || "Admin";
     }
 
@@ -3244,14 +3244,16 @@ function printReceiptData(t) {
             <div style="margin-top: 5px;"><b>Details:</b> ${t.desc || 'N/A'}</div>
         </div>
         <div style="text-align: center; border-top: 1px dashed black; padding-top: 10px; margin-top: 15px; font-size: 0.9rem;">Thank you</div>
-        <div style="text-align: center; font-size: 0.8rem; margin-top: 5px; color: #555;">Issued by: ${String(issuerName).toUpperCase()}</div>
+        <div style="text-align: center; font-size: 0.8rem; margin-top: 5px; color: #555;">
+            Issued by: ${String(issuerName).toUpperCase()}<br>
+            Mob: ${issuerMobile}
+        </div>
     `;
 
     const editModal = document.getElementById('edit-trans-modal');
     if (editModal) editModal.classList.add('hidden');
     document.getElementById('receipt-modal').classList.remove('hidden');
 }
-
 function downloadReceiptImage() {
     const area = document.getElementById('receipt-render-area');
     html2canvas(area, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
@@ -3278,33 +3280,38 @@ function downloadReceiptImage() {
 
 function shareReceiptWhatsApp() {
     if(!currentReceiptData) return;
-    const area = document.getElementById('receipt-render-area');
+    
+    const t = currentReceiptData;
+    const acc = DB.accs.find(a => a.id === t.accId);
+    const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
     const orgName = DB.settings.org || "Finance Manager";
 
-    showToast("Preparing image for WhatsApp...", "success");
+    // 1. Get Customer Mobile (remove spaces/dashes)
+    let mobile = cust ? cust.ref.replace(/\D/g, '') : "";
+    
+    // 2. Add Country Code (91 for India) if it's a 10-digit number
+    if (mobile.length === 10) mobile = "91" + mobile;
 
-    // ADDED logging: false HERE
-    html2canvas(area, { scale: 3, backgroundColor: "#ffffff", logging: false }).then(canvas => {
-        canvas.toBlob(function(blob) {
-            const fileName = `Receipt_${currentReceiptData.id}.png`;
-            const file = new File([blob], fileName, { type: 'image/png' });
+    if (!mobile) return alert("Customer mobile number not found!");
 
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({
-                    files: [file],
-                    title: `${orgName} Receipt`,
-                    text: `Transaction Receipt from ${orgName}`
-                }).catch((error) => {
-                    console.log('Sharing cancelled or failed', error);
-                });
-            } else {
-                alert("Direct image sharing is not supported on this browser. The image will download so you can attach it manually.");
-                downloadReceiptImage();
-            }
-        }, 'image/png');
-    });
+    // 3. Create a Professional Message
+    let msg = `*${orgName.toUpperCase()}*%0A`;
+    msg += `*Receipt Confirmation*%0A%0A`;
+    msg += `Date: ${dateDisp(t.date)}%0A`;
+    msg += `Voucher: ${t.id}%0A`;
+    msg += `Account: ${acc ? acc.accNo : '-'}%0A`;
+    msg += `Type: ${t.type.toUpperCase()}%0A`;
+    msg += `--------------------------%0A`;
+    msg += `*Amount: ${fmt.format(t.amt)}*%0A`;
+    msg += `*Balance: ${acc ? fmt.format(acc.balance) : '0.00'}*%0A`;
+    msg += `--------------------------%0A`;
+    msg += `Details: ${t.desc || 'N/A'}%0A%0A`;
+    msg += `Thank you for banking with us!`;
+
+    // 4. Open WhatsApp Link
+    const whatsappUrl = `https://wa.me/${mobile}?text=${msg}`;
+    window.open(whatsappUrl, '_blank');
 }
-
 
 function printReceiptBluetooth() {
     if(!currentReceiptData) return;
@@ -6552,11 +6559,16 @@ function printViaRawBT(t) {
     const impact = acc ? (t.amt * getTxMod(acc, t.type)) : 0;
     const openingBal = acc ? (acc.balance - impact) : 0;
 
-    // --- NEW: Find out who issued this receipt ---
+    // --- LOGIC TO GET NAME AND MOBILE ---
     let issuerName = "Admin";
+    let issuerMobile = DB.settings.adminMobile || "";
+
     if (t.by === 'agent' && t.agentId) {
         const agent = DB.agents.find(a => a.id === t.agentId);
-        if (agent) issuerName = agent.user;
+        if (agent) {
+            issuerName = agent.user;
+            issuerMobile = agent.mobile || "";
+        }
     } else {
         issuerName = DB.settings.adminUser || "Admin";
     }
@@ -6576,16 +6588,13 @@ function printViaRawBT(t) {
     receipt += "Details: " + (t.desc || 'N/A') + "\n";
     receipt += "--------------------------------\n";
     receipt += "           Thank you\n";
-   receipt += "      Issued by: " + issuerName.toUpperCase() + "\n";
+    receipt += "      Issued by: " + issuerName.toUpperCase() + "\n";
+    receipt += "      Mob: " + issuerMobile + "\n";
+    receipt += "--------------------------------\n\n\n";
 
     let encodedReceipt = encodeURIComponent(receipt);
     let rawbtUrl = "intent:" + encodedReceipt + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
     window.location.href = rawbtUrl;
-}
-// And here is the code for the Test Button in Settings:
-function testRawBT() {
-    let testMsg = "--------------------------------\n   RAWBT CONNECTION SUCCESSFUL!\n--------------------------------\n\n\n";
-    window.location.href = "intent:" + encodeURIComponent(testMsg) + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
 }
 
 function openDateFilter() {
