@@ -3278,50 +3278,32 @@ function downloadReceiptImage() {
     });
 }
 
-function shareReceiptWhatsApp() {
+function shareReceiptWhatsApp(customerPhone) {
     if(!currentReceiptData) return;
-    
-    const t = currentReceiptData;
-    const acc = DB.accs.find(a => a.id === t.accId);
-    const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
+    const area = document.getElementById('receipt-render-area');
     const orgName = DB.settings.org || "Finance Manager";
 
-    // --- NEW: Logic to find Issued By Name ---
-    let issuerName = "Admin";
-    if (t.by === 'agent' && t.agentId) {
-        const agent = DB.agents.find(a => a.id === t.agentId);
-        if (agent) issuerName = agent.user;
-    } else {
-        issuerName = DB.settings.adminName || DB.settings.adminUser || "Admin";
-    }
+    // Clean the phone number (remove +, spaces, dashes)
+    const cleanPhone = customerPhone.replace(/\D/g, '');
 
-    // 1. Get Customer Mobile (remove spaces/dashes)
-    let mobile = cust ? cust.ref.replace(/\D/g, '') : "";
-    
-    // 2. Add Country Code (91 for India) if it's a 10-digit number
-    if (mobile.length === 10) mobile = "91" + mobile;
+    showToast("Preparing receipt...", "success");
 
-    if (!mobile) return alert("Customer mobile number not found!");
+    html2canvas(area, { scale: 3, backgroundColor: "#ffffff", logging: false }).then(canvas => {
+        // 1. Trigger Download so the image is first in their gallery
+        const link = document.createElement('a');
+        link.download = `Receipt_${currentReceiptData.id}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
 
-    // 3. Create a Professional Message
-    let msg = `*${orgName.toUpperCase()}*%0A`;
-    msg += `*Receipt Confirmation*%0A%0A`;
-    msg += `*Customer:* ${cust ? cust.name.toUpperCase() : 'N/A'}%0A`; // ADDED CUSTOMER NAME
-    msg += `Date: ${dateDisp(t.date)}%0A`;
-    msg += `Voucher: ${t.id}%0A`;
-    msg += `Account: ${acc ? acc.accNo : '-'}%0A`;
-    msg += `Type: ${t.type.toUpperCase()}%0A`;
-    msg += `--------------------------%0A`;
-    msg += `*Amount: ${fmt.format(t.amt)}*%0A`;
-    msg += `*Balance: ${acc ? fmt.format(acc.balance) : '0.00'}*%0A`;
-    msg += `--------------------------%0A`;
-    msg += `Details: ${t.desc || 'N/A'}%0A`;
-    msg += `*Issued by:* ${issuerName.toUpperCase()}%0A%0A`; // ADDED ISSUED BY NAME
-    msg += `Thank you for banking with us!`;
-
-    // 4. Open WhatsApp Link
-    const whatsappUrl = `https://wa.me/${mobile}?text=${msg}`;
-    window.open(whatsappUrl, '_blank');
+        // 2. Open WhatsApp to the specific number
+        const message = encodeURIComponent(`Hello, here is your receipt from ${orgName}. Please attach the latest image from your gallery.`);
+        const whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+        
+        // Give the download a moment to start before redirecting
+        setTimeout(() => {
+            window.open(whatsappUrl, '_blank');
+        }, 1000);
+    });
 }
 function printReceiptBluetooth() {
     if(!currentReceiptData) return;
