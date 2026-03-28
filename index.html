@@ -3279,43 +3279,48 @@ function downloadReceiptImage() {
 }
 
 function shareReceiptWhatsApp() {
-    if (!currentReceiptData) return;
+    if(!currentReceiptData) return;
+    
     const t = currentReceiptData;
     const acc = DB.accs.find(a => a.id === t.accId);
     const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
     const orgName = DB.settings.org || "Finance Manager";
 
-    if (!cust || !cust.ref) return alert("Customer mobile number not found!");
+    // --- NEW: Logic to find Issued By Name ---
+    let issuerName = "Admin";
+    if (t.by === 'agent' && t.agentId) {
+        const agent = DB.agents.find(a => a.id === t.agentId);
+        if (agent) issuerName = agent.user;
+    } else {
+        issuerName = DB.settings.adminName || DB.settings.adminUser || "Admin";
+    }
 
-    // 1. Format Mobile
-    let mobile = cust.ref.replace(/\D/g, '');
+    // 1. Get Customer Mobile (remove spaces/dashes)
+    let mobile = cust ? cust.ref.replace(/\D/g, '') : "";
+    
+    // 2. Add Country Code (91 for India) if it's a 10-digit number
     if (mobile.length === 10) mobile = "91" + mobile;
 
-    // 2. Build the Receipt Summary as a "Text Image"
-    // Using special characters to make it look like a box/voucher
-    let linkMsg = `*--- ${orgName.toUpperCase()} ---*%0A`;
-    linkMsg += `*VOUCHER RECEIPT*%0A`;
-    linkMsg += `--------------------------%0A`;
-    linkMsg += `*Date:* ${dateDisp(t.date)}%0A`;
-    linkMsg += `*No:* ${t.id}%0A`;
-    linkMsg += `*Cust:* ${cust.name}%0A`;
-    linkMsg += `*Acc:* ${acc ? acc.accNo : '-'}%0A`;
-    linkMsg += `*Type:* ${t.type.toUpperCase()}%0A`;
-    linkMsg += `--------------------------%0A`;
-    linkMsg += `*AMOUNT: ${fmt.format(t.amt)}*%0A`;
-    linkMsg += `*BALANCE: ${acc ? fmt.format(acc.balance) : '0.00'}*%0A`;
-    linkMsg += `--------------------------%0A`;
-    linkMsg += `*Details:* ${t.desc || 'N/A'}%0A`;
-    linkMsg += `--------------------------%0A`;
-    linkMsg += `_Click here to view full history:_ %0A`;
-    
-    // 3. Optional: Add a link to your hosted app (if applicable)
-    // Replace '#' with your actual website URL if you have one
-    const appUrl = window.location.href.split('#')[0]; 
-    linkMsg += `${appUrl}`;
+    if (!mobile) return alert("Customer mobile number not found!");
 
-    // 4. Open WhatsApp direct to that customer
-    const whatsappUrl = `https://wa.me/${mobile}?text=${linkMsg}`;
+    // 3. Create a Professional Message
+    let msg = `*${orgName.toUpperCase()}*%0A`;
+    msg += `*Receipt Confirmation*%0A%0A`;
+    msg += `*Customer:* ${cust ? cust.name.toUpperCase() : 'N/A'}%0A`; // ADDED CUSTOMER NAME
+    msg += `Date: ${dateDisp(t.date)}%0A`;
+    msg += `Voucher: ${t.id}%0A`;
+    msg += `Account: ${acc ? acc.accNo : '-'}%0A`;
+    msg += `Type: ${t.type.toUpperCase()}%0A`;
+    msg += `--------------------------%0A`;
+    msg += `*Amount: ${fmt.format(t.amt)}*%0A`;
+    msg += `*Balance: ${acc ? fmt.format(acc.balance) : '0.00'}*%0A`;
+    msg += `--------------------------%0A`;
+    msg += `Details: ${t.desc || 'N/A'}%0A`;
+    msg += `*Issued by:* ${issuerName.toUpperCase()}%0A%0A`; // ADDED ISSUED BY NAME
+    msg += `Thank you for banking with us!`;
+
+    // 4. Open WhatsApp Link
+    const whatsappUrl = `https://wa.me/${mobile}?text=${msg}`;
     window.open(whatsappUrl, '_blank');
 }
 function printReceiptBluetooth() {
