@@ -673,7 +673,62 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     border-color: #0369a1 !important;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
+/* Auto-Grid: 4 columns on PC, exactly 2 columns on Mobile */
+.clean-dash-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+    .clean-dash-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
 
+/* Perfect Clean Card Style */
+.clean-card {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    border: 1px solid #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.clean-title {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+.clean-value {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin: 0;
+}
+/* Smart Responsive Grid: 4 columns on PC, 2 columns on Mobile */
+  .smart-dash-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+  }
+  @media (max-width: 768px) {
+      .smart-dash-grid {
+          grid-template-columns: repeat(2, 1fr);
+      }
+  }
+/* Smart Flexible Grid specifically for the Reports Menu */
+  .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+  }
 </style>
 </head>
 <body>
@@ -763,19 +818,19 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         <h1 class="org-name-disp">My Finance Ltd</h1>
     </div>        
     
-     <div class="page-title" id="page-title">Dashboard</div>
+    <div class="page-title" id="page-title" style="display: none;">Dashboard</div>
 
-    <div class="dash-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 15px;">
-
-        
-      <div class="card" style="border-left: 4px solid #3498db; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #f0f7ff, #ffffff);">
+<div class="smart-dash-grid">
+    
+    <div class="card" style="border-left: 4px solid #3498db; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #f0f7ff, #ffffff);">
         <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Cash In Hand</small>
-        <h3 id="d-tot-cash" style="font-size: 1.6rem; margin-top: 8px; font-weight: 700; color: #333;"></h3>
-       </div> 
+        <h3 id="d-tot-cash" style="font-size: 1.6rem; margin-top: 8px; font-weight: 700; color: #333;">₹0</h3>
+    </div> 
+
     <div class="card" style="border-left: 4px solid #2ecc71; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #f1fcf4, #ffffff);">
         <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Today Receipt</small>
-       <h3 id="d-today-rec" style="font-size:1.6rem; margin-top:8px; font-weight: 700; color: #333;">₹0</h3>
-   </div>
+        <h3 id="d-today-rec" style="font-size:1.6rem; margin-top:8px; font-weight: 700; color: #333;">₹0</h3>
+    </div>
 
     <div class="card" style="border-left: 4px solid #27ae60; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #edf9f1, #ffffff);">
         <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Today Income</small>
@@ -784,7 +839,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 
     <div class="card" style="border-left: 4px solid #e74c3c; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #fff5f4, #ffffff);">
         <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Today Expense</small>
-       <h3 id="d-today-expense" style="font-size:1.6rem; margin-top:8px; color:#e74c3c; font-weight: 700;">₹0</h3>
+        <h3 id="d-today-expense" style="font-size:1.6rem; margin-top:8px; color:#e74c3c; font-weight: 700;">₹0</h3>
     </div>
 
     <div class="card" style="border-left: 4px solid #f1c40f; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #fffdf2, #ffffff);">
@@ -989,21 +1044,19 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
                     </div>
                 </div>
                 
-                <div class="dash-grid">
-                    <div class="report-btn-card" onclick="showReport('cust_list')"><i class="fas fa-users"></i> Cust List</div>
-                    <div class="report-btn-card" onclick="showReport('daybook')"><i class="fas fa-calendar-day"></i> Day Book</div>
-                    <div class="report-btn-card" onclick="openCustReportSearch()"><i class="fas fa-book"></i> Bal Book</div>
-                    <div class="report-btn-card" onclick="openTypeSearch()"><i class="fas fa-list-ol"></i> Schedule</div>
-                    <div class="report-btn-card" onclick="openLedgerSearch()"><i class="fas fa-list"></i> Ledger</div>
-                    <div class="report-btn-card" onclick="showReport('loans')"><i class="fas fa-money-bill"></i> Loans</div>
-                    <div id="btn-schedule" class="report-btn-card" onclick="showReport('schedule')"><i class="fas fa-exchange-alt"></i> Rec/Pay</div>
-                    <div id="btn-pl" class="report-btn-card" onclick="showReport('pl')"><i class="fas fa-chart-line"></i> P & L</div>
-                    <div id="btn-bs" class="report-btn-card" onclick="showReport('bs')"><i class="fas fa-balance-scale"></i> Balance Sheet</div>
-          <div class="report-btn-card" onclick="handleHandoverReportClick()">
-    <i class="fas fa-handshake"></i> Handover Rep
-</div>                         
-                    <div class="report-btn-card" onclick="handleAgentReportClick()"><i class="fas fa-user-tie"></i> Agent</div>
-                </div>
+                <div class="reports-grid">
+    <div class="report-btn-card" onclick="showReport('cust_list')"><i class="fas fa-users"></i> Cust List</div>
+    <div class="report-btn-card" onclick="showReport('daybook')"><i class="fas fa-calendar-day"></i> Day Book</div>
+    <div class="report-btn-card" onclick="openCustReportSearch()"><i class="fas fa-book"></i> Bal Book</div>
+    <div class="report-btn-card" onclick="openTypeSearch()"><i class="fas fa-list-ol"></i> Accounts Bal</div>
+    <div class="report-btn-card" onclick="openLedgerSearch()"><i class="fas fa-list"></i> Ledger</div>
+    <div class="report-btn-card" onclick="showReport('loans')"><i class="fas fa-money-bill"></i> Loans</div>
+    <div id="btn-schedule" class="report-btn-card" onclick="showReport('schedule')"><i class="fas fa-exchange-alt"></i> Rec/Pay</div>
+    <div id="btn-pl" class="report-btn-card" onclick="showReport('pl')"><i class="fas fa-chart-line"></i> P & L</div>
+    <div id="btn-bs" class="report-btn-card" onclick="showReport('bs')"><i class="fas fa-balance-scale"></i> Balance Sheet</div>
+    <div class="report-btn-card" onclick="handleHandoverReportClick()"><i class="fas fa-handshake"></i> Handover Rep</div>                         
+    <div class="report-btn-card" onclick="handleAgentReportClick()"><i class="fas fa-user-tie"></i> Agent</div>
+</div>
               </div>
            <div id="report-display" class="hidden">
     <div class="report-header-actions" style="position: sticky; top: -15px; z-index: 85; margin: -15px -15px 15px -15px; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
@@ -1246,16 +1299,16 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <label style="font-weight:bold; display:block; margin-bottom:5px;">Organization Name</label>
             <div class="flex-row" style="display: flex; gap: 10px;">
                 <input id="set-org" placeholder="Enter Organization Name" style="flex-grow: 1;">
-                <button onclick="saveSettingsOrg()" class="btn btn-primary">Update</button>
-            </div>
+              <!--  <button onclick="saveSettingsOrg()" class="btn btn-primary">Update</button>
+            </div>-->
         </div>
 
         <div class="setting-group" style="margin-bottom: 20px;">
             <label style="font-weight:bold; display:block; margin-bottom:5px;">Admin Name</label>
             <div class="flex-row" style="display: flex; gap: 10px;">
                 <input id="set-admin-name" placeholder="Enter Admin Name" style="flex-grow: 1;">
-                <button onclick="saveAdminName()" class="btn btn-primary">Update</button>
-            </div>
+               <!-- <button onclick="saveAdminName()" class="btn btn-primary">Update</button>
+            </div>-->
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
@@ -1590,7 +1643,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
                 <select id="edit-trans-type">
                     <option value="deposit">Deposit</option>
                     <option value="withdraw">Withdraw</option>
-                    <option value="payment">payment</option>
+                    <option value="disburse">Disburse</option>
                     <option value="repay_princ">Repayment</option>
                 </select>
             </div>
@@ -3042,11 +3095,11 @@ function selectTransAccount(acc){
         if(tLower.includes('loan')) sel.innerHTML += '<option value="repay_princ">Repayment</option>';
     } else {
         if(tLower.includes('loan')) {
-            sel.innerHTML = '<option value="payment">payment</option><option value="repay_princ">Repayment</option>';
+            sel.innerHTML = '<option value="disburse">Disburse</option><option value="repay_princ">Repayment</option>';
             
             // Auto-select withdraw for expense accounts
             if(isExpense) {
-                sel.value = 'payment';
+                sel.value = 'disburse';
             }
         } else {
             sel.innerHTML = '<option value="deposit">Deposit/Receipt</option><option value="withdraw">Withdraw/Payment</option>';
@@ -3090,7 +3143,7 @@ function editTransaction(id) {
         typeSel.innerHTML = `
             <option value="deposit">Deposit</option>
             <option value="withdraw">Withdraw</option>
-            <option value="payment">payment</option>
+            <option value="disburse">Disburse</option>
             <option value="repay_princ">Repayment</option>
         `;
     }
@@ -3123,7 +3176,7 @@ function deleteTransaction() {
         if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
             // Original added to cash, so we subtract it
             secondaryAcc.balance -= t.amt;
-        } else if (['withdraw', 'payment', 'expense'].includes(t.type)) {
+        } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
             // Original removed from cash, so we add it back
             secondaryAcc.balance += t.amt;
         }
@@ -3598,7 +3651,7 @@ function generateLedger(id) {
     document.getElementById('report-display').classList.remove('hidden');
 
     const ac = DB.accs.find(a => a.id === id);
-    document.getElementById('report-subtitle').innerText = `Ledger: ${ac.name} ${ac.accNo ? `(${ac.accNo})` : ''}`;
+   document.getElementById('report-subtitle').innerText = `Ledger: ${ac.name} ${ac.accNo ? `(${ac.accNo})` : ''}`;
 
     let h = `<table class="report-table"><thead><tr><th>Date</th><th>Description</th><th>Dr</th><th>Cr</th><th>Balance</th></tr></thead><tbody>`;
     
@@ -3722,7 +3775,7 @@ function generateDayBook(container, targetDate) {
             if (crAcc && (crAcc.type === 'cash' || crAcc.type === 'bank')) openingBal -= t.amt;
         } else if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
             openingBal += t.amt;
-        } else if (['withdraw', 'payment', 'expense'].includes(t.type)) {
+        } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
             openingBal -= t.amt;
         }
     });
@@ -3759,7 +3812,7 @@ function generateDayBook(container, targetDate) {
           
         
             <tr>
-                <td>${acc ? acc.name : (t.type === 'agent_handover' ? 'Agent Handover' : 'Office')} ${acc && acc.accNo ? `<small style="color:#666;">(${acc.accNo})</small>` : ''}</td>
+               <td>${acc ? acc.name : (t.type === 'agent_handover' ? 'Agent Handover' : 'Office')} ${acc && acc.accNo ? `<small style="color:#666;">(${acc.accNo})</small>` : ''}</td>
                 <td>${t.desc || t.type}</td>
                 <td align="right" style="color:green;">${rec ? fmt.format(rec) : '-'}</td>
                 <td align="right" style="color:red;">${pay ? fmt.format(pay) : '-'}</td>
@@ -4037,7 +4090,7 @@ function generateBS(b, fd, td) {
         if (t.by === 'agent') {
             if (['deposit', 'repay_princ', 'income'].includes(t.type)) {
                 agentBalances[agentName] += t.amt;
-            } else if (['withdraw', 'payment', 'expense'].includes(t.type)) {
+            } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
                 agentBalances[agentName] -= t.amt;
             }
         }
@@ -4274,7 +4327,7 @@ function generateSchedule(b, fd, td) {
                 } else if (liquidIds.includes(t.secAccId)) {
                     if (t.by === 'agent' && t.type !== 'agent_handover') return;
                     if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) opBal += t.amt;
-                    else if (['withdraw', 'payment', 'expense'].includes(t.type)) opBal -= t.amt;
+                    else if (['withdraw', 'disburse', 'expense'].includes(t.type)) opBal -= t.amt;
                 }
             }
         });
@@ -4351,7 +4404,7 @@ function generateSchedule(b, fd, td) {
                     const rawType = primaryAcc.category === 'ledger' ? primaryAcc.name : (primaryAcc.type || t.type).toUpperCase();
                     if(t.type === 'deposit') typeLabel = `${rawType} Deposit (via ${mode})`;
                     else if(t.type === 'withdraw') typeLabel = `${rawType} Withdraw (via ${mode})`;
-                    else if(t.type === 'payment') typeLabel = `${rawType} payment (via ${mode})`;
+                    else if(t.type === 'disburse') typeLabel = `${rawType} Disburse (via ${mode})`;
                     else if(t.type === 'repay_princ') typeLabel = `${rawType} Repayment (via ${mode})`;
                     else if(t.type === 'expense') typeLabel = `Expense - ${rawType} (via ${mode})`;
                     else if(t.type === 'income') typeLabel = `Income - ${rawType} (via ${mode})`;
@@ -4462,7 +4515,7 @@ function getBal(id, td, fd) {
                 if (t.by === 'agent' && t.type !== 'agent_handover') return; 
                 if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
                     runningBalance += t.amt;
-                } else if (['withdraw', 'payment', 'expense', 'payment'].includes(t.type)) {
+                } else if (['withdraw', 'disburse', 'expense', 'payment'].includes(t.type)) {
                     runningBalance -= t.amt;
                 }
             }
@@ -4502,13 +4555,13 @@ function getTxMod(acc, type) {
     // --- ASSET RULES (Loans, Cash, Bank) ---
     // Debit increases assets, Credit decreases them.
     if (isAsset) {
-        if (['payment', 'withdraw', 'expense'].includes(t)) return 1;  // Debit (Increase Loan/Decrease Bank)
+        if (['disburse', 'withdraw', 'expense'].includes(t)) return 1;  // Debit (Increase Loan/Decrease Bank)
         if (['deposit', 'repay_princ', 'income'].includes(t)) return -1; // Credit (Decrease Loan/Increase Bank)
     }
 
     if (isLiability) {
         if (['deposit', 'repay_princ'].includes(t)) return 1;  // Credit (Increase what you owe)
-        if (['withdraw', 'payment'].includes(t)) return -1;  // Debit (Decrease what you owe)
+        if (['withdraw', 'disburse'].includes(t)) return -1;  // Debit (Decrease what you owe)
     }
 
     return 1;
@@ -4581,17 +4634,19 @@ function updateUI() {
         if (isIncome) overallIncome += t.amt;
         if (isExpense) overallExpense += t.amt;
 
-        // Calculate Today's Specific Stats
-        if (t.date === today) {
-            if (session.role === 'agent' && t.agentId !== session.id) return;
+       // Calculate Today's Specific Stats
+            if (t.date === today) {
+                if (session.role === 'agent' && t.agentId !== session.id) return;
 
-            if (t.type === 'deposit' || t.type === 'repay_princ') {
-                todayReceipt += t.amt;
-                todayCount++;
+                // Move todayCount++ out here so it counts EVERY transaction
+                todayCount++; 
+
+                if (t.type === 'deposit' || t.type === 'repay_princ') {
+                    todayReceipt += t.amt;
+                }
+                if (isIncome) todayIncome += t.amt;
+                if (isExpense) todayExpense += t.amt;
             }
-            if (isIncome) todayIncome += t.amt;
-            if (isExpense) todayExpense += t.amt;
-        }
     });
     
 
@@ -4709,7 +4764,7 @@ function renderTrans(){
             tbody.innerHTML+=`
                 <tr>
                     <td>${dateDisp(t.date)}</td>
-                    <td>${cust ? cust.name : (acc ? acc.name : '-')} ${acc && acc.accNo ? `<small style="color:#666;">(${acc.accNo})</small>` : ''}</td>
+                    <td>${cust?cust.name:acc?acc.name:'-'}</td>
                     <td>${fmt.format(t.amt)}</td>
                 </tr>
             `;
@@ -4725,7 +4780,7 @@ function renderTrans(){
             tbody.innerHTML+=`
                 <tr>
                     <td>${dateDisp(t.date)}</td>
-                    <td>${cust ? cust.name : (acc ? acc.name : '-')} ${acc && acc.accNo ? `<small style="color:#666;">(${acc.accNo})</small>` : ''}</td>
+                   <td>${cust ? cust.name : (acc ? acc.name : '-')} ${acc && acc.accNo ? `<small style="color:#666;">(${acc.accNo})</small>` : ''}</td>
                     <td>${t.type}</td>
                     <td>${fmt.format(t.amt)}</td>
                     <td>${t.desc||''}</td>
@@ -5425,7 +5480,7 @@ function getAgentCashHolding(agentId) {
             // Money IN (Collections)
             if (['deposit', 'repay_princ', 'repay_int'].includes(t.type)) balance += t.amt;
             // Money OUT (Payouts OR Handover)
-            else if (['withdraw', 'payment', 'agent_handover'].includes(t.type)) balance -= t.amt;
+            else if (['withdraw', 'disburse', 'agent_handover'].includes(t.type)) balance -= t.amt;
         }
     });
     return balance;
@@ -5934,7 +5989,7 @@ function processDoubleEntry(t) {
     
     if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
         secondaryAcc.balance += t.amt; // This is a Debit to Cash
-    } else if (['withdraw', 'payment', 'expense'].includes(t.type)) {
+    } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
         secondaryAcc.balance -= t.amt; // This is a Credit to Cash
     }
 }
@@ -6331,7 +6386,7 @@ function generateAgentHandoverReport(agentId) {
             dailyData[date].comm += (t.comm || 0); // Add commission
         } else if (['deposit', 'repay_princ', 'repay_int'].includes(t.type)) {
             dailyData[date].in += t.amt;
-        } else if (['withdraw', 'payment'].includes(t.type)) {
+        } else if (['withdraw', 'disburse'].includes(t.type)) {
             dailyData[date].out += t.amt;
         }
     });
@@ -6521,7 +6576,7 @@ function printViaRawBT(t) {
     receipt += "Details: " + (t.desc || 'N/A') + "\n";
     receipt += "--------------------------------\n";
     receipt += "           Thank you\n";
-    receipt += "      Issued by: " + issuerName.toUpperCase() + "\n\n\n";
+   receipt += "      Issued by: " + issuerName.toUpperCase() + "\n";
 
     let encodedReceipt = encodeURIComponent(receipt);
     let rawbtUrl = "intent:" + encodedReceipt + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
