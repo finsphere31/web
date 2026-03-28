@@ -3280,37 +3280,33 @@ function downloadReceiptImage() {
 
 function shareReceiptWhatsApp() {
     if(!currentReceiptData) return;
-    
+    const area = document.getElementById('receipt-render-area');
     const t = currentReceiptData;
     const acc = DB.accs.find(a => a.id === t.accId);
     const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
-    const orgName = DB.settings.org || "Finance Manager";
 
-    // 1. Get Customer Mobile (remove spaces/dashes)
-    let mobile = cust ? cust.ref.replace(/\D/g, '') : "";
-    
-    // 2. Add Country Code (91 for India) if it's a 10-digit number
-    if (mobile.length === 10) mobile = "91" + mobile;
+    showToast("Generating Receipt Image...", "success");
 
-    if (!mobile) return alert("Customer mobile number not found!");
+    // 1. Convert the receipt div to an Image (Blob)
+    html2canvas(area, { scale: 3, backgroundColor: "#ffffff", logging: false }).then(canvas => {
+        canvas.toBlob(function(blob) {
+            const fileName = `Receipt_${t.id}.png`;
+            const file = new File([blob], fileName, { type: 'image/png' });
 
-    // 3. Create a Professional Message
-    let msg = `*${orgName.toUpperCase()}*%0A`;
-    msg += `*Receipt Confirmation*%0A%0A`;
-    msg += `Date: ${dateDisp(t.date)}%0A`;
-    msg += `Voucher: ${t.id}%0A`;
-    msg += `Account: ${acc ? acc.accNo : '-'}%0A`;
-    msg += `Type: ${t.type.toUpperCase()}%0A`;
-    msg += `--------------------------%0A`;
-    msg += `*Amount: ${fmt.format(t.amt)}*%0A`;
-    msg += `*Balance: ${acc ? fmt.format(acc.balance) : '0.00'}*%0A`;
-    msg += `--------------------------%0A`;
-    msg += `Details: ${t.desc || 'N/A'}%0A%0A`;
-    msg += `Thank you for banking with us!`;
-
-    // 4. Open WhatsApp Link
-    const whatsappUrl = `https://wa.me/${mobile}?text=${msg}`;
-    window.open(whatsappUrl, '_blank');
+            // 2. Check if the phone/browser supports direct file sharing
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: 'Transaction Receipt',
+                    text: `Receipt for ${cust ? cust.name : 'Customer'}` 
+                }).catch((error) => console.log('Sharing failed', error));
+            } else {
+                // 3. Fallback: If sharing is blocked, just download it
+                alert("Sharing not supported. Image will be saved to your gallery instead.");
+                downloadReceiptImage();
+            }
+        }, 'image/png');
+    });
 }
 
 function printReceiptBluetooth() {
