@@ -3279,36 +3279,45 @@ function downloadReceiptImage() {
 }
 
 function shareReceiptWhatsApp() {
-    if(!currentReceiptData) return;
-    const area = document.getElementById('receipt-render-area');
+    if (!currentReceiptData) return;
     const t = currentReceiptData;
     const acc = DB.accs.find(a => a.id === t.accId);
     const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
+    const orgName = DB.settings.org || "Finance Manager";
 
-    showToast("Generating Receipt Image...", "success");
+    if (!cust || !cust.ref) return alert("Customer mobile number not found!");
 
-    // 1. Convert the receipt div to an Image (Blob)
-    html2canvas(area, { scale: 3, backgroundColor: "#ffffff", logging: false }).then(canvas => {
-        canvas.toBlob(function(blob) {
-            const fileName = `Receipt_${t.id}.png`;
-            const file = new File([blob], fileName, { type: 'image/png' });
+    // 1. Format Mobile
+    let mobile = cust.ref.replace(/\D/g, '');
+    if (mobile.length === 10) mobile = "91" + mobile;
 
-            // 2. Check if the phone/browser supports direct file sharing
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({
-                    files: [file],
-                    title: 'Transaction Receipt',
-                    text: `Receipt for ${cust ? cust.name : 'Customer'}` 
-                }).catch((error) => console.log('Sharing failed', error));
-            } else {
-                // 3. Fallback: If sharing is blocked, just download it
-                alert("Sharing not supported. Image will be saved to your gallery instead.");
-                downloadReceiptImage();
-            }
-        }, 'image/png');
-    });
+    // 2. Build the Receipt Summary as a "Text Image"
+    // Using special characters to make it look like a box/voucher
+    let linkMsg = `*--- ${orgName.toUpperCase()} ---*%0A`;
+    linkMsg += `*VOUCHER RECEIPT*%0A`;
+    linkMsg += `--------------------------%0A`;
+    linkMsg += `*Date:* ${dateDisp(t.date)}%0A`;
+    linkMsg += `*No:* ${t.id}%0A`;
+    linkMsg += `*Cust:* ${cust.name}%0A`;
+    linkMsg += `*Acc:* ${acc ? acc.accNo : '-'}%0A`;
+    linkMsg += `*Type:* ${t.type.toUpperCase()}%0A`;
+    linkMsg += `--------------------------%0A`;
+    linkMsg += `*AMOUNT: ${fmt.format(t.amt)}*%0A`;
+    linkMsg += `*BALANCE: ${acc ? fmt.format(acc.balance) : '0.00'}*%0A`;
+    linkMsg += `--------------------------%0A`;
+    linkMsg += `*Details:* ${t.desc || 'N/A'}%0A`;
+    linkMsg += `--------------------------%0A`;
+    linkMsg += `_Click here to view full history:_ %0A`;
+    
+    // 3. Optional: Add a link to your hosted app (if applicable)
+    // Replace '#' with your actual website URL if you have one
+    const appUrl = window.location.href.split('#')[0]; 
+    linkMsg += `${appUrl}`;
+
+    // 4. Open WhatsApp direct to that customer
+    const whatsappUrl = `https://wa.me/${mobile}?text=${linkMsg}`;
+    window.open(whatsappUrl, '_blank');
 }
-
 function printReceiptBluetooth() {
     if(!currentReceiptData) return;
     const t = currentReceiptData;
