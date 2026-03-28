@@ -6576,7 +6576,7 @@ function printViaRawBT(t) {
     receipt += "Details: " + (t.desc || 'N/A') + "\n";
     receipt += "--------------------------------\n";
     receipt += "           Thank you\n";
-   receipt += "      Issued by: " + issuerName.toUpperCase() + "\n";
+    receipt += "      Issued by: " + issuerName.toUpperCase() + "\n\n\n";
 
     let encodedReceipt = encodeURIComponent(receipt);
     let rawbtUrl = "intent:" + encodedReceipt + "#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;";
