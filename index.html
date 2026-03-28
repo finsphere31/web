@@ -3278,21 +3278,23 @@ function downloadReceiptImage() {
     });
 }
 
-function shareReceiptWhatsApp(customerPhone) {
-    if (!currentReceiptData) return;
+function shareReceiptWhatsApp() {
+    // 1. Safety Check: Is there a receipt selected?
+    if (!currentReceiptData) return alert("No receipt data selected!");
+    
     const area = document.getElementById('receipt-render-area');
     const t = currentReceiptData;
     const orgName = DB.settings.org || "Finance Manager";
 
-    // 1. Get Account and Customer details
+    // 2. Get Account and Customer details automatically
     const acc = DB.accs.find(a => a.id === t.accId);
     const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
 
-    // 2. Calculate Opening Balance
+    // 3. Calculate Opening Balance
     const impact = acc ? (t.amt * getTxMod(acc, t.type)) : 0;
     const openingBal = acc ? (acc.balance - impact) : 0;
 
-    // 3. Logic to find Issued By Name
+    // 4. Logic to find Issued By Name
     let issuerName = "Admin";
     if (t.by === 'agent' && t.agentId) {
         const agent = DB.agents.find(a => a.id === t.agentId);
@@ -3301,27 +3303,31 @@ function shareReceiptWhatsApp(customerPhone) {
         issuerName = DB.settings.adminName || DB.settings.adminUser || "Admin";
     }
 
-    // 4. Clean the phone number
-    const cleanPhone = customerPhone.replace(/\D/g, '');
-    const finalPhone = cleanPhone.length === 10 ? "91" + cleanPhone : cleanPhone;
+    // 5. Automatic Phone Number Detection
+    let phone = cust ? cust.ref.replace(/\D/g, '') : "";
+    if (!phone) return alert("Error: Customer mobile number not found in profile.");
+    
+    // Add India 91 prefix if it's a 10 digit number
+    const finalPhone = phone.length === 10 ? "91" + phone : phone;
 
-    showToast("Preparing receipt...", "success");
+    showToast("Preparing WhatsApp Receipt...", "success");
 
+    // 6. Generate Image and Open WhatsApp
     html2canvas(area, { scale: 3, backgroundColor: "#ffffff", logging: false }).then(canvas => {
-        // A. Trigger Download for gallery
+        // A. Auto-save Image to Gallery
         const link = document.createElement('a');
         link.download = `Receipt_${t.id}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
 
-        // B. Create the detailed WhatsApp message
+        // B. Build Message String
         let msg = `*${orgName.toUpperCase()}*%0A`;
         msg += `*Receipt Confirmation*%0A%0A`;
         msg += `*Customer:* ${cust ? cust.name.toUpperCase() : 'N/A'}%0A`;
         msg += `*Date:* ${dateDisp(t.date)}%0A`;
         msg += `*Voucher:* ${t.id}%0A`;
         msg += `--------------------------%0A`;
-        msg += `*Opening Bal:* ${fmt.format(openingBal)}%0A`; // ADDED OPENING BAL
+        msg += `*Opening Bal:* ${fmt.format(openingBal)}%0A`;
         msg += `*Amount:* ${fmt.format(t.amt)}%0A`;
         msg += `*Current Bal:* ${acc ? fmt.format(acc.balance) : '0.00'}%0A`;
         msg += `--------------------------%0A`;
@@ -3330,9 +3336,10 @@ function shareReceiptWhatsApp(customerPhone) {
 
         const whatsappUrl = `https://wa.me/${finalPhone}?text=${msg}`;
         
+        // Open WhatsApp chat after a tiny delay
         setTimeout(() => {
             window.open(whatsappUrl, '_blank');
-        }, 1000);
+        }, 800);
     });
 }
 function printReceiptBluetooth() {
