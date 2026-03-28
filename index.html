@@ -3279,27 +3279,57 @@ function downloadReceiptImage() {
 }
 
 function shareReceiptWhatsApp(customerPhone) {
-    if(!currentReceiptData) return;
+    if (!currentReceiptData) return;
     const area = document.getElementById('receipt-render-area');
+    const t = currentReceiptData;
     const orgName = DB.settings.org || "Finance Manager";
 
-    // Clean the phone number (remove +, spaces, dashes)
+    // 1. Get Account and Customer details
+    const acc = DB.accs.find(a => a.id === t.accId);
+    const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
+
+    // 2. Calculate Opening Balance
+    const impact = acc ? (t.amt * getTxMod(acc, t.type)) : 0;
+    const openingBal = acc ? (acc.balance - impact) : 0;
+
+    // 3. Logic to find Issued By Name
+    let issuerName = "Admin";
+    if (t.by === 'agent' && t.agentId) {
+        const agent = DB.agents.find(a => a.id === t.agentId);
+        if (agent) issuerName = agent.user;
+    } else {
+        issuerName = DB.settings.adminName || DB.settings.adminUser || "Admin";
+    }
+
+    // 4. Clean the phone number
     const cleanPhone = customerPhone.replace(/\D/g, '');
+    const finalPhone = cleanPhone.length === 10 ? "91" + cleanPhone : cleanPhone;
 
     showToast("Preparing receipt...", "success");
 
     html2canvas(area, { scale: 3, backgroundColor: "#ffffff", logging: false }).then(canvas => {
-        // 1. Trigger Download so the image is first in their gallery
+        // A. Trigger Download for gallery
         const link = document.createElement('a');
-        link.download = `Receipt_${currentReceiptData.id}.png`;
+        link.download = `Receipt_${t.id}.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
 
-        // 2. Open WhatsApp to the specific number
-        const message = encodeURIComponent(`Hello, here is your receipt from ${orgName}. Please attach the latest image from your gallery.`);
-        const whatsappUrl = `https://wa.me/${cleanPhone}?text=${message}`;
+        // B. Create the detailed WhatsApp message
+        let msg = `*${orgName.toUpperCase()}*%0A`;
+        msg += `*Receipt Confirmation*%0A%0A`;
+        msg += `*Customer:* ${cust ? cust.name.toUpperCase() : 'N/A'}%0A`;
+        msg += `*Date:* ${dateDisp(t.date)}%0A`;
+        msg += `*Voucher:* ${t.id}%0A`;
+        msg += `--------------------------%0A`;
+        msg += `*Opening Bal:* ${fmt.format(openingBal)}%0A`; // ADDED OPENING BAL
+        msg += `*Amount:* ${fmt.format(t.amt)}%0A`;
+        msg += `*Current Bal:* ${acc ? fmt.format(acc.balance) : '0.00'}%0A`;
+        msg += `--------------------------%0A`;
+        msg += `*Issued by:* ${issuerName.toUpperCase()}%0A%0A`;
+        msg += `_Please attach the receipt image just saved to your gallery._`;
+
+        const whatsappUrl = `https://wa.me/${finalPhone}?text=${msg}`;
         
-        // Give the download a moment to start before redirecting
         setTimeout(() => {
             window.open(whatsappUrl, '_blank');
         }, 1000);
