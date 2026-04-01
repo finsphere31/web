@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+    <meta name="theme-color" content="#2c3e50">
+    <title>SubsManager Pro | Subscription Manager</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #1abc9c;
+            --bg: #f8f9fa;
+            --dark: #2c3e50;
+            --light: #34495e;
+            --text: #2c3e50;
+            --border: #e0e0e0;
+            --success: #2ecc71;
+            --warning: #e67e22;
+            --danger: #e74c3c;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        body.dark-mode { background: #121212; color: #e0e0e0; }
+        body.dark-mode .login-box, body.dark-mode .sidebar, body.dark-mode .main, body.dark-mode table, body.dark-mode .settings-card, body.dark-mode .upcoming-card { background: #1e1e1e !important; color: #e0e0e0 !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #333 !important; color: #e0e0e0 !important; border-color: #555 !important; }
+        
+        /* Login */
+        .login-container { height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #667eea, #764ba2); animation: gradientShift 15s ease infinite; background-size: 200% 200%; }
+        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .login-box { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: slideUp 0.5s ease; position: absolute; }
+        .login-box.hidden { display: none; }
+        .password-box { position: relative; margin: 8px 0; }
+        .password-box span { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; }
+        .login-box input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; }
+        .login-box button { width: 100%; padding: 12px; margin: 10px 0; background: var(--primary); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .link-btn { color: var(--primary); cursor: pointer; margin-top: 10px; display: inline-block; }
+        /* remember me centered */
+        .login-options { display: flex; justify-content: left; align-items: center; gap: 8px; margin: 12px 0 8px 0; font-size: 0.9rem; }
+        .login-options input { width: auto; margin: 0; transform: scale(1.05); cursor: pointer; }
+        .login-options label { cursor: pointer; user-select: none; }
+        
+        /* App layout */
+        #app { display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 220px; background: var(--dark); color: #fff; padding: 15px; overflow-y: auto; transition: transform 0.3s ease; position: relative; z-index: 1001; }
+        @media (max-width: 768px) { .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); z-index: 1002; } .sidebar.active { transform: translateX(0); } }
+        @media (min-width: 769px) { .sidebar { transform: translateX(0) !important; position: relative; } }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; }
+        #overlay.active { display: block; }
+        .org-display { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+        .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px; color: #ccc; border-radius: 6px; margin-bottom: 5px; cursor: pointer; background: none; width: 100%; text-align: left; border: none; }
+        .menu-item:hover { background: var(--light); color: #fff; }
+        .menu-item.active { background: var(--secondary); color: #fff; }
+        .sidebar button.logout { width: 100%; padding: 10px; margin-top: 20px; background: #e74c3c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #loggedUser { font-size: 12px; margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 4px; }
+        
+        /* Main */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { display: flex; align-items: center; gap: 15px; padding: 12px 20px; background: #25374b; border-bottom: 1px solid var(--border); }
+        @media (min-width: 769px) { .topbar button:first-child { display: none; } }
+        .title-area { flex: 1; text-align: center; }
+        .org-Title { font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .topbar button { padding: 8px 15px; background: var(--primary); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .content { flex: 1; overflow-y: auto; padding: 20px; }
+        .section { animation: fadeIn 0.3s ease; }
+        .hidden { display: none !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Dashboard Cards - all clickable */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 20px 0; }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(4, 1fr) !important; } }
+        .dashboard-card { padding: 20px 15px; border-radius: 16px; color: white !important; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1); transition: transform 0.2s, opacity 0.2s; cursor: pointer; }
+        .dashboard-card:hover { transform: translateY(-3px); opacity: 0.95; }
+        .dashboard-card h3 { font-size: 10px; opacity: 0.8; letter-spacing: 1px; margin-bottom: 5px; }
+        .dashboard-card h2 { font-size: 24px; font-weight: 800; margin: 0; }
+        .card-blue { background: linear-gradient(135deg, #4158D0, #C850C0); }
+        .card-green { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .card-orange { background: linear-gradient(135deg, #FF9A8B, #FF6A88); }
+        .card-red { background: linear-gradient(135deg, #ee0979, #ff6a00); }
+        
+        /* Upcoming Expirations Table */
+        .upcoming-card { background: white; border-radius: 16px; padding: 18px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        body.dark-mode .upcoming-card { background: #2d2d2d; }
+        .upcoming-card h3 { margin-bottom: 15px; font-size: 1.2rem; border-left: 4px solid var(--warning); padding-left: 12px; }
+        .expiry-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .expiry-table th, .expiry-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+        .expiry-table th { background: var(--warning); color: white; }
+        .badge-expiring { background: #fff3cd; color: #856404; padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        
+        /* Forms & Tables */
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+        button { padding: 10px 20px; background: var(--primary); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button.secondary { background: #95a5a6; }
+        button.danger { background: var(--danger); }
+        button.warning-btn { background: var(--warning); }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; margin-top: 20px; }
+        th { background: var(--primary); color: #fff; padding: 12px; text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: #f5f5f5; }
+        .search-bar { margin-bottom: 20px; display: flex; gap: 10px; }
+        .alert { padding: 15px; margin-bottom: 20px; border-radius: 4px; animation: slideDown 0.3s ease; }
+        .alert.success { background: #d4edda; color: #155724; }
+        .alert.danger { background: #f8d7da; color: #721c24; }
+        .alert.warning { background: #fff3cd; color: #856404; }
+        
+        /* Report & Modal */
+        .report-table-container { overflow-x: auto; margin-top: 20px; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; border-radius: 16px; max-width: 500px; width: 90%; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        body.dark-mode .modal-content { background: #2d2d2d; color: white; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-expired { background: #f8d7da; color: #721c24; }
+        .status-cancelled { background: #fff3cd; color: #856404; }
+        
+        /* Reminder modal extra styling */
+        .reminder-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
+        .reminder-actions button { min-width: 120px; }
+        
+        /* PRINT STYLES: only report data visible */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #reportData, #reportData * {
+                visibility: visible;
+            }
+            #reportData {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                margin: 0;
+                padding: 1rem;
+                background: white;
+                color: black;
+            }
+            .no-print, .sidebar, .topbar, #overlay, .dashboard-grid, .upcoming-card, .button-group, .form-grid, .search-bar, .settings-card, .menu-item, .logout, .topbar button, .title-area, .org-Title {
+                display: none !important;
+            }
+        }
+
+        /* Toast notification - fixed, does not affect layout */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+    pointer-events: none;
+}
+
+.toast {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+    animation: slideInRight 0.3s ease;
+    font-size: 14px;
+    border-left: 4px solid;
+}
+
+.toast.success { border-left-color: #2ecc71; background: #d4edda; color: #155724; }
+.toast.danger  { border-left-color: #e74c3c; background: #f8d7da; color: #721c24; }
+.toast.warning { border-left-color: #f39c12; background: #fff3cd; color: #856404; }
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+}
+
+.toast.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateX(100%); }
+}
+.button-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.settings-card .secondary + .secondary {
+    margin-left: 8px;
+} 
+    </style>
+</head>
+<body>
+<div id="loginPage" class="login-container">
+    <div id="loginBox" class="login-box">
+        <h1>SubsManager</h1>
+        <h2>Welcome Back</h2>
+        <input type="text" id="username" placeholder="Username">
+        <div class="password-box"><input type="password" id="password" placeholder="Password"><span onclick="togglePassword()">👁️</span></div>
+        <div class="login-options"><input type="checkbox" id="rememberMe"> <label for="rememberMe">Remember me</label></div>        
+        <div id="loginError" style="color: #e74c3c; font-size: 0.9rem; margin-bottom: 10px; display: none;"></div>
+        <button onclick="login()">Login</button>
+                <p class="link-btn" onclick="showRegister()">Create Account</p>
+        <p class="link-btn" onclick="showForgot()">Forgot Password?</p>
+    </div>
+    <div id="registerBox" class="login-box hidden">
+        <h2>Create Account</h2>
+        <input type="text" id="regUsername" placeholder="Username">
+        <input type="email" id="regEmail" placeholder="Email">
+        <input type="tel" id="regMobile" placeholder="Mobile Number (10 digits)">
+        <div class="password-box"><input type="password" id="regPassword" placeholder="Password"><span onclick="togglePassword2()">👁️</span></div>
+        <button onclick="register()">Register</button>
+        <p class="link-btn" onclick="showLogin()">Back to Login</p>
+    </div>
+    <div id="forgotBox" class="login-box hidden">
+        <h2>Reset Password</h2>
+        <input type="text" id="forgotUser" placeholder="Username">
+        <button onclick="sendOTP()">Send OTP</button>
+        <div id="otpSection" class="hidden"><input type="text" id="otpInput" placeholder="Enter OTP"><div class="password-box"><input type="password" id="newPass" placeholder="New Password"><span onclick="togglePassword3()">👁️</span></div><button onclick="resetPassword()">Reset Password</button></div>
+        <p class="link-btn" onclick="showLogin()">Back</p>
+    </div>
+</div>
+
+<div id="app" style="display:none;">
+    <div class="sidebar" id="sidebar">
+        <h2>SubsManager</h2>
+        <p id="loggedUser"></p>
+        <button class="menu-item active" onclick="showSection('dashboard', this)"><span>📊</span> Dashboard</button>
+        <button class="menu-item" onclick="showSection('customer', this)"><span>👤</span> Customer Master</button>
+        <button class="menu-item" id="planMenuBtn" onclick="showSection('plan', this)"><span>📦</span> Plan Master</button>
+        <button class="menu-item" onclick="showSection('subscription', this)"><span>🔄</span> Subscription Master</button>
+        <button class="menu-item" onclick="showSection('report', this)"><span>📑</span> Reports</button>
+        <button class="menu-item" onclick="showSection('settings', this)"><span>⚙️</span> Settings</button>
+        <button class="logout" onclick="logout()">🚪 Logout</button>
+    </div>
+    <div id="overlay" onclick="closeSidebarMobile()"></div>
+    <div class="main">
+        <div class="topbar"><button onclick="toggleSidebar()">☰</button><div class="title-area"><div id="headerOrg" class="org-Title">My Organization</div></div></div>
+        <div class="content">
+            <!-- Dashboard with clickable cards -->
+            <div id="dashboard" class="section">
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card card-blue" onclick="quickReport('customers')"><h3>👤 CUSTOMERS</h3><h2 id="totalCustomers">0</h2></div>
+                    <div class="dashboard-card card-green" onclick="quickReport('active')"><h3>🔄 ACTIVE SUBS</h3><h2 id="activeSubs">0</h2></div>
+                    <div class="dashboard-card card-orange" onclick="quickReport('revenue')"><h3>💰 REVENUE</h3><h2 id="totalRevenue">₹0</h2></div>
+                    <div class="dashboard-card card-red" onclick="quickReport('expired')"><h3>⚠️ EXPIRED</h3><h2 id="expiredSubs">0</h2></div>
+                </div>
+                <!-- Upcoming Expirations -->
+                <div class="upcoming-card">
+                    <h3>⏰ Upcoming Expirations (Next 7 Days)</h3>
+                    <table class="expiry-table" id="upcomingExpiryTable">
+                        <thead><tr><th>Customer</th><th>Plan</th><th>Renewal Date</th><th>Days Left</th><th>Reminder</th></tr></thead>
+                        <tbody id="upcomingList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Customer Master -->
+            <div id="customer" class="section hidden">
+                <h2>Customer Master</h2>
+                <div class="form-grid"><div><label>Name</label><input type="text" id="custName"></div><div><label>Email</label><input type="email" id="custEmail"></div><div><label>Mobile</label><input type="text" id="custMobile"></div><div><label>City</label><input type="text" id="custCity"></div></div>
+                <div class="button-group"><button onclick="addCustomer()">➕ Add Customer</button></div>
+                <div class="search-bar"><input type="text" id="searchCustomer" placeholder="Search..." onkeyup="searchCustomers()"></div>
+                <table id="custTable"><thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>City</th><th>Action</th></tr></thead><tbody></tbody></table>
+            </div>
+            <!-- Plan Master -->
+            <div id="plan" class="section hidden">
+                <h2>Plan Master</h2>
+                <div class="form-grid"><div><label>Plan Name</label><input type="text" id="planName"></div><div><label>Price (₹)</label><input type="number" id="planPrice" step="0.01"></div><div><label>Duration</label><select id="planDuration"><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="half-yearly">Half Yearly</option><option value="yearly">Yearly</option><option value="custom">Custom Days</option></select></div><div><label>Custom Days</label><input type="number" id="planDays" placeholder="Days"></div></div>
+                <div class="button-group"><button onclick="addPlan()">➕ Add Plan</button></div>
+                <div class="search-bar"><input type="text" id="searchPlan" placeholder="Search plan..." onkeyup="searchPlans()"></div>
+                <table id="planTable"><thead><tr><th>Name</th><th>Price</th><th>Duration</th><th>Days</th><th>Action</th></tr></thead><tbody></tbody></table>
+            </div>
+            <!-- Subscription Master -->
+            <div id="subscription" class="section hidden">
+                <h2>Subscription Master</h2>
+                <div class="form-grid">
+                    <div><label>Subscription Date</label><input type="date" id="subDate" onchange="updatePlanDetails()"></div>
+                    <div><label>Customer</label><select id="subCustomer"></select></div>
+                    <div><label>Plan</label><select id="subPlan" onchange="updatePlanDetails()"></select></div>
+                    <div><label>Payable Amount (₹)</label><input type="number" id="subAmount" readonly></div>
+                    <div><label>Paid Amount (₹)</label><input type="number" id="subPaid" step="0.01" oninput="updateBalance()"></div>
+                    <div><label>Balance Due (₹)</label><input type="number" id="subBalance" readonly></div>
+                    <div><label>Renewal Date</label><input type="date" id="renewDate" readonly></div>
+                    <div><label>Remarks</label><input type="text" id="subRemarks" placeholder="Remarks"></div>
+                </div>
+                <button onclick="addSubscription()">✅ Save Subscription</button>
+                <table id="subTable"><thead><tr><th>Date</th><th>Customer</th><th>Plan</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Renewal</th><th>Status</th><th>Remarks</th><th>Action</th></tr></thead><tbody></tbody></table>
+            </div>
+            <!-- Reports -->
+            <div id="report" class="section hidden">
+                <h2>Reports & Analytics</h2>
+                <div class="form-grid"><div><label>Report Type</label><select id="reportSelector"><option value="all">Full Subscription Ledger</option><option value="customers">Customer Master List</option><option value="active">Active Subscriptions</option><option value="expired">Expired Subscriptions</option><option value="revenue">Revenue Summary (Monthly)</option><option value="gst">Tax/GST Report (18%)</option><option value="due">📌 Customer Payment Due Report</option></select></div></div>
+                <div class="button-group"><button onclick="generateReport()">View Report</button><button class="secondary" onclick="window.print()">🖨️ Print</button></div>
+                <div id="reportData" class="report-table-container"></div>
+            </div>
+            <!-- Settings -->
+            <div id="settings" class="section hidden">
+                <h2>Settings</h2>
+                <div class="settings-card"><h3>🏢 Company Info</h3><div class="form-grid"><div><label>Organization Name</label><input type="text" id="settingsOrgName"></div><div><label>Owner Name</label><input type="text" id="settingsOwnerName"></div><div><label>Mobile</label><input type="text" id="settingsMobile"></div><div><label>Address</label><textarea id="settingsAddress" rows="2"></textarea></div></div><button onclick="saveOrgSettings()">💾 Save Settings</button><hr><h3>🛡️ Data Management</h3><button class="secondary" onclick="backupData()">📥 Backup</button><button class="secondary" onclick="document.getElementById('restoreFileSettings').click()">📂 Restore</button><input type="file" id="restoreFileSettings" style="display:none" onchange="restoreData(event)"></div>
+            </div>
+        </div>
+    </div>
+    <div id="toastContainer" class="toast-container"></div>
+</div>
+
+<script>
+    let editingCustomerIndex = null;
+let editingPlanIndex = null;
+    // DATA STORES
+    let currentUser = null;
+    let customers = [], plans = [], subscriptions = [];
+    let orgSettings = { orgName: 'My Organization', ownerName: '', mobile: '', address: '' };
+    let generatedOTP = '';
+    let isEditing = false;
+    let editingSubIndex = null;
+    const DEFAULT_USERS = [{ username: "admin", password: "123", role: "admin" }, { username: "user", password: "123", role: "user" }];
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
+    function showAlert(msg, type) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerText = msg;
+
+    // Optional: add an icon (emoji)
+    let icon = '';
+    if (type === 'success') icon = '✅ ';
+    else if (type === 'danger') icon = '❌ ';
+    else if (type === 'warning') icon = '⚠️ ';
+    toast.innerHTML = `${icon}${msg}`;
+
+    container.appendChild(toast);
+
+    // Auto‑remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+    function downloadFile(content, filename) { const blob = new Blob([content], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(blob); }
+    function updateOrgHeader() { const h = document.getElementById('headerOrg'); if (h) h.innerText = orgSettings.orgName; }
+    function saveOrgSettingsToLocal() { localStorage.setItem('orgSettings', JSON.stringify(orgSettings)); }
+    function saveOrgSettings() { const newOrg = document.getElementById('settingsOrgName').value.trim(); if (!newOrg) { showAlert('Organization name required', 'warning'); return; } orgSettings.orgName = newOrg; orgSettings.ownerName = document.getElementById('settingsOwnerName').value.trim(); orgSettings.mobile = document.getElementById('settingsMobile').value.trim(); orgSettings.address = document.getElementById('settingsAddress').value.trim(); saveOrgSettingsToLocal(); updateOrgHeader(); showAlert('Settings saved', 'success'); }
+    
+    // ========== REMINDER MODAL (WhatsApp & SMS) ==========
+    function showReminderOptions(sub) {
+        // Find customer mobile by matching name
+        const cust = customers.find(c => c.name === sub.customer);
+        const mobile = cust ? cust.mobile : null;
+        const today = new Date();
+        const renewDate = new Date(sub.renewal);
+        const daysLeft = Math.ceil((renewDate - today) / (1000*60*60*24));
+        const reminderMsg = `🔔 Reminder: Your subscription for "${sub.plan}" is expiring on ${sub.renewal} (in ${daysLeft} days). Please renew to continue services. - ${orgSettings.orgName}`;
+        const encodedMsg = encodeURIComponent(reminderMsg);
+        
+        // Build modal HTML
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'modal';
+        modalDiv.id = 'reminderModal';
+        modalDiv.innerHTML = `
+            <div class="modal-content">
+                <h3>📱 Send Renewal Reminder</h3>
+                <p><strong>Customer:</strong> ${escapeHtml(sub.customer)}</p>
+                <p><strong>Plan:</strong> ${escapeHtml(sub.plan)}</p>
+                <p><strong>Renewal Date:</strong> ${sub.renewal}</p>
+                <p><strong>Days left:</strong> ${daysLeft} day(s)</p>
+                <hr>
+                <p><strong>Message:</strong><br>${escapeHtml(reminderMsg)}</p>
+                <div class="reminder-actions">
+                    ${mobile ? `<button class="whatsapp-btn" style="background:#25D366;" onclick="sendWhatsApp('${mobile}', '${encodedMsg}')">💬 WhatsApp</button>
+                    <button class="sms-btn" style="background:#34B7F1;" onclick="sendSMS('${mobile}', '${encodedMsg}')">📱 SMS</button>` : '<p style="color:red;">⚠️ No mobile number found for this customer. Please update customer master.</p>'}
+                    <button class="secondary" onclick="closeReminderModal()">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+    }
+    function sendWhatsApp(mobile, encodedMsg) {
+        const waUrl = `https://wa.me/${mobile}?text=${encodedMsg}`;
+        window.open(waUrl, '_blank');
+        closeReminderModal();
+    }
+    function sendSMS(mobile, encodedMsg) {
+        const smsUrl = `sms:${mobile}?body=${encodedMsg}`;
+        window.open(smsUrl);
+        closeReminderModal();
+    }
+    function closeReminderModal() {
+        const modal = document.getElementById('reminderModal');
+        if (modal) modal.remove();
+    }
+    // =================================================
+    
+    // Upcoming Expirations (now with Reminder button)
+    function renderUpcomingExpirations() {
+        const tbody = document.getElementById('upcomingList');
+        if (!tbody) return;
+        const today = new Date(); today.setHours(0,0,0,0);
+        const nextWeek = new Date(today); nextWeek.setDate(today.getDate() + 7);
+        const expiring = subscriptions.filter(s => s.status !== 'cancelled' && s.status !== 'expired').filter(s => {
+            const renew = new Date(s.renewal); renew.setHours(0,0,0,0);
+            return renew >= today && renew <= nextWeek;
+        }).sort((a,b) => new Date(a.renewal) - new Date(b.renewal));
+        tbody.innerHTML = '';
+        if (expiring.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">No subscriptions expiring in next 7 days</td></tr>';
+            return;
+        }
+        expiring.forEach((sub) => {
+            const renewDate = new Date(sub.renewal);
+            const daysLeft = Math.ceil((renewDate - today) / (1000*60*60*24));
+            tbody.innerHTML += `
+                <tr>
+                    <td>${escapeHtml(sub.customer)}</td>
+                    <td>${escapeHtml(sub.plan)}</td>
+                    <td>${sub.renewal}</td>
+                    <td><span class="badge-expiring">${daysLeft} day(s)</span></td>
+                    <td><button class="warning-btn" onclick="showReminderOptions(${JSON.stringify(sub).replace(/"/g, '&quot;')})">🔔 Reminder</button></td>
+                </tr>
+            `;
+        });
+    }
+    
+    function updateDashboardStats() {
+        document.getElementById('totalCustomers').innerText = customers.length;
+        const today = new Date(); today.setHours(0,0,0,0);
+        const activeCount = subscriptions.filter(s => s.status === 'active' && new Date(s.renewal) >= today).length;
+        const expiredCount = subscriptions.filter(s => s.status === 'expired' || (s.status === 'active' && new Date(s.renewal) < today)).length;
+        document.getElementById('activeSubs').innerText = activeCount;
+        document.getElementById('expiredSubs').innerText = expiredCount;
+        const totalRev = subscriptions.reduce((sum, s) => sum + (s.amount || 0), 0);
+        document.getElementById('totalRevenue').innerText = '₹' + totalRev.toFixed(2);
+    }
+    
+    // QUICK REPORT FROM DASHBOARD CARDS (clean, no side effects)
+    function quickReport(type) {
+        const reportSection = document.getElementById('report');
+        const allSections = document.querySelectorAll('.section');
+        allSections.forEach(s => s.classList.add('hidden'));
+        reportSection.classList.remove('hidden');
+        document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
+        const reportBtn = Array.from(document.querySelectorAll('.menu-item')).find(btn => btn.innerText.includes('Reports'));
+        if (reportBtn) reportBtn.classList.add('active');
+        const selector = document.getElementById('reportSelector');
+        if (type === 'customers') selector.value = 'customers';
+        else if (type === 'active') selector.value = 'active';
+        else if (type === 'revenue') selector.value = 'revenue';
+        else if (type === 'expired') selector.value = 'expired';
+        generateReport();
+        closeSidebarMobile();
+    }
+    
+    // CUSTOMER functions
+    function renderCustomers(data = customers) { let tbody = document.querySelector('#custTable tbody'); tbody.innerHTML = ''; if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" class="no-data">No customers</td></tr>'; return; } data.forEach((c, i) => { let idx = customers.indexOf(c); tbody.innerHTML += `<tr><td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.email || '-')}</td><td>${escapeHtml(c.mobile || '-')}</td><td>${escapeHtml(c.city || '-')}</td><td><button onclick="editCustomer(${idx})">✏️ Edit</button> <button class="danger" onclick="deleteCustomer(${idx})">🗑️delete</button></td></tr>`; }); }
+    function addCustomer() {
+    let n = document.getElementById('custName').value.trim();
+    let e = document.getElementById('custEmail').value.trim();
+    let m = document.getElementById('custMobile').value.trim();
+    let c = document.getElementById('custCity').value.trim();
+
+    if (!n) {
+        showAlert('Enter name', 'warning');
+        return;
+    }
+    if (m && !/^\d{10}$/.test(m)) {
+        showAlert('10-digit mobile', 'warning');
+        return;
+    }
+
+    // Duplicate check (case-insensitive) – exclude current edited customer
+    let duplicate = customers.some((cust, idx) => {
+        if (editingCustomerIndex !== null && idx === editingCustomerIndex) return false;
+        return cust.name.toLowerCase() === n.toLowerCase();
+    });
+    if (duplicate) {
+        showAlert('❌ Customer with this name already exists!', 'danger');
+        return;
+    }
+
+    if (editingCustomerIndex !== null) {
+        // Update existing customer
+        customers[editingCustomerIndex] = { name: n, email: e, mobile: m, city: c };
+        editingCustomerIndex = null;
+        showAlert('Customer updated', 'success');
+    } else {
+        // Add new customer
+        customers.push({ name: n, email: e, mobile: m, city: c });
+        showAlert('Customer added', 'success');
+    }
+
+    saveAllData();
+    renderCustomers();
+    updateDropdowns();
+
+    // Clear form
+    document.getElementById('custName').value = '';
+    document.getElementById('custEmail').value = '';
+    document.getElementById('custMobile').value = '';
+    document.getElementById('custCity').value = '';
+}
+
+function editCustomer(i) {
+    let c = customers[i];
+    document.getElementById('custName').value = c.name;
+    document.getElementById('custEmail').value = c.email;
+    document.getElementById('custMobile').value = c.mobile;
+    document.getElementById('custCity').value = c.city;
+    editingCustomerIndex = i;          // mark that we are editing
+    showAlert('Editing customer – modify and click "Add Customer"', 'info');
+} 
+   function deleteCustomer(i) { if (confirm('Delete customer?')) { customers.splice(i, 1); saveAllData(); renderCustomers(); updateDropdowns(); showAlert('Deleted', 'success'); } }
+    function searchCustomers() { let s = document.getElementById('searchCustomer').value.toLowerCase(); renderCustomers(customers.filter(c => c.name.toLowerCase().includes(s) || (c.mobile && c.mobile.includes(s)))); }
+    
+    // PLAN functions
+    function renderPlans(data = plans) { let tbody = document.querySelector('#planTable tbody'); tbody.innerHTML = ''; if (!data.length) { tbody.innerHTML = '<tr><td colspan="5">No plans</td></tr>'; return; } data.forEach((p, i) => { let idx = plans.indexOf(p); tbody.innerHTML += `<tr><td>${escapeHtml(p.name)}</td><td>₹${p.price.toFixed(2)}</td><td>${p.duration}</td><td>${p.days || '-'}</td><td><button onclick="editPlan(${idx})">✏️ Edit</button> <button class="danger" onclick="deletePlan(${idx})">🗑️delete</button></td></tr>`; }); }
+    function addPlan() {
+    let n = document.getElementById('planName').value.trim();
+    let p = parseFloat(document.getElementById('planPrice').value);
+    let d = document.getElementById('planDuration').value;
+    let days = parseInt(document.getElementById('planDays').value) || 0;
+
+    if (!n || isNaN(p)) {
+        showAlert('Valid name & price', 'warning');
+        return;
+    }
+
+    // Duplicate check (case-insensitive) – exclude current edited plan
+    let duplicate = plans.some((plan, idx) => {
+        if (editingPlanIndex !== null && idx === editingPlanIndex) return false;
+        return plan.name.toLowerCase() === n.toLowerCase();
+    });
+    if (duplicate) {
+        showAlert('❌ Plan with this name already exists!', 'danger');
+        return;
+    }
+
+    if (editingPlanIndex !== null) {
+        // Update existing plan
+        plans[editingPlanIndex] = { name: n, price: p, duration: d, days };
+        editingPlanIndex = null;
+        showAlert('Plan updated', 'success');
+    } else {
+        // Add new plan
+        plans.push({ name: n, price: p, duration: d, days });
+        showAlert('Plan added', 'success');
+    }
+
+    saveAllData();
+    renderPlans();
+    updateDropdowns();
+
+    // Clear form
+    document.getElementById('planName').value = '';
+    document.getElementById('planPrice').value = '';
+    document.getElementById('planDuration').value = 'monthly';
+    document.getElementById('planDays').value = '';
+}
+
+function editPlan(i) {
+    let p = plans[i];
+    document.getElementById('planName').value = p.name;
+    document.getElementById('planPrice').value = p.price;
+    document.getElementById('planDuration').value = p.duration;
+    document.getElementById('planDays').value = p.days || '';
+    editingPlanIndex = i;              // mark that we are editing
+    showAlert('Editing plan – modify and click "Add Plan"', 'info');
+}    
+    function deletePlan(i) { if (confirm('Delete plan?')) { plans.splice(i, 1); saveAllData(); renderPlans(); updateDropdowns(); showAlert('Deleted', 'success'); } }
+    function searchPlans() { let s = document.getElementById('searchPlan').value.toLowerCase(); renderPlans(plans.filter(p => p.name.toLowerCase().includes(s))); }
+    
+    // SUBSCRIPTION
+    function updatePlanDetails() { let planIdx = document.getElementById('subPlan').value; if (planIdx === '') return; let plan = plans[planIdx]; if (!plan) return; document.getElementById('subAmount').value = plan.price.toFixed(2); updateBalance(); let subDate = document.getElementById('subDate').value; if (!subDate) return; let date = new Date(subDate); let addDays = 30; if (plan.duration === 'monthly') addDays = 30; else if (plan.duration === 'quarterly') addDays = 90; else if (plan.duration === 'half-yearly') addDays = 180; else if (plan.duration === 'yearly') addDays = 365; else if (plan.duration === 'custom') addDays = plan.days || 30; date.setDate(date.getDate() + addDays); document.getElementById('renewDate').value = date.toISOString().split('T')[0]; }
+    function updateBalance() { let payable = parseFloat(document.getElementById('subAmount').value) || 0; let paid = parseFloat(document.getElementById('subPaid').value) || 0; let bal = payable - paid; document.getElementById('subBalance').value = bal.toFixed(2); }
+    function addSubscription() {
+    let date = document.getElementById('subDate').value;
+    let custIdx = document.getElementById('subCustomer').value;
+    let planIdx = document.getElementById('subPlan').value;
+    let payable = parseFloat(document.getElementById('subAmount').value);
+    let paid = parseFloat(document.getElementById('subPaid').value) || 0;
+    let balance = payable - paid;
+    let renewal = document.getElementById('renewDate').value;
+    let remarks = document.getElementById('subRemarks').value;
+
+    if (!date || custIdx === '' || planIdx === '' || isNaN(payable)) {
+        showAlert('Fill all required fields', 'warning');
+        return;
+    }
+
+    let customerName = customers[custIdx].name;
+    let planName = plans[planIdx].name;
+
+    // Check for existing non-expired subscription (active or cancelled) for same customer+plan
+    // Ignore the current one if editing
+    let existingNonExpired = subscriptions.some((sub, idx) => {
+        if (isEditing && editingSubIndex !== null && idx === editingSubIndex) return false;
+        return sub.customer === customerName && sub.plan === planName && (sub.status === 'active' || sub.status === 'cancelled');
+    });
+
+    // If such a subscription exists, ask user for confirmation
+    if (existingNonExpired) {
+        let confirmAdd = confirm('⚠️ This customer already has an active/cancelled subscription for this plan.\nDo you still want to add a new subscription?');
+        if (!confirmAdd) {
+            return; // User cancelled
+        }
+    }
+
+    let newSub = {
+        date, customer: customerName, plan: planName,
+        amount: payable, paid, balance, renewal, remarks,
+        status: 'active'
+    };
+
+    if (isEditing && editingSubIndex !== null) {
+        subscriptions[editingSubIndex] = newSub;
+        isEditing = false;
+        editingSubIndex = null;
+        showAlert('Subscription updated', 'success');
+    } else {
+        subscriptions.push(newSub);
+        showAlert('Subscription saved', 'success');
+    }
+
+    saveAllData();
+    renderSubscriptions();
+    clearSubscriptionForm();
+    refreshDashboardIfVisible();
+    checkAndUpdateExpiredStatuses();
+}    
+    function cancelSubscription(idx) { if (confirm('Cancel this subscription?')) { if (subscriptions[idx].status !== 'cancelled') { subscriptions[idx].status = 'cancelled'; saveAllData(); renderSubscriptions(); renderUpcomingExpirations(); refreshDashboardIfVisible(); showAlert('Subscription cancelled', 'success'); } else { showAlert('Already cancelled', 'warning'); } } }
+    function renderSubscriptions(data = subscriptions) { let tbody = document.querySelector('#subTable tbody'); tbody.innerHTML = ''; if (!data.length) { tbody.innerHTML = '<tr><td colspan="10">No subscriptions</td></tr>'; return; } data.forEach((s, i) => { let statusClass = ''; let statusText = s.status || 'active'; if(statusText === 'active') statusClass = 'status-active'; else if(statusText === 'expired') statusClass = 'status-expired'; else statusClass = 'status-cancelled'; tbody.innerHTML += `<tr><td>${s.date}</td><td>${escapeHtml(s.customer)}</td><td>${escapeHtml(s.plan)}</td><td>₹${s.amount.toFixed(2)}</td><td>₹${(s.paid || 0).toFixed(2)}</td><td>₹${(s.balance || 0).toFixed(2)}</td><td>${s.renewal}</td><td><span class="status-badge ${statusClass}">${statusText.toUpperCase()}</span></td><td>${escapeHtml(s.remarks || '-')}</td><td><button onclick="editSubscription(${i})">✏️</button> <button class="danger" onclick="deleteSubscription(${i})">🗑️</button> ${s.status !== 'cancelled' ? `<button class="warning-btn" onclick="cancelSubscription(${i})">❌</button>` : ''}</td></tr>`; }); }
+    function deleteSubscription(i) { if (confirm('Delete subscription?')) { subscriptions.splice(i, 1); saveAllData(); renderSubscriptions(); refreshDashboardIfVisible(); showAlert('Deleted', 'success'); } }
+    function editSubscription(i) { let s = subscriptions[i]; document.getElementById('subDate').value = s.date; document.getElementById('subRemarks').value = s.remarks || ''; document.getElementById('subPaid').value = s.paid || 0; let custSelect = document.getElementById('subCustomer'); for (let opt of custSelect.options) if (opt.text === s.customer) opt.selected = true; let planSelect = document.getElementById('subPlan'); for (let opt of planSelect.options) if (opt.text === s.plan) opt.selected = true; updatePlanDetails(); document.getElementById('subPaid').value = s.paid || 0; updateBalance(); isEditing = true; editingSubIndex = i; subscriptions.splice(i, 1); saveAllData(); renderSubscriptions(); showAlert('Editing mode: modify and click Save', 'warning'); }
+    function clearSubscriptionForm() { let today = new Date().toISOString().split('T')[0]; document.getElementById('subDate').value = today; document.getElementById('subCustomer').value = ''; document.getElementById('subPlan').value = ''; document.getElementById('subAmount').value = ''; document.getElementById('subPaid').value = ''; document.getElementById('subBalance').value = ''; document.getElementById('renewDate').value = ''; document.getElementById('subRemarks').value = ''; isEditing = false; editingSubIndex = null; }
+    function updateDropdowns() { let custSel = document.getElementById('subCustomer'); custSel.innerHTML = '<option value="">Select Customer</option>' + customers.map((c, i) => `<option value="${i}">${escapeHtml(c.name)}</option>`).join(''); let planSel = document.getElementById('subPlan'); planSel.innerHTML = '<option value="">Select Plan</option>' + plans.map((p, i) => `<option value="${i}">${escapeHtml(p.name)}</option>`).join(''); }
+    function checkAndUpdateExpiredStatuses() { let today = new Date(); today.setHours(0,0,0,0); let updated = false; subscriptions.forEach((sub, idx) => { if (sub.status === 'cancelled') return; let renewalDate = new Date(sub.renewal); renewalDate.setHours(0,0,0,0); if (renewalDate < today && sub.status !== 'expired') { subscriptions[idx].status = 'expired'; updated = true; } }); if (updated) { saveAllData(); renderSubscriptions(); } }
+    
+    // REPORT generation
+    function generateReport() { let type = document.getElementById('reportSelector').value; const today = new Date(); today.setHours(0,0,0,0); let html = `<div style="text-align:center"><h2>${escapeHtml(orgSettings.orgName)}</h2><p>${document.getElementById('reportSelector').options[document.getElementById('reportSelector').selectedIndex].text}</p><p>${new Date().toLocaleString()}</p><hr></div><div class="report-table-container">`; 
+    if (type === 'customers') { let rows = customers.map((c,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.email||'-')}</td><td>${escapeHtml(c.mobile||'-')}</td><td>${escapeHtml(c.city||'-')}</td></tr>`).join(''); html += `<table><thead><tr><th>S.No</th><th>Name</th><th>Email</th><th>Mobile</th><th>City</th></tr></thead><tbody>${rows||'<tr><td colspan="5">No data</td></tr>'}</tbody></table>`; }
+    else if (type === 'revenue') { let map = new Map(); subscriptions.forEach(s => { let d = new Date(s.date); let key = `${d.getFullYear()}-${d.getMonth()+1}`; let name = d.toLocaleString('default',{month:'long',year:'numeric'}); if(!map.has(key)) map.set(key,{month:name,total:0,count:0}); let e=map.get(key); e.total+=s.amount; e.count++; }); let rows='', totalRev=0; for(let m of map.values()) { rows+=`<tr><td>${m.month}</td><td>${m.count}</td><td>₹${m.total.toFixed(2)}</td></tr>`; totalRev+=m.total; } html+=`<table><thead><tr><th>Month</th><th>Count</th><th>Revenue</th></tr></thead><tbody>${rows||'<tr><td colspan="3">No data</td></tr>'}</tbody><tfoot><tr><td><strong>Total</strong></td><td>${subscriptions.length}</td><td><strong>₹${totalRev.toFixed(2)}</strong></td></tr></tfoot></table>`; }
+    else if (type === 'due') { let dueMap = new Map(); subscriptions.forEach(s => { if (s.balance > 0 && s.status !== 'cancelled') { if (!dueMap.has(s.customer)) dueMap.set(s.customer, []); dueMap.get(s.customer).push(s); } }); let rows=''; for (let [cust, subs] of dueMap.entries()) { let totalDue = subs.reduce((a,b)=>a+b.balance,0); rows += `<tr style="background:#fff3cd;"><td colspan="4"><strong>${escapeHtml(cust)}</strong> - Total Due: ₹${totalDue.toFixed(2)}</td></tr>`; subs.forEach(sub => { rows += `<tr><td>${sub.date}</td><td>${sub.plan}</td><td>₹${sub.amount.toFixed(2)}</td><td>₹${sub.balance.toFixed(2)}</td></tr>`; }); } if(rows==='') rows='<tr><td colspan="4">No pending dues</td></tr>'; html+=`<table><thead><tr><th>Subscription Date</th><th>Plan</th><th>Amount</th><th>Balance Due</th></tr></thead><tbody>${rows}</tbody></table>`; }
+    else { let filtered = [...subscriptions]; if (type === 'active') filtered = subscriptions.filter(s => s.status === 'active' && new Date(s.renewal) >= today); if (type === 'expired') filtered = subscriptions.filter(s => s.status === 'expired' || (s.status === 'active' && new Date(s.renewal) < today)); let rows='', total=0; filtered.forEach((s,i)=>{ total+=s.amount; let status = (s.status === 'active' && new Date(s.renewal) >= today) ? 'ACTIVE' : (s.status==='cancelled'?'CANCELLED':'EXPIRED'); rows+=`<tr><td>${i+1}</td><td>${s.date}</td><td>${escapeHtml(s.customer)}</td><td>${escapeHtml(s.plan)}</td><td>₹${s.amount.toFixed(2)}</td><td>${s.renewal}</td><td>${status}</td></tr>`; }); if(rows==='') rows='<tr><td colspan="7">No records</td></tr>'; let gst = total*0.18; html+=`<table><thead><tr><th>S.No</th><th>Date</th><th>Customer</th><th>Plan</th><th>Amount</th><th>Renewal</th><th>Status</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="4"><strong>Subtotal</strong></td><td><strong>₹${total.toFixed(2)}</strong></td><td colspan="2"></td></tr>${type==='gst'?`<tr><td colspan="4">GST 18%</td><td>₹${gst.toFixed(2)}</td><td colspan="2"></td></tr><tr><td colspan="4">GRAND TOTAL</td><td>₹${(total+gst).toFixed(2)}</td><td colspan="2"></td></tr>`:''}</tfoot></table>`; } document.getElementById('reportData').innerHTML = html + `</div>`; }
+    
+    function saveAllData() { localStorage.setItem('customers', JSON.stringify(customers)); localStorage.setItem('plans', JSON.stringify(plans)); localStorage.setItem('subscriptions', JSON.stringify(subscriptions)); refreshDashboardIfVisible(); }
+    function loadAllData() { customers = JSON.parse(localStorage.getItem('customers')) || []; plans = JSON.parse(localStorage.getItem('plans')) || []; subscriptions = JSON.parse(localStorage.getItem('subscriptions')) || []; subscriptions.forEach(s => { if (!s.status) s.status = 'active'; }); checkAndUpdateExpiredStatuses(); renderCustomers(); renderPlans(); renderSubscriptions(); updateDropdowns(); let today = new Date().toISOString().split('T')[0]; if (document.getElementById('subDate')) document.getElementById('subDate').value = today; updateDashboardStats(); renderUpcomingExpirations(); if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode'); }
+    function backupData() { let data = { customers, plans, subscriptions, users: JSON.parse(localStorage.getItem('users') || '[]') }; let json = JSON.stringify(data, null, 2); downloadFile(json, `backup_${new Date().toISOString().slice(0,10)}.json`); showAlert('Backup created', 'success'); }
+    function restoreData(e) { let file = e.target.files[0]; if (!file) return; let reader = new FileReader(); reader.onload = function(ev) { try { let data = JSON.parse(ev.target.result); customers = data.customers || []; plans = data.plans || []; subscriptions = data.subscriptions || []; if (data.users) localStorage.setItem('users', JSON.stringify(data.users)); saveAllData(); renderCustomers(); renderPlans(); renderSubscriptions(); updateDropdowns(); refreshDashboardIfVisible(); renderUpcomingExpirations(); showAlert('Restored successfully', 'success'); } catch (err) { showAlert('Invalid file', 'danger'); } }; reader.readAsText(file); }
+    function refreshDashboardIfVisible() { updateDashboardStats(); renderUpcomingExpirations(); }
+    
+    // LOGIN & UI
+    function login() {
+    let u = document.getElementById('username').value.trim();
+    let p = document.getElementById('password').value;
+    let errorDiv = document.getElementById('loginError');
+
+    // Clear previous error
+    errorDiv.style.display = 'none';
+    errorDiv.innerText = '';
+
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    DEFAULT_USERS.forEach(du => {
+        if (!users.find(x => x.username === du.username)) users.push(du);
+    });
+
+    let user = users.find(uu => uu.username === u && uu.password === p);
+    if (!user) {
+        // Show error message
+        errorDiv.innerText = '❌ Invalid username or password. Please try again.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Successful login – continue as before
+    currentUser = user;
+    localStorage.setItem('loggedInUser', JSON.stringify(user));
+    if (document.getElementById('rememberMe').checked) localStorage.setItem('rememberUser', JSON.stringify(user));
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    updateUserInfo();
+    applyRoleAccess();
+    updateOrgHeader();
+    showAlert('Welcome!', 'success');
+    showSection('dashboard', document.querySelector('.menu-item'));
+    checkAndUpdateExpiredStatuses();
+    refreshDashboardIfVisible();
+}    
+    function checkLogin() { let saved = localStorage.getItem('loggedInUser') || localStorage.getItem('rememberUser'); if (saved) { currentUser = JSON.parse(saved); document.getElementById('loginPage').style.display = 'none'; document.getElementById('app').style.display = 'flex'; updateUserInfo(); applyRoleAccess(); updateOrgHeader(); showSection('dashboard', document.querySelector('.menu-item')); checkAndUpdateExpiredStatuses(); refreshDashboardIfVisible(); } }
+    function logout() { if (confirm('Logout?')) { currentUser = null; localStorage.removeItem('loggedInUser'); document.getElementById('loginPage').style.display = 'flex'; document.getElementById('app').style.display = 'none'; closeSidebarMobile(); } }
+    function updateUserInfo() { document.getElementById('loggedUser').innerHTML = `👤 ${currentUser.username} (${currentUser.role})`; }
+   " function applyRoleAccess() { document.getElementById('planMenuBtn').style.display = currentUser.role === 'admin' ? 'flex' : 'none'; }"
+    function applyRoleAccess() { document.getElementById('planMenuBtn').style.display = 'flex';}
+    function register() {
+    let u = document.getElementById('regUsername').value.trim();
+    let e = document.getElementById('regEmail').value.trim();
+    let m = document.getElementById('regMobile').value.trim();
+    let pwd = document.getElementById('regPassword').value;
+    if (!u || !e || !m || !pwd) {
+        showAlert('All fields required', 'warning');
+        return;
+    }
+    if (!/^\d{10}$/.test(m)) {
+        showAlert('Enter a valid 10-digit mobile number', 'warning');
+        return;
+    }
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.find(x => x.username === u)) {
+        showAlert('Username exists', 'danger');
+        return;
+    }
+    users.push({ username: u, email: e, mobile: m, password: pwd, role: 'user' });
+    localStorage.setItem('users', JSON.stringify(users));
+    showAlert('Registered! Login now', 'success');
+    showLogin();}    
+    
+    function sendOTP() {
+    let username = document.getElementById('forgotUser').value.trim();
+    if (!username) {
+        showAlert('Enter username', 'warning');
+        return;
+    }
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    let user = users.find(u => u.username === username);
+    if (!user) {
+        showAlert('User not found', 'danger');
+        return;
+    }
+    // Generate OTP
+    generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+
+    // Use the user's mobile number if available, otherwise fallback to alert
+    if (user.mobile && /^\d{10}$/.test(user.mobile)) {
+        let message = `Your OTP for password reset is: ${generatedOTP}. Please use it within 5 minutes. - SubsManager`;
+        let smsUrl = `sms:${user.mobile}?body=${encodeURIComponent(message)}`;
+        // Open messaging app (works on mobile devices)
+        window.open(smsUrl);
+        showAlert(`OTP sent to ${user.mobile} via SMS.`, 'success');
+    } else {
+        // Fallback: show OTP in an alert
+        showAlert(`No mobile number found. Your OTP: ${generatedOTP}`, 'warning');
+    }
+
+    // Show OTP input section
+    document.getElementById('otpSection').classList.remove('hidden');}    
+    function resetPassword() { let otp = document.getElementById('otpInput').value, newPass = document.getElementById('newPass').value, user = document.getElementById('forgotUser').value.trim(); if (otp !== generatedOTP) { showAlert('Invalid OTP', 'danger'); return; } let users = JSON.parse(localStorage.getItem('users')) || []; users = users.map(u => u.username === user ? { ...u, password: newPass } : u); localStorage.setItem('users', JSON.stringify(users)); showAlert('Password updated', 'success'); showLogin(); }
+    function showLogin() { document.getElementById('loginBox').classList.remove('hidden'); document.getElementById('registerBox').classList.add('hidden'); document.getElementById('forgotBox').classList.add('hidden'); }
+    function showRegister() { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden'); document.getElementById('forgotBox').classList.add('hidden'); }
+    function showForgot() { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.add('hidden'); document.getElementById('forgotBox').classList.remove('hidden'); }
+    function togglePassword() { let inp = document.getElementById('password'); inp.type = inp.type === 'password' ? 'text' : 'password'; }
+    function togglePassword2() { let inp = document.getElementById('regPassword'); inp.type = inp.type === 'password' ? 'text' : 'password'; }
+    function togglePassword3() { let inp = document.getElementById('newPass'); inp.type = inp.type === 'password' ? 'text' : 'password'; }
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
+    function showSection(id, el) { document.querySelectorAll('.section').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); document.querySelectorAll('.menu-item').forEach(a => a.classList.remove('active')); if (el) el.classList.add('active'); if (id === 'dashboard') { updateDashboardStats(); renderUpcomingExpirations(); checkAndUpdateExpiredStatuses(); } closeSidebarMobile(); }
+    function toggleSidebar() { if (window.innerWidth <= 768) { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); } }
+    function closeSidebarMobile() { if (window.innerWidth <= 768) { document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); } }
+    window.onload = () => { let savedOrg = localStorage.getItem('orgSettings'); if(savedOrg) orgSettings = JSON.parse(savedOrg); updateOrgHeader(); if(document.getElementById('settingsOrgName')) { document.getElementById('settingsOrgName').value = orgSettings.orgName; document.getElementById('settingsOwnerName').value = orgSettings.ownerName || ''; document.getElementById('settingsMobile').value = orgSettings.mobile || ''; document.getElementById('settingsAddress').value = orgSettings.address || ''; } loadAllData(); checkLogin(); if (document.getElementById('subDate')) document.getElementById('subDate').valueAsDate = new Date(); };
+</script>
+</body>
+</html>
