@@ -209,7 +209,7 @@ nav button:hover {
         width: auto;    /* small buttons can remain inline */
     }
 }
-main{flex:1;padding:15px;overflow-y:auto;position:relative;padding-bottom: 80px;}
+main{flex:1;padding:15px;overflow-y:auto;position:relative;}
 .page-header{margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
 .page-title{font-size:1.3rem;font-weight:bold;color:var(--header-bg)}
 .mobile-header{display:none;height:60px;background:var(--header-bg);color:white;align-items:center;padding:0 15px;justify-content:space-between;position:fixed;top:0;left:0;width:100%;z-index:90}
@@ -612,6 +612,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 /* Organization name display (with wrap support) */
 .org-name-disp {
     margin: 0 auto 20px auto;
+    top: 10px;
     font-size: 1.6rem;
     width: 100%;
     max-width: 2500px;
@@ -748,6 +749,22 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     background-clip: padding-box, border-box;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     animation: rotateGradient 4s linear infinite, slideInOut 5s ease-in-out forwards;
+}
+#fixed-org-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    /* Glass effect */
+    background: rgba(243, 244, 246, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    padding: 10px 0;
+    margin: 0;
+
+    /* Smooth shadow */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 </style>
 </head>
@@ -1079,7 +1096,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 </div>
               </div>
            <div id="report-display" class="hidden">
-    <div class="report-header-actions" style="position: sticky; top: -15px; z-index: 85; margin: -15px -15px 15px -15px; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
+    <div class="report-header-actions" style="position: sticky; top: 78px; z-index: 90; margin: -15px -15px 15px -15px; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
 
         <div class="desktop-actions" style="display: flex; gap: 10px; align-items: center;">
             <button onclick="closeReport()" class="btn" style="background-color: #E5E7EB; color: #2c3e50;">Back</button>
@@ -1359,6 +1376,22 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <h3>Printer Config</h3>
             <div style="width:50px"></div>
         </div>
+<div id="driver-miter" class="card driver-select-card" onclick="setPrinterDriver('miter')" style="text-align:center; padding:10px; margin:0;">
+    <i class="fas fa-print" style="font-size:1.5rem; color:#8e44ad;"></i>
+    <div style="font-weight:bold; margin-top:5px;">Miter Print</div>
+    <small style="font-size:0.7rem;">External App</small>
+</div>
+
+<div id="interface-miter" class="print-interface hidden">
+    <div style="background:#e8f4fd; color:#2980b9; padding:10px; border-radius:5px; font-size:0.85rem; margin-bottom:10px;">
+        <strong>Requirement:</strong> Ensure the Miter Print app is installed and configured.
+    </div>
+    <button onclick="testMiterPrint()" class="btn btn-secondary" style="width:100%; background:#8e44ad;">
+        <i class="fas fa-print"></i> Test Print (Miter)
+    </button>
+</div>
+
+
 
         <div class="printer-box">
             <label style="font-size:0.9rem; color:#666;">Select Print Method:</label>
@@ -3367,9 +3400,13 @@ function printReceiptBluetooth() {
     const t = currentReceiptData;
     const method = DB.settings.printMethod || 'rawbt';
 
-    if(method === 'rawbt' && typeof printViaRawBT === "function") {
+    if(method === 'rawbt') {
         printViaRawBT(t);
-        showToast("Sent to RawBT", "success");
+    } 
+    else if(method === 'miter') {
+        printViaMiter(t);
+    }
+    else if (method === 'ble') {
     } 
     else if (window.BLEManager && window.BLEManager.characteristic) {
         const acc = DB.accs.find(a => a.id === t.accId);
@@ -6288,16 +6325,20 @@ function openAgentTab(tab) {
 }
 
 function setPrinterDriver(type) {
+    // 1. Save preference to DB
+    DB.settings.printMethod = type;
+    saveDB();
+
+    // 2. UI Highlighting
     document.querySelectorAll('.driver-select-card').forEach(el => el.classList.remove('active'));
     document.getElementById('driver-' + type).classList.add('active');
     
-    if (type === 'rawbt') {
-        document.getElementById('interface-rawbt').classList.remove('hidden');
-        document.getElementById('interface-ble').classList.add('hidden');
-    } else {
-        document.getElementById('interface-rawbt').classList.add('hidden');
-        document.getElementById('interface-ble').classList.remove('hidden');
-    }
+    // 3. Toggle visibility
+    document.getElementById('interface-rawbt').classList.add('hidden');
+    document.getElementById('interface-ble').classList.add('hidden');
+    document.getElementById('interface-miter').classList.add('hidden');
+
+    document.getElementById('interface-' + type).classList.remove('hidden');
 }
 
 const BLEManager = {
@@ -6307,19 +6348,21 @@ const BLEManager = {
 
         connect: async function() {
         // 1. Check if the browser even supports Bluetooth
-        if (!navigator.bluetooth) {
-            return alert("Bluetooth is NOT available. \n\nOn mobile, this ONLY works if you are using HTTPS (secure site) or a browser that supports Web Bluetooth.");
-        }
+       if (!navigator.bluetooth) {
+        return alert("Web Bluetooth is not supported. \n\nREASONS:\n1. You are not using HTTPS (required).\n2. Your browser (like Firefox or iOS Safari) doesn't support this feature.");
+    }
 
-        try {
-            document.getElementById('ble-status-text').innerText = 'Searching...';
-      
-            this.device = await navigator.bluetooth.requestDevice({
-                acceptAllDevices: true,
-                optionalServices: ['49535056-fe7d-4ae5-8fa9-9fafd205e455', '000018f0-0000-1000-8000-00805f9b34fb'] 
-            });
+    try {
+        document.getElementById('ble-status-text').innerText = 'Searching...';
+        
+        // Use 'acceptAllDevices' but you must provide optionalServices 
+        // for the browser to allow communication after pairing.
+        this.device = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '49535056-fe7d-4ae5-8fa9-9fafd205e455']
+        });
 
-            const server = await this.device.gatt.connect();
+        const server = await this.device.gatt.connect();
             const services = await server.getPrimaryServices();
             
             for (const service of services) {
@@ -6811,6 +6854,49 @@ function autoUpdateAccountName() {
         // 3. Automatically set the new name
         document.getElementById('edit-cacc-name').value = `${cust.name} - ${typeName}`;
     }
+}
+function printViaMiter(t) {
+    if (!t) return alert("No transaction data");
+
+    const acc = DB.accs.find(a => a.id === t.accId);
+    const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
+    const orgName = DB.settings.org || "Finance Manager";
+
+    // Prepare the text content (same format as your RawBT)
+    let receiptText = `--------------------------------\n`;
+    receiptText += `       ${orgName.toUpperCase()}\n`;
+    receiptText += `--------------------------------\n`;
+    receiptText += `Date: ${dateDisp(t.date)}\n`;
+    receiptText += `Voucher: ${t.id}\n`;
+    receiptText += `Name: ${cust ? cust.name : 'General'}\n`;
+    receiptText += `Account: ${acc ? (acc.accNo || '-') : '-'}\n`;
+    receiptText += `Type: ${t.type.toUpperCase()}\n`;
+    receiptText += `Amount: Rs ${t.amt.toFixed(2)}\n`;
+    receiptText += `Avail Bal: Rs ${acc ? acc.balance.toFixed(2) : '0.00'}\n`;
+    receiptText += `--------------------------------\n`;
+    receiptText += `           Thank you\n\n\n`;
+
+    try {
+        // Miter Print usually expects a JSON object or raw string encoded
+        const encodedData = encodeURIComponent(receiptText);
+        const url = `miterprint://${encodedData}`;
+        
+        window.location.href = url;
+    } catch (err) {
+        alert("Miter Print Error: " + err.message);
+    }
+}
+
+// Test function for settings page
+function testMiterPrint() {
+    const testData = {
+        id: "TEST-MITER",
+        date: new Date().toISOString().split('T')[0],
+        type: "deposit",
+        amt: 1.00,
+        accId: DB.accs[0].id
+    };
+    printViaMiter(testData);
 }
 </script>
 </body>
