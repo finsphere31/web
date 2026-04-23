@@ -612,7 +612,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 /* Organization name display (with wrap support) */
 .org-name-disp {
     margin: 0 auto 20px auto;
-    top: 10px;
     font-size: 1.6rem;
     width: 100%;
     max-width: 2500px;
@@ -753,18 +752,125 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 #fixed-org-header {
     position: sticky;
     top: 0;
-    z-index: 1000;
-
-    /* Glass effect */
-    background: rgba(243, 244, 246, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
+    z-index: 91; /* High enough to stay above everything */
+    background: var(--bg-main); /* Hides text scrolling behind it */
+    margin: 0; 
     padding: 10px 0;
-    margin: 0;
+}
+/* Modern Styling */
+    .adj-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        max-width: 1500px;
+        margin: 20px auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-    /* Smooth shadow */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .adj-header {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    /* Responsive Grid Layout */
+    .adj-grid-row {
+        display: grid;
+        grid-template-columns: 1fr; /* Stacked on mobile */
+        gap: 15px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* Desktop View: Auto-adjust columns */
+    @media (min-width: 768px) {
+        .adj-grid-row {
+            grid-template-columns: 1.5fr 1.5fr 3fr 1.5fr 2fr;
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group small {
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+    }
+
+    .form-control {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #4a90e2;
+        outline: none;
+        box-shadow: 0 0 5px rgba(74, 144, 226, 0.2);
+    }
+
+    /* Radio Group Styling */
+    .radio-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        height: 100%;
+    }
+
+    .radio-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    /* Totals Bar */
+    .totals-bar {
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .btn-save {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        background: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-save:hover { background: #219150; }
+    main {
+    background: #f3f4f6;   /* same light gray */
+    padding-top: 0;
+}
+.totals-bar {
+    background: #9AFEFF;
+    color: #1e2a3a;  /* dark text for readability */
+    /* rest unchanged */
 }
 </style>
 </head>
@@ -816,6 +922,16 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
         <span>FinSphere</span> </div>
         <nav>
             <button onclick="navTo('dashboard')" id="btn-dashboard" class="active"><i class="fas fa-home"></i> Dashboard</button>
+
+              <button onclick="document.getElementById('master-submenu').classList.toggle('hidden')">
+    <i class="fas fa-folder"></i> Master <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
+</button>
+
+<div id="master-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
+    <button onclick="navTo('ledgers')" id="btn-ledgers" style="padding-left: 40px;"><i class="fas fa-book"></i> Account Master</button>
+    <button onclick="navTo('accountTypes')" id="btn-accountTypes" style="padding-left: 40px;"><i class="fas fa-cog"></i> Account Types</button>
+    <button onclick="navTo('groups')" id="btn-groups" style="padding-left: 40px;"><i class="fas fa-layer-group"></i> Groups</button>
+</div>   
             <button onclick="navTo('customers')" id="btn-customers"><i class="fas fa-users"></i> Customers</button>
             <button onclick="navTo('transactions')" id="btn-transactions"><i class="fas fa-exchange-alt"></i> Transactions</button>
             <button onclick="navTo('Adjustment Entry')" id="btn-Adjustment Entry"><i class="fas fa-exchange-alt"></i> Adjustment Entry</button>
@@ -831,16 +947,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     <button onclick="openAgentTab('cre')" style="padding-left: 40px;"><i class="fas fa-user-plus"></i> Create Agent</button>
     <button onclick="openAgentTab('ass')" style="padding-left: 40px;"><i class="fas fa-tasks"></i> Assign Accounts</button>
 </div>
-                
-             <button onclick="document.getElementById('master-submenu').classList.toggle('hidden')">
-    <i class="fas fa-folder"></i> Master <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
-</button>
-
-<div id="master-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
-    <button onclick="navTo('ledgers')" id="btn-ledgers" style="padding-left: 40px;"><i class="fas fa-book"></i> Account Master</button>
-    <button onclick="navTo('accountTypes')" id="btn-accountTypes" style="padding-left: 40px;"><i class="fas fa-cog"></i> Account Types</button>
-    <button onclick="navTo('groups')" id="btn-groups" style="padding-left: 40px;"><i class="fas fa-layer-group"></i> Groups</button>
-</div>   
+                           
 </div> <button onclick="navTo('settings')" id="btn-settings"><i class="fas fa-cog"></i> Settings</button>             
              
            <button onclick="logout()" class="btn-logout-3d"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -876,12 +983,12 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     </div>
 
     <div class="card" style="border-left: 4px solid #27ae60; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #edf9f1, #ffffff);">
-        <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Today Income</small>
+        <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Income</small>
         <h3 id="d-today-income" style="font-size:1.6rem; margin-top:8px; color:#27ae60; font-weight: 700;">₹0</h3>
     </div>
 
     <div class="card" style="border-left: 4px solid #e74c3c; padding: 10px; margin-bottom: 0; background: linear-gradient(to right, #fff5f4, #ffffff);">
-        <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Today Expense</small>
+        <small style="color:#666; font-size:1.1rem; text-transform:uppercase;">Expense</small>
         <h3 id="d-today-expense" style="font-size:1.6rem; margin-top:8px; color:#e74c3c; font-weight: 700;">₹0</h3>
     </div>
 
@@ -985,54 +1092,67 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             </div>
         </div>
 
-        <div id="view-Adjustment Entry" class="hidden">
-    <div class="card">
-        <h3>Adjustment Entry</h3>
-        <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Transfer balance between ANY two accounts (Debit -> Credit)</p>
+      <div id="view-Adjustment Entry" class="hidden">
+    <div class="adj-card">
+    <h2 class="adj-header">Adjustment Entry</h2>
+    
+    <form id="adj-form" novalidate>
         
-        <form id="adj-form" class="flex-col">
-            <div class="flex">
-                <div style="flex:1">
-                    <small>Entry Date</small>
-                    <input type="date" id="adj-date" required>
-                </div>
-                <div style="flex:1">
-                    <small>Amount (₹)</small>
-                    <input type="number" id="adj-amt" placeholder="0.00" step="0.01" required>
+        <div class="adj-grid-row">
+            <div class="form-group">
+                <small>Voucher Date</small>
+                <input type="date" id="adj-date-new" class="form-control">
+            </div>
+            <div class="form-group">
+                <small>Voucher No.</small>
+                <input type="text" id="adj-vouch-no" placeholder="e.g. ADJ-001" class="form-control">
+            </div>
+            <div class="form-group">
+                <small>Primary Account</small>
+                <input type="text" id="adj-pri-name" class="form-control" placeholder="Search account..." onkeyup="searchAdjAcc(this, 'pri')">
+                <input type="hidden" id="adj-pri-id">
+            </div>
+            <div class="form-group">
+                <small>Amount</small>
+                <input type="number" id="adj-pri-amt" class="form-control" placeholder="0.00" oninput="calcAdjTotals()">
+            </div>
+            <div class="form-group">
+                <small>Entry Type</small>
+                <div class="radio-group">
+                    <label class="radio-item"><input type="radio" name="adj-type" value="dr" checked onchange="calcAdjTotals()"> <span style="color:#27ae60">DR</span></label>
+                    <label class="radio-item"><input type="radio" name="adj-type" value="cr" onchange="calcAdjTotals()"> <span style="color:#e74c3c">CR</span></label>
                 </div>
             </div>
-
-            <div class="flex">
-                <div style="flex:1; background: #f4fff4; padding: 10px; border-radius: 8px; border: 1px solid #27ae60;">
-                    <strong style="color: #27ae60;">DEBIT</strong>
-                    <div style="display:flex; gap:5px; margin-top:5px;">
-                        <input type="text" id="adj-dr-name" placeholder="Search Account..." readonly>
-                        <button type="button" onclick="openAdjSearch('dr')" class="btn-sm btn-primary">🔍</button>
-                    </div>
-                    <input type="hidden" id="adj-dr-id">
-                    <small id="adj-dr-bal" style="color: #666;">Bal: ₹0.00</small>
-                </div>
-
-                <div style="flex:1; background: #fff4f4; padding: 10px; border-radius: 8px; border: 1px solid #e74c3c;">
-                    <strong style="color: #e74c3c;">CREDIT </strong>
-                    <div style="display:flex; gap:5px; margin-top:5px;">
-                        <input type="text" id="adj-cr-name" placeholder="Search Account..." readonly>
-                        <button type="button" onclick="openAdjSearch('cr')" class="btn-sm btn-danger">🔍</button>
-                    </div>
-                    <input type="hidden" id="adj-cr-id">
-                    <small id="adj-cr-bal" style="color: #666;">Bal: ₹0.00</small>
-                </div>
-            </div>
-
-            <input id="adj-desc" placeholder="Narration (Reason for adjustment)">
-            
-           <div class="flex" style="justify-content: flex-start; gap: 15px;">
-           <button type="submit" class="btn btn-success" style="padding: 10px 25px;">
-            <i class="fas fa-check"></i> Post </button>           
-    <button type="button" onclick="resetAdjForm()" class="btn btn-secondary" style="padding: 10px 25px;"><i class="fas fa-eraser"></i> Clear</button>       
         </div>
-      </form>
-    </div>
+
+       
+        <div id="adj-rows-container">
+            </div>
+        
+       <div style="display: flex; gap: 10px; justify-content: flex-start; margin: 15px 0;">
+    <button type="button" class="btn-secondary" style="padding: 8px 15px; cursor: pointer; border-radius: 5px; border: 1px solid #ccc;" onclick="addAdjRow()">+ Add Account</button>
+    <button type="button" class="btn-secondary" style="padding: 8px 15px; cursor: pointer; border-radius: 5px; border: 1px solid #1abc9c; background: linear-gradient(135deg, #2ecc71 0%, #3498db 100%); color: white; font-weight: 600;" onclick="saveMultiAdjustment()">
+    Save Journal Entry
+</button>
+</div>
+
+<div class="form-group" style="margin-bottom: 10px;">
+            <small>Remarks</small>
+            <textarea id="adj-desc-new" class="form-control" rows="2" placeholder="Enter reason for adjustment..."></textarea>
+        </div>
+        <div class="totals-bar">
+            <span>TOTALS</span>
+            <div>
+                <span style="margin-right: 20px;">DR: ₹<span id="adj-tot-dr">0</span></span>
+                <span>CR: ₹<span id="adj-tot-cr">0</span></span>
+            </div>
+        </div>
+        
+        
+
+        
+    </form>
+</div>
 
     <div class="card">
         <h4>Recent Adjustments</h4>
@@ -1096,7 +1216,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 </div>
               </div>
            <div id="report-display" class="hidden">
-    <div class="report-header-actions" style="position: sticky; top: 78px; z-index: 90; margin: -15px -15px 15px -15px; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
+    <div class="report-header-actions" style="position: sticky; top: 65px; z-index: 90; margin: -15px -15px 15px -15px; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;">
 
         <div class="desktop-actions" style="display: flex; gap: 10px; align-items: center;">
             <button onclick="closeReport()" class="btn" style="background-color: #E5E7EB; color: #2c3e50;">Back</button>
@@ -1376,22 +1496,6 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <h3>Printer Config</h3>
             <div style="width:50px"></div>
         </div>
-<div id="driver-miter" class="card driver-select-card" onclick="setPrinterDriver('miter')" style="text-align:center; padding:10px; margin:0;">
-    <i class="fas fa-print" style="font-size:1.5rem; color:#8e44ad;"></i>
-    <div style="font-weight:bold; margin-top:5px;">Miter Print</div>
-    <small style="font-size:0.7rem;">External App</small>
-</div>
-
-<div id="interface-miter" class="print-interface hidden">
-    <div style="background:#e8f4fd; color:#2980b9; padding:10px; border-radius:5px; font-size:0.85rem; margin-bottom:10px;">
-        <strong>Requirement:</strong> Ensure the Miter Print app is installed and configured.
-    </div>
-    <button onclick="testMiterPrint()" class="btn btn-secondary" style="width:100%; background:#8e44ad;">
-        <i class="fas fa-print"></i> Test Print (Miter)
-    </button>
-</div>
-
-
 
         <div class="printer-box">
             <label style="font-size:0.9rem; color:#666;">Select Print Method:</label>
@@ -3400,13 +3504,9 @@ function printReceiptBluetooth() {
     const t = currentReceiptData;
     const method = DB.settings.printMethod || 'rawbt';
 
-    if(method === 'rawbt') {
+    if(method === 'rawbt' && typeof printViaRawBT === "function") {
         printViaRawBT(t);
-    } 
-    else if(method === 'miter') {
-        printViaMiter(t);
-    }
-    else if (method === 'ble') {
+        showToast("Sent to RawBT", "success");
     } 
     else if (window.BLEManager && window.BLEManager.characteristic) {
         const acc = DB.accs.find(a => a.id === t.accId);
@@ -4767,8 +4867,8 @@ function updateUI() {
     // 3. Update the UI Elements
     document.getElementById('d-tot-cash').innerText = fmt.format(cashInHand);
     document.getElementById('d-today-rec').innerText = fmt.format(todayReceipt);
-    document.getElementById('d-today-income').innerText = fmt.format(todayIncome);
-    document.getElementById('d-today-expense').innerText = fmt.format(todayExpense);
+    document.getElementById('d-today-income').innerText = fmt.format(overallIncome);
+    document.getElementById('d-today-expense').innerText = fmt.format(overallExpense);
     document.getElementById('d-today-count').innerText = todayCount;
 
     // 4. Update Overall Summary Box (Profit/Loss)
@@ -6196,113 +6296,54 @@ function selectAdjAccount(acc) {
     closeAdjSearch();
 }
 
-// 2. Double Entry Posting Logic
-document.getElementById('adj-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const drId = parseInt(document.getElementById('adj-dr-id').value);
-    const crId = parseInt(document.getElementById('adj-cr-id').value);
-    const amt = parseFloat(document.getElementById('adj-amt').value);
-    const date = document.getElementById('adj-date').value;
-    const desc = document.getElementById('adj-desc').value;
+// 1. Initialize this at the very top of your <script> tag
+let adjRowCount = 0;
 
-    if (!drId || !crId || drId === crId) return alert("Select two different accounts");
-
-    const drAcc = DB.accs.find(a => a.id === drId);
-    const crAcc = DB.accs.find(a => a.id === crId);
-
-    // --- ACCOUNTING MATH ---
-    // Rule: Debit increases Assets/Expenses, Decreases Liab/Equity/Income
-    // Rule: Credit decreases Assets/Expenses, Increases Liab/Equity/Income
+// 2. Wrap your event listeners in a check
+document.addEventListener('DOMContentLoaded', () => {
+    const adjForm = document.getElementById('adj-form');
     
-    function updateBalance(acc, amount, action) {
-        const group = DB.groups.find(g => g.name === acc.group);
-        const isAssetOrExpense = group && (group.type === 'Asset' || group.type === 'Expense');
-        
-        let modifier = 1;
-        if (action === 'dr') {
-            modifier = isAssetOrExpense ? 1 : -1;
-        } else { // cr
-            modifier = isAssetOrExpense ? -1 : 1;
-        }
-        acc.balance += (amount * modifier);
+    // Only attempt to add the listener if the element actually exists
+    if (adjForm) {
+        adjForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveMultiAdjustment();
+        });
+    } else {
+        console.warn("Adjustment form ('adj-form') not found on this page load.");
     }
-
-    updateBalance(drAcc, amt, 'dr');
-    updateBalance(crAcc, amt, 'cr');
-
-    const entry = {
-        id: Date.now(),
-        date: date,
-        accId: drId,      // Primary is Debit
-        secAccId: crId,   // Secondary is Credit
-        type: 'adjustment',
-        amt: amt,
-        desc: `[ADJ] ${desc}`,
-        by: session.role
-    };
-
-    DB.trans.push(entry);
-    saveDB();
-    resetAdjForm();
-    renderAdjHistory();
-    alert("Adjustment Entry Posted and Reports Updated!");
+    
+    // Set default date if the field exists
+    const dateInput = document.getElementById('adj-date-new');
+    if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
 });
 
-function resetAdjForm() {
-    document.getElementById('adj-form').reset();
-    document.getElementById('adj-dr-id').value = '';
-    document.getElementById('adj-cr-id').value = '';
-    document.getElementById('adj-dr-bal').innerText = 'Bal: ₹0.00';
-    document.getElementById('adj-cr-bal').innerText = 'Bal: ₹0.00';
-    document.getElementById('adj-date').value = dateNow();
-}
 
-function renderAdjHistory() {
-    const tbody = document.getElementById('adj-history-body');
-    if (!tbody) return;
-    tbody.innerHTML = '';
 
-    const adjustments = DB.trans.filter(t => t.type === 'adjustment').sort((a,b) => b.id - a.id).slice(0, 10);
-
-    adjustments.forEach(t => {
-        const dr = DB.accs.find(a => a.id === t.accId);
-        const cr = DB.accs.find(a => a.id === t.secAccId);
-        
-        // The delete button line has been removed below
-        tbody.innerHTML += `
-            <tr>
-                <td>${dateDisp(t.date)}</td>
-                <td style="color:green">Dr: ${dr ? dr.name : '?' }</td>
-                <td style="color:red">Cr: ${cr ? cr.name : '?' }</td>
-                <td>${fmt.format(t.amt)}</td>
-            </tr>
-        `;
-    });
-}
-
-function deleteAdjustment(id) {
-    if (!confirm("Reverse this adjustment?")) return;
-    const t = DB.trans.find(x => x.id === id);
+function addAdjRow() {
+    adjRowCount++;
+    const container = document.getElementById('adj-rows-container');
     
-    // Reverse the math
-    const drAcc = DB.accs.find(a => a.id === t.accId);
-    const crAcc = DB.accs.find(a => a.id === t.secAccId);
+    if (!container) return;
 
-    function updateBalance(acc, amount, action) {
-        const group = DB.groups.find(g => g.name === acc.group);
-        const isAssetOrExpense = group && (group.type === 'Asset' || group.type === 'Expense');
-        let modifier = (action === 'dr') ? (isAssetOrExpense ? 1 : -1) : (isAssetOrExpense ? -1 : 1);
-        acc.balance += (amount * modifier);
-    }
-
-    if(drAcc) updateBalance(drAcc, t.amt, 'cr'); // Reverse Dr to Cr
-    if(crAcc) updateBalance(crAcc, t.amt, 'dr'); // Reverse Cr to Dr
-
-    DB.trans = DB.trans.filter(x => x.id !== id);
-    saveDB();
-    renderAdjHistory();
+    const row = document.createElement('div');
+    row.className = 'flex';
+    row.style.cssText = 'gap:10px; margin-top:10px; padding:10px; background:#fff; border:1px solid #ddd; border-radius:8px; align-items:center;';
+    
+        row.innerHTML = `
+        <span style="width:25px; font-weight:bold;">${adjRowCount}</span>
+        <div style="flex:2;">
+            <input type="text" placeholder="Select account..." readonly onclick="searchAdjAcc(this, 'row')">
+            <input type="hidden" class="row-acc-id">
+        </div>
+        <div style="flex:1;">
+            <input type="number" class="row-amt" placeholder="0" oninput="calcAdjTotals()">
+        </div>
+        <button type="button" class="btn-danger" onclick="this.parentElement.remove(); calcAdjTotals();" style="width:40px; padding:5px; border:none; border-radius:4px; cursor:pointer;">✖</button>
+    `;
+    container.appendChild(row);
+    calcAdjTotals();
 }
-
 
 function toggleMobileMenu() {
   const dropdown = document.querySelector('.mobile-menu-dropdown');
@@ -6325,20 +6366,16 @@ function openAgentTab(tab) {
 }
 
 function setPrinterDriver(type) {
-    // 1. Save preference to DB
-    DB.settings.printMethod = type;
-    saveDB();
-
-    // 2. UI Highlighting
     document.querySelectorAll('.driver-select-card').forEach(el => el.classList.remove('active'));
     document.getElementById('driver-' + type).classList.add('active');
     
-    // 3. Toggle visibility
-    document.getElementById('interface-rawbt').classList.add('hidden');
-    document.getElementById('interface-ble').classList.add('hidden');
-    document.getElementById('interface-miter').classList.add('hidden');
-
-    document.getElementById('interface-' + type).classList.remove('hidden');
+    if (type === 'rawbt') {
+        document.getElementById('interface-rawbt').classList.remove('hidden');
+        document.getElementById('interface-ble').classList.add('hidden');
+    } else {
+        document.getElementById('interface-rawbt').classList.add('hidden');
+        document.getElementById('interface-ble').classList.remove('hidden');
+    }
 }
 
 const BLEManager = {
@@ -6348,21 +6385,19 @@ const BLEManager = {
 
         connect: async function() {
         // 1. Check if the browser even supports Bluetooth
-       if (!navigator.bluetooth) {
-        return alert("Web Bluetooth is not supported. \n\nREASONS:\n1. You are not using HTTPS (required).\n2. Your browser (like Firefox or iOS Safari) doesn't support this feature.");
-    }
+        if (!navigator.bluetooth) {
+            return alert("Bluetooth is NOT available. \n\nOn mobile, this ONLY works if you are using HTTPS (secure site) or a browser that supports Web Bluetooth.");
+        }
 
-    try {
-        document.getElementById('ble-status-text').innerText = 'Searching...';
-        
-        // Use 'acceptAllDevices' but you must provide optionalServices 
-        // for the browser to allow communication after pairing.
-        this.device = await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
-            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '49535056-fe7d-4ae5-8fa9-9fafd205e455']
-        });
+        try {
+            document.getElementById('ble-status-text').innerText = 'Searching...';
+      
+            this.device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['49535056-fe7d-4ae5-8fa9-9fafd205e455', '000018f0-0000-1000-8000-00805f9b34fb'] 
+            });
 
-        const server = await this.device.gatt.connect();
+            const server = await this.device.gatt.connect();
             const services = await server.getPrimaryServices();
             
             for (const service of services) {
@@ -6855,49 +6890,146 @@ function autoUpdateAccountName() {
         document.getElementById('edit-cacc-name').value = `${cust.name} - ${typeName}`;
     }
 }
-function printViaMiter(t) {
-    if (!t) return alert("No transaction data");
+// 1. Function to handle searching accounts within the Adjustment Form
+function searchAdjAcc(inputElement, type) {
+    // Stores which element is currently being updated
+    window.currentAdjInput = inputElement; 
+    
+    // Opens the existing search modal you already have in your code
+    openAdjSearch(type); 
+}
 
-    const acc = DB.accs.find(a => a.id === t.accId);
-    const cust = acc ? DB.customers.find(c => c.id === acc.custId) : null;
-    const orgName = DB.settings.org || "Finance Manager";
+// 2. Function to calculate totals and validate if Dr matches Cr
+function calcAdjTotals() {
+    let totDr = 0;
+    let totCr = 0;
 
-    // Prepare the text content (same format as your RawBT)
-    let receiptText = `--------------------------------\n`;
-    receiptText += `       ${orgName.toUpperCase()}\n`;
-    receiptText += `--------------------------------\n`;
-    receiptText += `Date: ${dateDisp(t.date)}\n`;
-    receiptText += `Voucher: ${t.id}\n`;
-    receiptText += `Name: ${cust ? cust.name : 'General'}\n`;
-    receiptText += `Account: ${acc ? (acc.accNo || '-') : '-'}\n`;
-    receiptText += `Type: ${t.type.toUpperCase()}\n`;
-    receiptText += `Amount: Rs ${t.amt.toFixed(2)}\n`;
-    receiptText += `Avail Bal: Rs ${acc ? acc.balance.toFixed(2) : '0.00'}\n`;
-    receiptText += `--------------------------------\n`;
-    receiptText += `           Thank you\n\n\n`;
+    // Get Primary Account values
+    const priAmt = parseFloat(document.getElementById('adj-pri-amt').value) || 0;
+    const isPriDr = document.querySelector('input[name="adj-type"]:checked').value === 'dr';
 
-    try {
-        // Miter Print usually expects a JSON object or raw string encoded
-        const encodedData = encodeURIComponent(receiptText);
-        const url = `miterprint://${encodedData}`;
-        
-        window.location.href = url;
-    } catch (err) {
-        alert("Miter Print Error: " + err.message);
+    if (isPriDr) totDr += priAmt;
+    else totCr += priAmt;
+
+    // Get all Offsetting Row values
+    document.querySelectorAll('.row-amt').forEach(input => {
+        const amt = parseFloat(input.value) || 0;
+        // In this professional entry, offsets are the OPPOSITE of primary
+        if (isPriDr) totCr += amt; 
+        else totDr += amt;
+    });
+
+    // Update the UI totals
+    document.getElementById('adj-tot-dr').innerText = totDr.toLocaleString('en-IN');
+    document.getElementById('adj-tot-cr').innerText = totCr.toLocaleString('en-IN');
+
+    // Visual feedback: Red if not balanced, Green if balanced
+    const display = document.getElementById('adj-tot-dr').parentElement;
+    if (totDr === totCr && totDr > 0) {
+        display.style.color = "green";
+    } else {
+        display.style.color = "red";
     }
 }
 
-// Test function for settings page
-function testMiterPrint() {
-    const testData = {
-        id: "TEST-MITER",
-        date: new Date().toISOString().split('T')[0],
-        type: "deposit",
-        amt: 1.00,
-        accId: DB.accs[0].id
-    };
-    printViaMiter(testData);
+// 3. Function to handle selecting an account from the modal
+// You need to update your existing selectAdjAccount to handle the new form
+const originalSelectAdjAccount = selectAdjAccount;
+selectAdjAccount = function(acc) {
+    if (window.currentAdjInput) {
+        // If we are coming from the Adjustment Form
+        window.currentAdjInput.value = acc.name;
+        const parent = window.currentAdjInput.parentElement;
+        const hiddenId = parent.querySelector('input[type="hidden"]');
+        if (hiddenId) hiddenId.value = acc.id;
+        
+        // Reset the trigger
+        window.currentAdjInput = null;
+        closeAdjSearch();
+        calcAdjTotals();
+    } else {
+        // Fallback to original behavior for other parts of the app
+        originalSelectAdjAccount(acc);
+    }
+};
+
+// 1. Updated Save Function with Manual Validation
+function saveMultiAdjustment() {
+    const date = document.getElementById('adj-date-new').value;
+    const priAccId = parseInt(document.getElementById('adj-pri-id').value);
+    const priAmt = parseFloat(document.getElementById('adj-pri-amt').value);
+    const isPriDr = document.querySelector('input[name="adj-type"]:checked').value === 'dr';
+    const desc = document.getElementById('adj-desc-new').value || "Adjustment Entry";
+
+    // MANUAL VALIDATION: This replaces the 'required' attribute
+    if (!priAccId) return alert("Error: Please select a Primary Account.");
+    if (isNaN(priAmt) || priAmt <= 0) return alert("Error: Please enter a valid Primary Amount.");
+
+    const rowElements = document.querySelectorAll('#adj-rows-container .flex');
+    let totalOffset = 0;
+    let offsets = [];
+
+    // Check each Offsetting Account row
+    for (let row of rowElements) {
+        const accId = parseInt(row.querySelector('.row-acc-id').value);
+        const amt = parseFloat(row.querySelector('.row-amt').value);
+
+        if (!accId) return alert("Error: One of your offsetting accounts is not selected.");
+        if (isNaN(amt) || amt <= 0) return alert("Error: Please enter a valid amount for all rows.");
+
+        offsets.push({ id: accId, amt: amt });
+        totalOffset += amt;
+    }
+
+    // Check if balanced
+    if (priAmt.toFixed(2) !== totalOffset.toFixed(2)) {
+        return alert(`Entry NOT Balanced!\nPrimary: ${priAmt}\nTotal Offsets: ${totalOffset}`);
+    }
+
+    // --- Processing ---
+    const primaryAcc = DB.accs.find(a => a.id === priAccId);
+    applyBalanceLogic(primaryAcc, priAmt, isPriDr);
+
+    offsets.forEach(off => {
+        const offAcc = DB.accs.find(a => a.id === off.id);
+        applyBalanceLogic(offAcc, off.amt, !isPriDr); // Always opposite of primary
+
+        DB.trans.push({
+            id: Date.now() + Math.random(),
+            date: date,
+            accId: isPriDr ? priAccId : off.id,   // Dr Account
+            secAccId: isPriDr ? off.id : priAccId, // Cr Account
+            type: 'adjustment',
+            amt: off.amt,
+            desc: desc,
+            by: 'admin'
+        });
+    });
+
+    saveDB();
+    alert("Success: Journal Entry Saved!");
+    
+    // Reset the form
+    document.getElementById('adj-rows-container').innerHTML = '';
+    document.getElementById('adj-pri-amt').value = '';
+    document.getElementById('adj-pri-name').value = '';
+    document.getElementById('adj-pri-id').value = '';
+    calcAdjTotals();
 }
+
+// 2. Helper for Accounting Math (Asset/Expense vs Liability/Income)
+function applyBalanceLogic(acc, amt, isDebit) {
+    const group = DB.groups.find(g => g.name === acc.group);
+    const isDrNormal = group && (group.type === 'Asset' || group.type === 'Expense');
+    
+    if (isDrNormal) {
+        acc.balance += isDebit ? amt : -amt;
+    } else {
+        acc.balance += isDebit ? -amt : amt;
+    }
+}
+
+
 </script>
 </body>
 </html>
